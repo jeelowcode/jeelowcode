@@ -53,6 +53,14 @@ com.jeelowcode
     ├── yudao-module                         // 芋道核心模块
 ```
 
+## 4.项目关系
+
+| 项目 | Star | 开源平台    |
+|--|--|---------|
+| [JeeLowCode低代码平台](https://gitcode.com/jeelowcode/jeelowcode)| [![Gitee star](https://gitee.com/jeelowecode/JeeLowCode/badge/star.svg)](https://gitee.com/jeelowecode/JeeLowCode)     | Gitee   |
+| [JeeLowCode低代码平台](https://github.com/jeelowcode/jeelowcode) | [![GitHub stars](https://img.shields.io/github/stars/jeelowcode/jeelowcode.svg?style=social&label=Stars)](https://github.com/jeelowcode/jeelowcode)     | Github  |
+| [JeeLowCode低代码平台](https://gitcode.com/jeelowcode/jeelowcode)| [GitCode](https://gitcode.com/jeelowcode/jeelowcode) | Gitcode |
+
 ## 5.系统架构图
 <img src="https://ai.oss.mj.ink/chatgpt/jeelowcode/gitee/jsjg2.png"/>
 
