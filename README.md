@@ -59,7 +59,7 @@ com.jeelowcode
 |--|--|---------|
 | [JeeLowCode低代码平台](https://gitcode.com/jeelowcode/jeelowcode)| [![Gitee star](https://gitee.com/jeelowecode/JeeLowCode/badge/star.svg)](https://gitee.com/jeelowecode/JeeLowCode)     | Gitee   |
 | [JeeLowCode低代码平台](https://github.com/jeelowcode/jeelowcode) | [![GitHub stars](https://img.shields.io/github/stars/jeelowcode/jeelowcode.svg?style=social&label=Stars)](https://github.com/jeelowcode/jeelowcode)     | Github  |
-| [JeeLowCode低代码平台](https://gitcode.com/jeelowcode/jeelowcode)| [GitCode](https://gitcode.com/jeelowcode/jeelowcode) | Gitcode |
+| [JeeLowCode低代码平台](https://gitcode.com/jeelowcode/jeelowcode)| [![star](https://gitcode.com/jeelowcode/jeelowcode/star/badge.svg)](https://gitcode.com/jeelowcode/jeelowcode) | Gitcode |
 
 ## 5.系统架构图
 <img src="https://ai.oss.mj.ink/chatgpt/jeelowcode/gitee/jsjg2.png"/>
