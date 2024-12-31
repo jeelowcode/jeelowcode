@@ -53,12 +53,18 @@ com.jeelowcode
 ```
 
 ## 4.项目关系
+**后端项目**
 
-| 项目 | Star | 开源平台    |
+| 项目 | Star | 简介      |
 |--|--|---------|
-| [JeeLowCode低代码平台](https://gitcode.com/jeelowcode/jeelowcode)| [![Gitee star](https://gitee.com/jeelowecode/JeeLowCode/badge/star.svg)](https://gitee.com/jeelowecode/JeeLowCode)     | Gitee   |
-| [JeeLowCode低代码平台](https://github.com/jeelowcode/jeelowcode) | [![GitHub stars](https://img.shields.io/github/stars/jeelowcode/jeelowcode.svg?style=social&label=Stars)](https://github.com/jeelowcode/jeelowcode)     | Github  |
-| [JeeLowCode低代码平台](https://gitcode.com/jeelowcode/jeelowcode)| [![star](https://gitcode.com/jeelowcode/jeelowcode/star/badge.svg)](https://gitcode.com/jeelowcode/jeelowcode) | Gitcode |
+| [JeeLowCode](https://gitcode.com/jeelowcode/jeelowcode)| [![Gitee star](https://gitee.com/jeelowecode/JeeLowCode/badge/star.svg)](https://gitee.com/jeelowecode/JeeLowCode) [![GitHub stars](https://img.shields.io/github/stars/jeelowcode/jeelowcode.svg?style=social&label=Stars)](https://github.com/jeelowcode/jeelowcode) [![star](https://gitcode.com/jeelowcode/jeelowcode/star/badge.svg)](https://gitcode.com/jeelowcode/jeelowcode)      | 基于 Spring Boot 多模块架构   |
+
+**前端项目**
+
+| 项目 | Star | 简介                                    |
+|--|--|---------------------------------------|
+| [jeelowcode-ui-admin-vue3](https://gitcode.com/jeelowcode/jeelowcode-ui-admin-vue3)| [![Gitee star](https://gitee.com/jeelowecode/jeelowcode-ui-admin-vue3/badge/star.svg)](https://gitee.com/jeelowecode/jeelowcode-ui-admin-vue3) [![GitHub stars](https://img.shields.io/github/stars/jeelowcode/jeelowcode-ui-admin-vue3.svg?style=social&label=Stars)](https://github.com/jeelowcode/jeelowcode-ui-admin-vue3) [![star](https://gitcode.com/jeelowcode/jeelowcode-ui-admin-vue3/star/badge.svg)](https://gitcode.com/jeelowcode/jeelowcode-ui-admin-vue3)      | 基于 Vue3 + Element Plus + Avue 实现的后台管理 |
+
 
 ## 5.系统架构图
 <img src="https://ai.oss.mj.ink/chatgpt/jeelowcode/gitee/jsjg2.png"/>
