@@ -22,7 +22,8 @@
 ## 1.项目简介
 
 **JeeLowCode** 是一款基于芋道源码（ruoyi-vue-pro）精心二次封装的企业级低代码开发框架。在探索市场上众多低代码平台时，我们发现它们不仅价格昂贵，而且功能上往往不尽人意，难以仅通过简单的界面配置就满足我们的开发需求。在这样的背景下，寻找一款既免费又稳定，同时易于使用的全开源低代码开发平台变得尤为困难。JeeLowCode 正是为了填补这一市场空缺而诞生的。
-
+<br><br>
+<img src="https://img.shields.io/badge/注意:-JeeLoCode 不允许任何形式的二次开源-red.svg" alt="Downloads">
 ## 2.在线体验
 
 [体验地址：http://demo.jeelowcode.com](http://demo.jeelowcode.com)
