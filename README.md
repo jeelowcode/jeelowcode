@@ -43,7 +43,6 @@ com.jeelowcode
     │       └── jeelowcode-excel             // Excel导入导出模块
     │       └── jeelowcode-exception         // 自定义异常模块
     │       └── jeelowcode-plus              // SQL/DDL 语构建模块
-    │       └── jeelowcode-sqlformat         // SQL核心模块
     │       └── jeelowcode-tenant            // 租户模块
     │       └── jeelowcode-utils             // 工具类模块
     ├── jeelowcode-module                    // 个人业务相关
