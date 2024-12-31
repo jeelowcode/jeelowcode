@@ -1,0 +1,210 @@
+/*
+ * Copyright (c) 2011-2023, baomidou (jobob@qq.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *//*
+Apache License
+Version 2.0, January 2004
+http://www.apache.org/licenses/
+本软件受适用的国家软件著作权法（包括国际条约）和开源协议 双重保护许可。
+
+开源协议中文释意如下：
+1.JeeLowCode开源版本无任何限制，在遵循本开源协议（Apache2.0）条款下，【允许商用】使用，不会造成侵权行为。
+2.允许基于本平台软件开展业务系统开发。
+3.在任何情况下，您不得使用本软件开发可能被认为与【本软件竞争】的软件。
+
+最终解释权归：http://www.jeelowcode.com
+*/
+package com.jeelowcode.framework.plus.core.conditions.interfaces;
+
+import java.io.Serializable;
+
+/**
+ * 查询条件封装
+ * <p>拼接</p>
+ *
+ * @author hubin miemie HCL
+ * @since 2017-05-26
+ */
+public interface Join<Children> extends Serializable {
+
+    /**
+     * 拼接 OR
+     *
+     * @return children
+     */
+    default Children or() {
+        return or(true);
+    }
+
+    /**
+     * 拼接 OR
+     *
+     * @param condition 执行条件
+     * @return children
+     */
+    Children or(boolean condition);
+
+    /**
+     * 拼接 sql
+     * <p>!! 会有 sql 注入风险 !!</p>
+     * <p>例1: apply("id = 1")</p>
+     * <p>例2: apply("date_format(dateColumn,'%Y-%m-%d') = '2008-08-08'")</p>
+     * <p>例3: apply("date_format(dateColumn,'%Y-%m-%d') = {0}", LocalDate.now())</p>
+     * <p>例4: apply("name={0,javaType=int,jdbcType=NUMERIC,typeHandler=xxx.xxx.MyTypeHandler}", "老王")</p>
+     *
+     * @param values    数据数组
+     * @return children
+     */
+    default Children apply(String applySql, Object... values) {
+        return apply(true, applySql, values);
+    }
+
+    /**
+     * 拼接 sql
+     * <p>!! 会有 sql 注入风险 !!</p>
+     * <p>例1: apply("id = 1")</p>
+     * <p>例2: apply("date_format(dateColumn,'%Y-%m-%d') = '2008-08-08'")</p>
+     * <p>例3: apply("date_format(dateColumn,'%Y-%m-%d') = {0}", LocalDate.now())</p>
+     * <p>例4: apply("name={0,javaType=int,jdbcType=NUMERIC,typeHandler=xxx.xxx.MyTypeHandler}", "老王")</p>
+     *
+     * @param condition 执行条件
+     * @param values    数据数组
+     * @return children
+     */
+    Children apply(boolean condition, String applySql, Object... values);
+
+    /**
+     * 无视优化规则直接拼接到 sql 的最后(有sql注入的风险,请谨慎使用)
+     * <p>例: last("limit 1")</p>
+     * <p>注意只能调用一次,多次调用以最后一次为准</p>
+     *
+     * @param lastSql   sql语句
+     * @return children
+     */
+    default Children last(String lastSql) {
+        return last(true, lastSql);
+    }
+
+    /**
+     * 无视优化规则直接拼接到 sql 的最后(有sql注入的风险,请谨慎使用)
+     * <p>例: last("limit 1")</p>
+     * <p>注意只能调用一次,多次调用以最后一次为准</p>
+     *
+     * @param condition 执行条件
+     * @param lastSql   sql语句
+     * @return children
+     */
+    Children last(boolean condition, String lastSql);
+
+    /**
+     * sql 注释(会拼接在 sql 的最后面)
+     * <p>
+     * 自3.5.6开始,默认不处理转义字符,如有需要,调用{@link com.baomidou.mybatisplus.core.toolkit.sql.StringEscape#escapeRawString(String)}
+     * </p>
+     *
+     * @param comment sql注释
+     * @return children
+     */
+    default Children comment(String comment) {
+        return comment(true, comment);
+    }
+
+    /**
+     * sql 注释(会拼接在 sql 的最后面)
+     * <p>
+     * 自3.5.6开始,默认不处理转义字符,如有需要,调用{@link com.baomidou.mybatisplus.core.toolkit.sql.StringEscape#escapeRawString(String)}
+     * </p>
+     *
+     * @param condition 执行条件
+     * @param comment   sql注释
+     * @return children
+     */
+    Children comment(boolean condition, String comment);
+
+    /**
+     * sql 起始句（会拼接在SQL语句的起始处）
+     * <p>
+     * 自3.5.6开始,默认不处理转义字符,如有需要,调用{@link com.baomidou.mybatisplus.core.toolkit.sql.StringEscape#escapeRawString(String)}
+     * </p>
+     *
+     * @param firstSql 起始语句
+     * @return children
+     */
+    default Children first(String firstSql) {
+        return first(true, firstSql);
+    }
+
+    /**
+     * sql 起始句（会拼接在SQL语句的起始处）
+     * <p>
+     * 自3.5.6开始,默认不处理转义字符,如有需要,调用{@link com.baomidou.mybatisplus.core.toolkit.sql.StringEscape#escapeRawString(String)}
+     * </p>
+     *
+     * @param condition 执行条件
+     * @param firstSql  起始语句
+     * @return children
+     * @since 3.3.1
+     */
+    Children first(boolean condition, String firstSql);
+
+    /**
+     * 拼接 EXISTS ( sql语句 )
+     * <p>!! sql 注入方法 !!</p>
+     * <p>例: exists("select id from table where age = 1")</p>
+     *
+     * @param existsSql sql语句
+     * @param values    数据数组
+     * @return children
+     */
+    default Children exists(String existsSql, Object... values) {
+        return exists(true, existsSql, values);
+    }
+
+    /**
+     * 拼接 EXISTS ( sql语句 )
+     * <p>!! sql 注入方法 !!</p>
+     * <p>例: exists("select id from table where age = 1")</p>
+     *
+     * @param condition 执行条件
+     * @param existsSql sql语句
+     * @param values    数据数组
+     * @return children
+     */
+    Children exists(boolean condition, String existsSql, Object... values);
+
+    /**
+     * 拼接 NOT EXISTS ( sql语句 )
+     * <p>!! sql 注入方法 !!</p>
+     * <p>例: notExists("select id from table where age = 1")</p>
+     *
+     * @param existsSql sql语句
+     * @param values    数据数组
+     * @return children
+     */
+    default Children notExists(String existsSql, Object... values) {
+        return notExists(true, existsSql, values);
+    }
+
+    /**
+     * 拼接 NOT EXISTS ( sql语句 )
+     * <p>!! sql 注入方法 !!</p>
+     * <p>例: notExists("select id from table where age = 1")</p>
+     *
+     * @param condition 执行条件
+     * @param existsSql sql语句
+     * @param values    数据数组
+     * @return children
+     */
+    Children notExists(boolean condition, String existsSql, Object... values);
+}

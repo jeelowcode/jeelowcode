@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeelowcode.core.framework.mapper.example.ExampleReportMapper">
+
+    <select id="getIpAndVisitsNum" resultType="java.util.Map">
+        <![CDATA[
+        SELECT
+            COUNT(DISTINCT user_ip) AS users_num,
+            COUNT(DISTINCT id) AS login_num
+        FROM
+            system_login_log
+        WHERE
+            deleted = 0
+            AND create_time >= #{startDate}
+            AND create_time <= #{endDate}
+        ]]>
+    </select>
+
+    <select id="getMaxUsedModel" resultType="java.util.Map">
+        <![CDATA[
+        SELECT temp.* FROM (
+            SELECT
+                model_title AS mk,
+                SUM( users_num ) AS syyhs,
+                SUM( use_num ) AS mksys
+            FROM
+                lowcode_log_module_usage_records
+            WHERE
+                is_deleted = 0
+                AND record_date >= #{begin}
+                AND record_date <= #{end}
+            GROUP BY
+                model_title
+            ) temp
+        ORDER BY
+            temp.syyhs DESC,
+            temp.mksys DESC
+        ]]>
+    </select>
+
+    <select id="getMinUsedModel" resultType="java.util.Map">
+        <![CDATA[
+        SELECT temp.* FROM (
+            SELECT
+                model_title AS mk,
+                SUM( users_num ) AS syyhs,
+                SUM( use_num ) AS mksys
+            FROM
+                lowcode_log_module_usage_records
+            WHERE
+                is_deleted = 0
+                AND record_date >= #{begin}
+                AND record_date <= #{end}
+            GROUP BY
+                model_title
+            ) temp
+        ORDER BY
+            temp.syyhs ASC,
+            temp.mksys DESC
+        ]]>
+    </select>
+
+</mapper>

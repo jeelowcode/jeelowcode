@@ -1,0 +1,29 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.jeelowcode</groupId>
+        <artifactId>jeelowcode-module</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <groupId>com.jeelowcode</groupId>
+    <artifactId>jeelowcode-module-biz</artifactId>
+    <packaging>jar</packaging>
+    <name>${project.artifactId}</name>
+    <version>${jeelowcode.version}</version>
+    <description> 个人业务模块 </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>jeelowcode-module-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>jeelowcode-core</artifactId>
+        </dependency>
+
+    </dependencies>
+</project>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeelowcode.core.framework.mapper.JeeLowCodeMapper">
+
+    <select id="getWebViewFieldList" resultType="string">
+      SELECT
+            field.field_code as "field_code"
+        FROM
+            lowcode_dbform_field field
+            INNER JOIN lowcode_dbform_field_web field_web ON field.field_code = field_web.field_code and field.dbform_id = field_web.dbform_id
+        WHERE
+            field.is_deleted = 0
+            AND field_web.is_deleted = 0
+            AND field_web.is_db_select = 'Y'
+            AND field.dbform_id = #{dbFormId}
+        ORDER BY
+            field.sort_num ASC,
+            field.id ASC
+  </select>
+
+    <select id="getDbWhereFieldList" resultType="map">
+        SELECT
+            field.field_code as "field_code",
+            field.field_type as "field_type",
+            field_query.query_mode as "query_mode"
+        FROM
+            lowcode_dbform_field field
+            INNER JOIN lowcode_dbform_field_web field_web ON field.field_code = field_web.field_code  and field.dbform_id = field_web.dbform_id
+			INNER JOIN lowcode_dbform_field_query field_query ON field.field_code = field_query.field_code and field.dbform_id = field_query.dbform_id
+        WHERE
+            field.is_deleted = 0
+            AND field_web.is_deleted = 0
+			AND field_query.is_deleted = 0
+            AND field_query.query_is_db = 'Y'
+            AND field.is_db='Y'
+            AND field.dbform_id = #{dbFormId}
+        ORDER BY
+            field.sort_num ASC,
+            field.id ASC
+  </select>
+
+    <select id="getReportWhereFieldList" resultType="map">
+         SELECT
+            field.field_code as "field_code",
+            field.field_type as "field_type",
+            field.query_mode as "query_mode"
+        FROM
+			lowcode_report report
+            INNER JOIN lowcode_report_field field on report.id =field.report_id
+        WHERE
+            report.is_deleted = 0
+            AND field.is_deleted = 0
+            AND field.query_is_db = 'Y'
+            AND report.id = #{reportId}
+        ORDER BY
+            field.sort_num ASC,
+            field.id ASC
+  </select>
+
+    <select id="getExcelFieldList" resultType="map">
+        SELECT
+            df.field_code as "field_code",
+            df.field_name as "field_name",
+            dfe.import_example_txt as "import_example_txt"
+        FROM
+            lowcode_dbform_field df
+            INNER JOIN lowcode_dbform_field_export dfe ON df.field_code = dfe.field_code  and df.dbform_id = dfe.dbform_id
+        WHERE
+            df.dbform_id = #{dbFormId}
+            AND df.is_deleted = 0
+            AND dfe.is_deleted = 0
+            AND dfe.is_export = 'Y'
+        ORDER BY
+            df.sort_num ASC,
+            df.id ASC
+    </select>
+
+    <select id="getFormCou" resultType="map">
+        select
+        (select count(id)  from lowcode_dbform_enhance_js where is_deleted = 0 and js_type='js' and dbform_id = #{dbFormId})  as "js_cou",
+        (select count(id)  from lowcode_dbform_enhance_js where is_deleted = 0 and js_type='scss' and dbform_id = #{dbFormId})  as "scss_cou",
+        (select count(id)  from lowcode_dbform_button where is_deleted = 0 and dbform_id = #{dbFormId})  as "button_cou",
+        (select count(id)  from lowcode_dbform_enhance_java where is_deleted = 0 and dbform_id = #{dbFormId})   as "java_cou",
+        (select count(id)  from lowcode_dbform_enhance_sql where is_deleted = 0 and dbform_id = #{dbFormId})  as "sql_cou",
+        (select count(id)  from lowcode_dbform_field where is_deleted = 0 and dbform_id = #{dbFormId})   as "field_cou"
+        from lowcode_dbform dbform
+        where id = #{dbFormId}
+    </select>
+
+</mapper>

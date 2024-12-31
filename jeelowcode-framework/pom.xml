@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.jeelowcode</groupId>
+        <artifactId>jeelowcode</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <groupId>com.jeelowcode</groupId>
+    <artifactId>jeelowcode-framework</artifactId>
+    <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
+    <description>低代码框架工具包</description>
+
+    <modules>
+        <module>jeelowcode-global</module>
+        <module>jeelowcode-utils</module>
+        <module>jeelowcode-tenant</module>
+        <module>jeelowcode-excel</module>
+        <module>jeelowcode-exception</module>
+        <module>jeelowcode-plus</module>
+    </modules>
+
+</project>

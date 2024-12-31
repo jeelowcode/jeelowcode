@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeelowcode.core.framework.mapper.AdapterMapper">
+
+    <select id="getUserName" resultType="String">
+        select username from system_users where id = #{userId};
+    </select>
+    <select id="getNickname" resultType="String">
+        select nickname from system_users where id = #{userId};
+    </select>
+
+    <select id="getDeptId" resultType="Long">
+        select dept_id from system_users where id = #{userId};
+    </select>
+
+
+    <select id="getUserPageByDeptId" resultType="com.jeelowcode.framework.utils.model.JeeLowCodeUser">
+        SELECT
+        s_user.id as "userId",
+        s_user.nickname as "nickName",
+        s_user.mobile as "mobile",
+        s_user.email as "email",
+        s_user.avatar as "avatar",
+        sex_data.label as "sex",
+        t_post.postStr as "post",
+        s_dept.name as "deptName"
+        FROM
+        system_users  s_user
+        LEFT JOIN system_dept s_dept  on s_user.dept_id = s_dept.id and s_dept.deleted =0
+        LEFT JOIN (
+        SELECT
+        sup.user_id,
+        GROUP_CONCAT(sp.name SEPARATOR '、') as postStr
+        FROM
+        system_user_post sup
+        INNER JOIN system_post sp on sup.post_id =sp.id
+        where sup.deleted=0 and sp.deleted=0
+        group by sup.user_id
+        )t_post on s_user.id =t_post.user_id
+        LEFT JOIN system_dict_data sex_data on sex_data.value =s_user.sex AND sex_data.dict_type ='system_user_sex'
+        where s_user.deleted =0
+        and s_user.tenant_id =#{tenantId}
+        <if test="deptIdList!=null and deptIdList.size()>0">
+            and s_dept.id in
+            <foreach collection="deptIdList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.nickName!=null and params.nickName!=''">
+            and s_user.nickname like concat('%', #{params.nickName}, '%')
+        </if>
+        <if test="params.mobile!=null and params.mobile!=''">
+            and s_user.mobile like concat('%', #{params.mobile}, '%')
+        </if>
+    </select>
+
+    <select id="getUserPageByRoleId" resultType="com.jeelowcode.framework.utils.model.JeeLowCodeUser">
+        SELECT
+        s_user.id as "userId",
+        s_user.nickname as "nickName",
+        s_user.mobile as "mobile",
+        s_user.email as "email",
+        s_user.avatar as "avatar",
+        sex_data.label as "sex",
+        t_post.postStr as "post",
+        s_dept.name as "deptName"
+        FROM
+        system_users  s_user
+        INNER JOIN system_user_role sur on s_user.id =sur.user_id
+        LEFT JOIN system_dept s_dept  on s_user.dept_id = s_dept.id
+        LEFT JOIN (
+        SELECT
+        sup.user_id,
+        GROUP_CONCAT(sp.name SEPARATOR '、') as postStr
+        FROM
+        system_user_post sup
+        INNER JOIN system_post sp on sup.post_id =sp.id
+        where sup.deleted=0 and sp.deleted=0
+        group by sup.user_id
+        )t_post on s_user.id =t_post.user_id
+        LEFT JOIN system_dict_data sex_data on sex_data.value =s_user.sex  AND sex_data.dict_type ='system_user_sex'
+
+        where s_user.deleted =0 and sur.deleted =0
+        and s_user.tenant_id =#{tenantId}
+        AND sur.role_id = #{roleId}
+        <if test="params.nickName!=null and params.nickName!=''">
+            and s_user.nickname like concat('%', #{params.nickName}, '%')
+        </if>
+        <if test="params.mobile!=null and params.mobile!=''">
+            and s_user.mobile like concat('%', #{params.mobile}, '%')
+        </if>
+        <if test="deptIdList!=null and deptIdList.size()>0">
+            and s_dept.id in
+            <foreach collection="deptIdList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+    </select>
+
+    <select id="getDbFormFieldDict" resultType="java.util.Map">
+        SELECT 
+            f.field_code,
+            d.value,
+            d.label
+        FROM
+            lowcode_dbform_field_dict f
+            JOIN system_dict_data d ON d.dict_type = f.dict_code
+        WHERE
+            d.deleted = 0
+            AND f.is_deleted = 0
+            AND f.dict_type = 'dict'
+            AND f.dbform_id = #{dbFormId}
+    </select>
+
+</mapper>

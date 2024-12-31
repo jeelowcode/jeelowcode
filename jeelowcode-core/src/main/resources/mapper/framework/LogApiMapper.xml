@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeelowcode.core.framework.mapper.LogApiMapper">
+
+    <select id="countModelUsageRecords" resultType="java.util.Map">
+        <![CDATA[
+        SELECT
+            model_title AS modelTitle,
+            COUNT( DISTINCT ip ) AS usersNum,
+            COUNT( id ) AS useNum
+        FROM
+            lowcode_log_api
+        WHERE
+            is_deleted = 0
+            AND create_time >= #{begin}
+            AND create_time <= #{end}
+        GROUP BY
+            model_title
+        ]]>
+    </select>
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeelowcode.core.framework.mapper.example.ExampleDbFormMapper">
+
+    <insert id="insertStudent">
+        INSERT INTO example_student (id,sno,name,sex,birthday,flag)
+        VALUES(#{map.id},#{map.sno},#{map.name},#{map.sex},#{map.birthday},#{map.flag})
+    </insert>
+
+    <insert id="insertStudent1">
+        INSERT INTO example_student (id,name,birthday)
+        VALUES(#{id},#{name},#{birthday})
+    </insert>
+
+    <delete id="delScoreByStudentId">
+        update example_score set is_deleted = -1 where student_id in
+        <foreach collection="studentIdList" item="studentId" open="(" separator="," close=")">
+            #{studentId}
+        </foreach>
+    </delete>
+
+    <select id="getStudentPage" resultType="java.util.Map">
+        select * from example_student where is_deleted = 0
+    </select>
+
+    <select id="getStudentBySon" resultType="java.lang.Long">
+        select id from example_student where is_deleted = 0 and sno = #{sno} limit 1
+    </select>
+
+    <select id="getStudentExcludIdBySon" resultType="java.lang.Long">
+        select id from example_student where is_deleted = 0 and sno = #{sno} and id != #{id} limit 1
+    </select>
+
+    <select id="getStudentById" resultType="java.util.Map">
+        select * from example_student where id = #{id}
+    </select>
+
+    <select id="getSubmoredateByMainDateId" resultType="java.util.Map">
+        select * from example_sub_more_date where is_deleted = 0 and rl_id = #{mainDateId}
+    </select>
+</mapper>

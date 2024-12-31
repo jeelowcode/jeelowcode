@@ -1,0 +1,70 @@
+server:
+  port: 48080
+
+--- #################### 数据库相关配置 ####################
+spring:
+  datasource:
+    dynamic: # 多数据源配置
+      primary: master
+      datasource:
+        master:
+          # MYSQL数据库
+          name: db_jeelowcode
+          url: jdbc:mysql://127.0.0.1:3306/${spring.datasource.dynamic.datasource.master.name}?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
+          username: root
+          password: 123456
+        slave: # 日志库单独
+          name: db_jeelowcodelog
+          lazy: true # 开启懒加载，保证启动速度
+          url: jdbc:mysql://127.0.0.1:3306/${spring.datasource.dynamic.datasource.slave.name}?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true # MySQL Connector/J 8.X 连接的示例
+          username: root
+          password: 123456
+
+  # Redis 配置。Redisson 默认的配置足够使用，一般不需要进行调优
+  redis:
+    host: 127.0.0.1 # 地址
+    port: 6379 # 端口
+    database: 9 # 数据库索引
+    #  password: 123456 # 密码，建议生产环境开启
+
+logging:
+  file:
+    name: /data/mjkj/webapp/mjkj_jeelowcode/webapp/logs/${spring.application.name}.log # 日志文件名，全路径
+--- #################### 芋道相关配置 ####################
+
+# 芋道配置项，设置当前项目所有自定义的配置
+yudao:
+  captcha:
+    enable: false # 本地环境，暂时关闭图片验证码，方便登录等接口的测试；
+  security:
+    mock-enable: true
+    permit-all-urls:
+      - /admin-api/jeelowcode/open/** # 低代码平台，不需要登
+      - /admin-api/jeelowcode/demo/**
+  xss:
+    enable: false
+    exclude-urls: # 如下两个 url，仅仅是为了演示，去掉配置也没关系
+      - ${spring.boot.admin.context-path}/** # 不处理 Spring Boot Admin 的请求
+      - ${management.endpoints.web.base-path}/** # 不处理 Actuator 的请求
+  access-log: # 访问日志的配置项
+    enable: false
+  error-code: # 错误码相关配置项
+    enable: false
+  demo: false # 关闭演示模式
+  tencent-lbs-key: TVDBZ-TDILD-4ON4B-PFDZA-RNLKH-VVF6E # QQ 地图的密钥 https://lbs.qq.com/service/staticV2/staticGuide/staticDoc
+
+--- #################### 低代码平台相关配置 ####################
+jeelowcode:
+  excludeTableNames: #不允许该类型的表开头
+    - lowcode_
+    - qrtz_
+    - system_
+    - act_
+    - bpm_
+    - flw_
+    - infra_
+  debug: true #是否开启调试模式
+  #AES加解密 key 重新生成AesUtil.genAesKey()
+  aesKey: O2BEeIv399qHQNhD6aGW8R8DEj4bqHXm
+  #JAVA增强生成文件地址(正式环境没有用到)
+  enhancePath: ''

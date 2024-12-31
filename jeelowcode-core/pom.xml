@@ -1,0 +1,87 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.jeelowcode</groupId>
+        <artifactId>jeelowcode</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <groupId>com.jeelowcode</groupId>
+    <artifactId>jeelowcode-core</artifactId>
+    <packaging>jar</packaging>
+    <name>${project.artifactId}</name>
+    <version>${jeelowcode.version}</version>
+    <description> JeeLowCode低代码核心代码 </description>
+
+    <dependencies>
+        <!-- Web 相关 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- 鉴权 相关 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- DB 相关 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-mybatis</artifactId>
+        </dependency>
+
+        <!-- redis 相关 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-redis</artifactId>
+        </dependency>
+
+        <!-- 租户 相关 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-biz-tenant</artifactId>
+        </dependency>
+
+        <!-- **************** jeelowcode低代码框架  **************** -->
+        <dependency>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>jeelowcode-excel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>jeelowcode-exception</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>jeelowcode-plus</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>jeelowcode-tenant</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>jeelowcode-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>jeelowcode-global</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>QLExpress</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+        </dependency>
+
+    </dependencies>
+</project>
