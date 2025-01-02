@@ -71,7 +71,7 @@ com.jeelowcode
 <img src="https://ai.oss.mj.ink/chatgpt/jeelowcode/gitee/jsjg2.png"/>
 
 
-## 6.Hello Word入门
+## 6.Hello World入门
 只需要**4步**带你了解低代码JeeLowCode
 <table>
     <tr>
@@ -352,7 +352,7 @@ com.jeelowcode
 </table>  
 
 
-**第一步：检查本地环境：Node.js: 18.12.0**
+**第一步：检查本地环境：Node.js: 18.0.0**
 
 <table>
     <tr>
