@@ -17,8 +17,8 @@
 
     <modules>
         <!-- 流程模块 -->
-        <module>yudao-module-bpm-api</module>
-        <module>yudao-module-bpm-biz</module>
+<!--        <module>yudao-module-bpm-api</module>
+        <module>yudao-module-bpm-biz</module>-->
 
         <!-- 基础模块 -->
         <module>yudao-module-infra-api</module>
