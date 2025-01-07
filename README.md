@@ -1,5 +1,7 @@
 
+
 <a href="http://doc.jeelowcode.com/club" target="_blank">
+
 <p align="center">
 	<img alt="logo"  src="https://ai.oss.mj.ink/chatgpt/jeelowcode/gitee/xct.jpg">
 </p>
@@ -66,8 +68,19 @@ com.jeelowcode
 |--|--|---------------------------------------|
 | [jeelowcode-ui-admin-vue3](https://gitcode.com/jeelowcode/jeelowcode-ui-admin-vue3)| [![Gitee star](https://gitee.com/jeelowecode/jeelowcode-ui-admin-vue3/badge/star.svg)](https://gitee.com/jeelowecode/jeelowcode-ui-admin-vue3) [![GitHub stars](https://img.shields.io/github/stars/jeelowcode/jeelowcode-ui-admin-vue3.svg?style=social&label=Stars)](https://github.com/jeelowcode/jeelowcode-ui-admin-vue3) [![star](https://gitcode.com/jeelowcode/jeelowcode-ui-admin-vue3/star/badge.svg)](https://gitcode.com/jeelowcode/jeelowcode-ui-admin-vue3)      | 基于 Vue3 + Element Plus + Avue 实现的后台管理 |
 
+<table>
+  <tr>
+    <td >微信交流群（添加时备注：进群）</td>
+    <td >官方公众号</td>
+  </tr>
+  <tr>
+    <td ><img height="320" width="250" src="https://ai.oss.mj.ink/chatgpt/jeelowcode/gitee/jeelowcode-kf.png"/></td>  
+    <td ><img height="250" width="250" src="https://ai.oss.mj.ink/chatgpt/jeelowcode/gitee/wxgzh.jpg"/></td>  
+  </tr>
+</table>
 
 ## 5.系统架构图
+
 <img src="https://ai.oss.mj.ink/chatgpt/jeelowcode/gitee/jsjg2.png"/>
 
 
@@ -422,18 +435,3 @@ pnpm run dev-server
     </tr>
 </table>
 
-
-
-
-## 技术交流（广告勿扰）：
-
-<table>
-  <tr>
-    <td >JeeLowCode客服（添加时备注：进群）</td>
-    <td >JeeLowCode公众号</td>
-  </tr>
-  <tr>
-    <td ><img height="320" width="250" src="https://ai.oss.mj.ink/chatgpt/jeelowcode/gitee/jeelowcode-kf.png"/></td>  
-    <td ><img height="250" width="250" src="https://ai.oss.mj.ink/chatgpt/jeelowcode/gitee/wxgzh.jpg"/></td>  
-  </tr>
-</table>
