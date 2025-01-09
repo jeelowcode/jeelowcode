@@ -27,9 +27,9 @@ import java.util.Map;
  */
 public class EnhanceContext extends BaseEnhanceContext implements Serializable{
     //参数
-    private EnhanceParam param;
+    private EnhanceParam param=new EnhanceParam();
     //结果
-    private EnhanceResult result;
+    private EnhanceResult result=new EnhanceResult();
 
 
     public EnhanceParam getParam() {
