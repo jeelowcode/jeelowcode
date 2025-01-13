@@ -26,6 +26,7 @@ import com.jeelowcode.framework.plus.SqlHelper;
 import com.jeelowcode.framework.plus.build.buildmodel.wrapper.SqlInfoQueryWrapper;
 import com.jeelowcode.framework.plus.core.model.SqlFormatModel;
 import com.jeelowcode.framework.utils.adapter.IJeeLowCodeAdapter;
+import com.jeelowcode.framework.utils.constant.JeeLowCodeConstant;
 import com.jeelowcode.framework.utils.enums.JeeLowCodeFieldTypeEnum;
 import com.jeelowcode.framework.utils.enums.ParamEnum;
 import com.jeelowcode.framework.utils.enums.QueryModelEnum;
@@ -129,7 +130,15 @@ public class JeeLowCodeAnnoaionAspectjSQL {
 
         }
 
-        return returnVal;
+        if(resultFlag){//结果类型
+            ExecuteEnhanceModel executeEnhanceModel=new ExecuteEnhanceModel();
+            executeEnhanceModel.setId(context.getResult().getId());
+            return executeEnhanceModel;
+        }else {
+            listModel.setTotal(context.getResult().getTotal());
+            listModel.setRecords(context.getResult().getRecords());
+        }
+        return listModel;
     }
 
     public BuildSqlEnhanceContext getContextAndPlugins(JoinPoint joinPoint,Object returnVal){
@@ -148,7 +157,7 @@ public class JeeLowCodeAnnoaionAspectjSQL {
         }
 
         Long dbFormId = (Long) paramMap.getOrDefault("dbFormId", null);
-        Long dataId = (Long)paramMap.getOrDefault("dataId",null);
+        Long dataId = (Long)paramMap.getOrDefault("id",null);
         Page page = (Page)paramMap.getOrDefault("page", null);
         List<Long> dataIdList =(List)paramMap.getOrDefault("dataIdList",null);
         String buttonCode = aspectMethodNameMap.get(methodName);
@@ -207,8 +216,14 @@ public class JeeLowCodeAnnoaionAspectjSQL {
                 this.executeEnhanceAfterImport(context, enhanceSqlEntity);
                 break;
             case ENHANCE_LIST:
-                //列表
-                this.executeEnhanceAfterList(context, enhanceSqlEntity);
+                //列表 前端只保留了一个
+                Map<String, Object> params = context.getParam().getParams();
+                Integer pageSize = JeeLowCodeUtils.getMap2Integer(params, "pageSize");
+                if(Func.isEmpty(pageSize) || pageSize==-1 || Func.equals(pageSize, JeeLowCodeConstant.NOT_PAGE)){
+                    this.executeEnhanceAfterList(context, enhanceSqlEntity);
+                }else{
+                    this.executeEnhanceAfterPage(context, enhanceSqlEntity);
+                }
                 break;
             case ENHANCE_PAGE:
                 //分页
