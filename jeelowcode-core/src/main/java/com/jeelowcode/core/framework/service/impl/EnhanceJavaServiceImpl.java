@@ -30,6 +30,7 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ public class EnhanceJavaServiceImpl extends ServiceImpl<EnhanceJavaMapper, Enhan
     private HistoryDbFormMapper historyDbFormMapper;
 
     //新增java增强
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveEnhanceJava(EnhanceJavaEntity enhanceJavaEntity){
         long id = IdWorker.getId();
@@ -67,6 +69,7 @@ public class EnhanceJavaServiceImpl extends ServiceImpl<EnhanceJavaMapper, Enhan
     }
 
     //编辑java增强
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateEnhanceJava(EnhanceJavaEntity enhanceJavaEntity){
         this.updateById(enhanceJavaEntity);

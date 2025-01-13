@@ -65,7 +65,7 @@ public class JeeLowCodeAnnotationAspectjJAVA {
     @Before(value = EXPRESSION)
     public void before(JoinPoint joinPoint) throws Throwable {
 
-        BuildEnhanceContext buildEnhanceContext = this.getContextAndPlugins(joinPoint);
+        BuildEnhanceContext buildEnhanceContext = this.getContextAndPlugins("start",joinPoint);//
         if (FuncBase.isEmpty(buildEnhanceContext)) {
             return;
         }
@@ -89,7 +89,7 @@ public class JeeLowCodeAnnotationAspectjJAVA {
     @AfterReturning(value = EXPRESSION, returning = "returnVal")
     public Object afterReturning(JoinPoint joinPoint, Object returnVal) throws Throwable {
         //获取参数
-        BuildEnhanceContext buildEnhanceContext = this.getContextAndPlugins(joinPoint);
+        BuildEnhanceContext buildEnhanceContext = this.getContextAndPlugins("end",joinPoint);
         if (FuncBase.isEmpty(buildEnhanceContext)) {
             return returnVal;
         }
@@ -159,7 +159,7 @@ public class JeeLowCodeAnnotationAspectjJAVA {
 
     @Around(value = EXPRESSION)
     public Object aroudAdvice(ProceedingJoinPoint joinPoint) throws Throwable {
-        BuildEnhanceContext buildEnhanceContext = this.getContextAndPlugins(joinPoint);
+        BuildEnhanceContext buildEnhanceContext = this.getContextAndPlugins("around",joinPoint);
         if (FuncBase.isEmpty(buildEnhanceContext)) {
             return joinPoint.proceed();
         }
@@ -169,14 +169,15 @@ public class JeeLowCodeAnnotationAspectjJAVA {
         }
         EnhanceContext context = buildEnhanceContext.getContext();
 
+
         for (EnhanceJavaEntity enhanceJavaEntity : enhanceJavaEntityList) {
             this.executeEnhance(enhanceJavaEntity, context, JavaEnhanceEventState.AROUND.getName(), joinPoint);
+
             if (FuncBase.isNotEmpty(context.getResult()) && context.getResult().isExitFlag()) {
                 break;
             }
-
         }
-        if (Func.isEmpty(context.getResult())) {
+        if (Func.isEmpty(context.getResult()) || Func.isEmpty(context.getResult().getRecords())) {
             return joinPoint.proceed();
         }
 
@@ -185,7 +186,7 @@ public class JeeLowCodeAnnotationAspectjJAVA {
 
     @AfterThrowing(value = EXPRESSION, throwing = "ex")
     public void afterThrowing(JoinPoint joinPoint, Exception ex) throws Throwable {
-        BuildEnhanceContext buildEnhanceContext = this.getContextAndPlugins(joinPoint);
+        BuildEnhanceContext buildEnhanceContext = this.getContextAndPlugins("throwing",joinPoint);
         if (FuncBase.isEmpty(buildEnhanceContext)) {
             return;
         }
@@ -212,7 +213,13 @@ public class JeeLowCodeAnnotationAspectjJAVA {
         aspectMethodNameMap = initAspectMethodNameMap;
     }
 
-    public BuildEnhanceContext getContextAndPlugins(JoinPoint joinPoint) {
+    /**
+     *
+     * @param type start end around throwing
+     * @param joinPoint
+     * @return
+     */
+    public BuildEnhanceContext getContextAndPlugins(String type,JoinPoint joinPoint) {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         // 获取方法名称
         String methodName = methodSignature.getName();
@@ -232,10 +239,42 @@ public class JeeLowCodeAnnotationAspectjJAVA {
         Long dbFormId = (Long) paramMap.get("dbFormId");
         String buttonCode = aspectMethodNameMap.get(methodName);
         String key = dbFormId + "_" + buttonCode;
-        List<EnhanceJavaEntity> enhanceJavaEntityList = pluginNames.getOrDefault(key, null);
-        if (Func.isEmpty(enhanceJavaEntityList)) {//不存在增强
+        List<EnhanceJavaEntity> enhanceJavaEntityAllList = pluginNames.getOrDefault(key, null);
+        if (Func.isEmpty(enhanceJavaEntityAllList)) {//不存在增强
             return null;
         }
+        //获取专属增强
+        List<EnhanceJavaEntity> enhanceJavaEntityList=new ArrayList<>();
+        for(EnhanceJavaEntity javaEntity:enhanceJavaEntityAllList){
+            String javaClassUrl = javaEntity.getJavaClassUrl();//
+            BaseAdvicePlugin plugin = PluginManager.getPlugin(javaClassUrl);
+            switch (type) {
+                case "start"://前置增强
+                    if (!(plugin instanceof BeforeAdvicePlugin)) {
+                        break;
+                    }
+                    enhanceJavaEntityList.add(javaEntity);
+                    break;
+                case "end"://后置增强
+                    if (!(plugin instanceof AfterAdvicePlugin)) {
+                        break;
+                    }
+                    enhanceJavaEntityList.add(javaEntity);
+                    break;
+                case "around":
+                    if (!(plugin instanceof AroundAdvicePlugin)) {
+                        break;
+                    }
+                    enhanceJavaEntityList.add(javaEntity);
+                    break;
+                case "throwing":
+                    enhanceJavaEntityList.add(javaEntity);
+                    break;
+                default:
+                    break;
+            }
+        }
+
 
         //判断是否是列表，导出增强
         List<EnhanceJavaEntity> setOperation = enhanceJavaEntityList.stream()
@@ -308,7 +347,7 @@ public class JeeLowCodeAnnotationAspectjJAVA {
                 //环绕-前置
                 PluginManager.executeAroundBeforePlugin(plugin, context);
 
-                if (Func.isEmpty(context.getResult())) {
+                if (Func.isEmpty(context.getResult()) || Func.isEmpty(context.getResult().getRecords())) {
                     context.setResult(new EnhanceResult());
                 }
                 if (context.getResult().isExitFlag()) {//说明终止，不用往下走
