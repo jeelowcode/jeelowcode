@@ -28,7 +28,9 @@ public enum ParamEnum {
     TREE_PARENT("jeeLowCode_treeParent", "获取指定列的所有上级"),
     REQUEST_PARAM_BODY("requestParamBody", "body参数"),
     MORE_SELECT_FIELD("more_select_field", "body参数"),
-    REQUEST_REPORT_CODES("jeeLowCode_report_codes", "报表code 多个通过,隔开")
+    REQUEST_REPORT_CODES("jeeLowCode_report_codes", "报表code 多个通过,隔开"),
+
+    ALL_QUERY_FIELD("jeeLowCode_all_query_field", "所有字段都可以查询"),
     ;
 
     /**

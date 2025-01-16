@@ -39,6 +39,26 @@
             field.id ASC
   </select>
 
+    <select id="getAllDbWhereFieldList" resultType="map">
+        SELECT
+            field.field_code as "field_code",
+            field.field_type as "field_type",
+            field_query.query_mode as "query_mode"
+        FROM
+            lowcode_dbform_field field
+                INNER JOIN lowcode_dbform_field_web field_web ON field.field_code = field_web.field_code  and field.dbform_id = field_web.dbform_id
+                INNER JOIN lowcode_dbform_field_query field_query ON field.field_code = field_query.field_code and field.dbform_id = field_query.dbform_id
+        WHERE
+            field.is_deleted = 0
+          AND field_web.is_deleted = 0
+          AND field_query.is_deleted = 0
+          AND field.is_db='Y'
+          AND field.dbform_id = #{dbFormId}
+        ORDER BY
+            field.sort_num ASC,
+            field.id ASC
+    </select>
+
     <select id="getReportWhereFieldList" resultType="map">
          SELECT
             field.field_code as "field_code",

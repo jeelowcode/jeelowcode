@@ -33,6 +33,9 @@ public interface JeeLowCodeMapper {
     @JeelowCodeCache(cacheNames = "'JeeLowCodeMapper:getDbWhereFieldList:' + #dbFormId", reflexClass = Map.class,nullIsSave = true)
     List<Map<String,String>> getDbWhereFieldList(Long dbFormId);
 
+    @JeelowCodeCache(cacheNames = "'JeeLowCodeMapper:getAllDbWhereFieldList:' + #dbFormId", reflexClass = Map.class,nullIsSave = true)
+    List<Map<String,String>> getAllDbWhereFieldList(Long dbFormId);
+
     //获取开启搜索列-数据报表
     @JeelowCodeCache(cacheNames = "'JeeLowCodeMapper:getReportWhereFieldList:' + #reportId", reflexClass = Map.class,nullIsSave=true)
     List<Map<String,String>> getReportWhereFieldList(Long reportId);

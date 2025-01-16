@@ -13,7 +13,9 @@ http://www.apache.org/licenses/
 */
 package com.jeelowcode.core.framework.config.btncommand.receiver;
 
+import com.jeelowcode.core.framework.utils.Func;
 import com.jeelowcode.framework.utils.adapter.IJeeLowCodeAdapter;
+import com.jeelowcode.framework.utils.enums.ParamEnum;
 import com.jeelowcode.framework.utils.model.ResultDataModel;
 import com.jeelowcode.framework.utils.tool.spring.SpringUtils;
 import com.jeelowcode.core.framework.config.btncommand.param.ButtonParamList;
@@ -53,6 +55,9 @@ public class ButtonReceiverList extends ButtonReceiverBase implements IButtonCom
 
         Long dbformId = param.getDbFormId();
         Map<String, Object> params = param.getParams();
+        if(Func.isNotEmpty(params)){
+            params.remove(ParamEnum.ALL_QUERY_FIELD.getCode());//特殊字段不允许用户带过来
+        }
         Page page = param.getPage();
         ResultDataModel resultDataModel = frameService.getDataList(dbformId, page, params);
 

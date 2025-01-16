@@ -1130,7 +1130,14 @@ public class FrameServiceImpl implements IFrameService {
 
     //处理where
     private void handleWhere(Long dbFormId, SqlInfoQueryWrapper.Wrapper wrapper, Map<String, Object> params) {
-        List<Map<String, String>> whereFieldMapList = jeeLowCodeMapper.getDbWhereFieldList(dbFormId);
+        String allQueryField = Func.getMap2Str(params, ParamEnum.ALL_QUERY_FIELD.getCode());
+        List<Map<String, String>> whereFieldMapList =null;
+        if(Func.isNotEmpty(allQueryField) && Func.equals(allQueryField,"Y")){
+            //特殊情况，是全部放开
+            whereFieldMapList = jeeLowCodeMapper.getAllDbWhereFieldList(dbFormId);
+        }else{
+            whereFieldMapList = jeeLowCodeMapper.getDbWhereFieldList(dbFormId);
+        }
         handleWhere(whereFieldMapList, wrapper, params);
     }
 

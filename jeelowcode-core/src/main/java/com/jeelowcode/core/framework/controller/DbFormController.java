@@ -257,6 +257,7 @@ public class DbFormController extends BaseController {
                         params.put(code,dataId);//id=1
                         params.put(ParamEnum.PAGE_NO.getCode(),1);
                         params.put(ParamEnum.PAGE_SIZE.getCode(),1000);
+                        params.put(ParamEnum.ALL_QUERY_FIELD.getCode(),"Y");
                         ResultDataModel model = frameService.getDataList(dbformId, params);
                         List<Map<String, Object>> tmpList = model.getRecords();
                         if(Func.isEmpty(tmpList)){
