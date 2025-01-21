@@ -49,7 +49,7 @@ public class ExampleStudentBeforeEnhanceAdd implements BeforeAdvicePlugin {
      * @param map
      */
     private void checkData(Map<String, Object> map) {
-        String sno = JeeLowCodeUtils.getMap2Str(map, "sno");
+        Long sno = JeeLowCodeUtils.getMap2Long(map, "sno");
         Long id = exampleDbFormMapper.getStudentBySon(sno);
         if (FuncBase.isNotEmpty(id)) {
             throw new JeeLowCodeException("学号[" + sno + "]已存在！");

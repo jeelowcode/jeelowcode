@@ -51,7 +51,7 @@ public class DesFormServiceImpl extends ServiceImpl<DesFormMapper, DesformEntity
         DesformEntity desformEntity=new DesformEntity();
         desformEntity.setId(id);
         desformEntity.setTenantId(jeeLowCodeAdapter.getTenantId());
-        desformEntity.setCreateUser(FuncBase.toLong(jeeLowCodeAdapter.getOnlineUserId()));
+        desformEntity.setCreateUser(jeeLowCodeAdapter.getOnlineUserId());
         desformEntity.setCreateTime(LocalDateTime.now());
         desformEntity.setDesformName(param.getDesformName());
         desformEntity.setDesformJson(param.getDesformJson());
@@ -71,7 +71,7 @@ public class DesFormServiceImpl extends ServiceImpl<DesFormMapper, DesformEntity
     public void updateDesForm(DesFormAddOrUpdateParam param){
         DesformEntity desformEntity=new DesformEntity();
         desformEntity.setId(param.getId());
-        desformEntity.setUpdateUser(FuncBase.toLong(jeeLowCodeAdapter.getOnlineUserId()));
+        desformEntity.setUpdateUser(jeeLowCodeAdapter.getOnlineUserId());
         desformEntity.setUpdateTime(LocalDateTime.now());
 
         desformEntity.setDesformName(param.getDesformName());
@@ -90,7 +90,7 @@ public class DesFormServiceImpl extends ServiceImpl<DesFormMapper, DesformEntity
         HistoryDesformEntity historyEntity=new HistoryDesformEntity();
         historyEntity.setId(IdWorker.getId());
         historyEntity.setTenantId(jeeLowCodeAdapter.getTenantId());
-        historyEntity.setCreateUser(FuncBase.toLong(jeeLowCodeAdapter.getOnlineUserId()));
+        historyEntity.setCreateUser(jeeLowCodeAdapter.getOnlineUserId());
         historyEntity.setCreateTime(LocalDateTime.now());
         historyEntity.setCreateUserName(jeeLowCodeAdapter.getOnlineUserName());
 

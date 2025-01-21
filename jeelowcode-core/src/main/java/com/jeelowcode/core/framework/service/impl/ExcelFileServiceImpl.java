@@ -74,9 +74,9 @@ public class ExcelFileServiceImpl extends ServiceImpl<ExcelFileMapper, ExcelFile
     public ExcelImportResultModel saveExcel(ServletRequestAttributes sra,long fileId, ButtonParamImport param) {
         RequestContextHolder.setRequestAttributes(sra, true);
 
-        String tenantId = jeeLowCodeAdapter.getTenantId();
-        String onlineUserId = jeeLowCodeAdapter.getOnlineUserId();
-        String onlineUserDeptId = jeeLowCodeAdapter.getOnlineUserDeptId();
+        Long tenantId = jeeLowCodeAdapter.getTenantId();
+        Long onlineUserId = jeeLowCodeAdapter.getOnlineUserId();
+        Long onlineUserDeptId = jeeLowCodeAdapter.getOnlineUserDeptId();
         LocalDateTime now = LocalDateTime.now();
 
         Long dbFormId = param.getDbFormId();
@@ -112,8 +112,8 @@ public class ExcelFileServiceImpl extends ServiceImpl<ExcelFileMapper, ExcelFile
                     entity.setDataId(id);//数据id
                     //赋予默认值
                     entity.setTenantId(tenantId);
-                    entity.setCreateUser(Func.toLong(onlineUserId));
-                    entity.setCreateDept(Func.toLong(onlineUserDeptId));
+                    entity.setCreateUser(onlineUserId);
+                    entity.setCreateDept(onlineUserDeptId);
                     entity.setCreateTime(now);
                     return entity;
                 })

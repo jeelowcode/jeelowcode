@@ -54,7 +54,7 @@ public class DbFormRoleController extends BaseController {
     @PostMapping("/list-field")
     @ApiOperationSupport(order = 2)
     @Operation(tags = "表单开发",summary = "列表 字段权限")
-    public BaseWebResult listRoleField(String tenantId,Long dbFormId) {
+    public BaseWebResult listRoleField(Long tenantId,Long dbFormId) {
         List<DbFormRoleFieldVo> list = dbFormRoleService.listRoleField(tenantId, dbFormId);
         return BaseWebResult.success(list);
     }
@@ -72,7 +72,7 @@ public class DbFormRoleController extends BaseController {
     @PostMapping("/list-button")
     @ApiOperationSupport(order = 4)
     @Operation(tags = "表单开发",summary = "列表 字段权限")
-    public BaseWebResult listRoleButton(String tenantId,Long dbFormId) {
+    public BaseWebResult listRoleButton(Long tenantId,Long dbFormId) {
         List<DbFormRoleButtonVo> list = dbFormRoleService.listRoleButton(tenantId, dbFormId);
         return BaseWebResult.success(list);
     }
@@ -109,7 +109,7 @@ public class DbFormRoleController extends BaseController {
     @PostMapping("/list-data")
     @ApiOperationSupport(order = 4)
     @Operation(tags = "表单开发",summary = "列表 数据权限")
-    public BaseWebResult listRoleData(String tenantId,Long dbFormId) {
+    public BaseWebResult listRoleData(Long tenantId,Long dbFormId) {
         List<DbFormRoleDataRuleVo> list = dbFormRoleService.listRoleData(tenantId, dbFormId);
         return BaseWebResult.success(list);
     }

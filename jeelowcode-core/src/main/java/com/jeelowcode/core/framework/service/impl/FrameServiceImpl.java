@@ -184,6 +184,8 @@ public class FrameServiceImpl implements IFrameService {
 
         String tableName = formEntity.getTableName();
         String tableDescribe = formEntity.getTableDescribe();
+        Long desformWebId = formEntity.getDesformWebId();
+        Long groupDbformId = formEntity.getGroupDbformId();
 
         //获取现有的字段
         List<FormFieldEntity> selectFieldList = dbFormService.getDbFieldList(dbFormId);
@@ -219,7 +221,8 @@ public class FrameServiceImpl implements IFrameService {
             this.handleIndex(dbFormId);
 
             //更新状态
-            this.syncSuccess(dbFormId);
+
+            this.syncSuccess(dbFormId, desformWebId, groupDbformId);
             return;
         }
         //部分更新
@@ -247,7 +250,7 @@ public class FrameServiceImpl implements IFrameService {
         this.handleIndex(dbFormId);
 
         //更新状态
-        this.syncSuccess(dbFormId);
+        this.syncSuccess(dbFormId, desformWebId, groupDbformId);
 
     }
 
@@ -291,10 +294,10 @@ public class FrameServiceImpl implements IFrameService {
 
         long size = Func.isEmpty(page)?JeeLowCodeConstant.NOT_PAGE: page.getSize();
         if (size == JeeLowCodeConstant.NOT_PAGE) {//列表
-            dataList = sqlService.getDataListByPlus(wrapper);
+            dataList = sqlService.getDataListByPlus(wrapper,params);
             total = (long) dataList.size();
         } else {//分页
-            IPage<Map<String, Object>> pages = sqlService.getDataIPageByPlus(page, wrapper);
+            IPage<Map<String, Object>> pages = sqlService.getDataIPageByPlus(page, wrapper,params);
             //处理字典回显
             dataList = pages.getRecords();
             total = pages.getTotal();
@@ -330,7 +333,7 @@ public class FrameServiceImpl implements IFrameService {
                 if (Func.isEmpty(wrapper)) {
                     return;
                 }
-                Map<String, Object> dataMap = sqlService.getDataOneByPlus(wrapper);
+                Map<String, Object> dataMap = sqlService.getDataOneByPlus(wrapper,params);
                 String value = Func.getMap2Str(dataMap, fieldCode);
                 Map<String, Object> labelMap = new HashMap<>();
                 labelMap.put(summaryLabel, value);
@@ -653,6 +656,10 @@ public class FrameServiceImpl implements IFrameService {
             dataList = pages.getRecords();
             total = pages.getTotal();
         }
+
+        //处理blob等特殊字段
+        Map<String, JeeLowCodeFieldTypeEnum> fieldTypeEnumMap = dbFormService.getReportFieldCodeAndTypeEnum(reportEntity.getId());
+        Func.handlePlusDataList(dataList, fieldTypeEnumMap);
 
         //处理字典回显
         reportService.dictView(reportEntity.getId(), dataList);
@@ -1186,9 +1193,23 @@ public class FrameServiceImpl implements IFrameService {
                 String listStr = FuncBase.toStr(obj);
                 List<String> paramList = FuncBase.toStrList(listStr);// 1<=x<2
                 Object leftVal = paramList.get(0);
-                Object rightVal = paramList.get(1);
-                Object finalLeftVal1 = Func.paramParse2Object(leftVal, fieldTypeEnum);
-                Object finalRightVal1 = Func.paramParse2Object(rightVal, fieldTypeEnum);
+                Object rightVal = null;
+                if(paramList.size()>1){
+                     leftVal = paramList.get(0);
+                     rightVal = paramList.get(1);
+                }
+                //有可能是null字符串
+                Object finalLeftVal1tmp =null;
+                if (Func.isNotEmpty(leftVal) && !Func.equals(leftVal, "null")) {
+                    finalLeftVal1tmp = Func.paramParse2Object(leftVal, fieldTypeEnum);
+                }
+                Object finalRightVal1tmp=null;
+                if (Func.isNotEmpty(rightVal)  && !Func.equals(rightVal, "null")) {
+                    finalRightVal1tmp = Func.paramParse2Object(rightVal, fieldTypeEnum);
+                }
+
+                Object finalLeftVal1=finalLeftVal1tmp;
+                Object finalRightVal1=finalRightVal1tmp;
 
                 if (FuncBase.isNotEmpty(finalLeftVal1) && FuncBase.isNotEmpty(finalRightVal1)) {
                     wrapper.setWhere(where -> {
@@ -1222,8 +1243,8 @@ public class FrameServiceImpl implements IFrameService {
     //处理租户数据权限
     private void handleTenantDataRole(Long dbFormId, SqlInfoQueryWrapper.Wrapper wrapper, Map<String, Object> params) {
         //获取当前的租户
-        String tenantId = jeeLowCodeAdapter.getTenantId();
-        if (Func.isEmpty(tenantId) || Func.equals(tenantId, "-1")) {
+        Long tenantId = jeeLowCodeAdapter.getTenantId();
+        if (Func.isEmpty(tenantId) || Func.equals(tenantId, -1L)) {
             return;//没有登录
         }
         List<DbFormRoleDataRuleVo> dbFormRoleDataRuleVoList = dbFormRoleService.listRoleData(tenantId, dbFormId);
@@ -1254,10 +1275,12 @@ public class FrameServiceImpl implements IFrameService {
      *
      * @param dbFormId
      */
-    private void syncSuccess(Long dbFormId) {
+    private void syncSuccess(Long dbFormId, Long desformWebId, Long groupDbformId) {
         //更新状态
         FormEntity updateEntity = new FormEntity();
         updateEntity.setId(dbFormId);
+        updateEntity.setDesformWebId(desformWebId);
+        updateEntity.setGroupDbformId(groupDbformId);
         updateEntity.setIsDbSync(YNEnum.Y.getCode());
         dbFormService.updateById(updateEntity);
     }

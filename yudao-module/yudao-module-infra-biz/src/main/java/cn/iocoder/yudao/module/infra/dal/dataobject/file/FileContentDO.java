@@ -28,7 +28,7 @@ public class FileContentDO extends BaseDO {
      * 编号，数据库自增
      */
     @TableId(type = IdType.INPUT)
-    private String id;
+    private Long id;
     /**
      * 配置编号
      *

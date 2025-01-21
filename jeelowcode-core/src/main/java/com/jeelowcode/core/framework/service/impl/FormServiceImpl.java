@@ -147,6 +147,9 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
     @Autowired
     private EnhanceSqlMapper enhanceSqlMapper;
 
+    @Autowired
+    private ReportFieldMapper reportFieldMapper;
+
     //判断是否是业务表
     @Override
     public boolean isServiceTable(Long dbFormId) {
@@ -329,7 +332,9 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
         }
 
         //2.保存字段属性
-        this.saveOrUpdateDbFormField(formId, param.getFieldList(), delIdVo.getFieldList());
+        Long desformWebId = param.getDbForm().getDesformWebId();
+        Long groupDbformId = param.getDbForm().getGroupDbformId();
+        this.saveOrUpdateDbFormField(formId, desformWebId, groupDbformId, param.getFieldList(), delIdVo.getFieldList());
 
         //3.保存字典属性
         this.saveOrUpdateDbFormDict(formId, param.getDictList(), delIdVo.getDictList());
@@ -1059,11 +1064,12 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
 
 
     //新增or修改 表单开发-表单字段属性
-    private void saveOrUpdateDbFormField(long formId, List<DbFormFieldVo> fieldList, List<Long> delIdList) {
+    private void saveOrUpdateDbFormField(Long formId, Long desformWebId, Long groupDbformId, List<DbFormFieldVo> fieldList, List<Long> delIdList) {
+        List<FormFieldEntity> oldFieldList = fieldMapper.getByDbFormId(formId);
+
         if (Func.isNotEmpty(delIdList)) {
             fieldMapper.deleteBatchIds(delIdList);//删除
         }
-        List<FormFieldEntity> oldFieldList = fieldMapper.getByDbFormId(formId);
 
         List<FormFieldEntity> addList=new ArrayList<>();
         List<FormFieldEntity> updateList=new ArrayList<>();
@@ -1116,6 +1122,8 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
             FormEntity saveOrUpdateEntity = new FormEntity();
             saveOrUpdateEntity.setIsDbSync(YNEnum.N.getCode());//默认的未同步
             saveOrUpdateEntity.setId(formId);
+            saveOrUpdateEntity.setDesformWebId(desformWebId);
+            saveOrUpdateEntity.setGroupDbformId(groupDbformId);
             baseMapper.updateById(saveOrUpdateEntity);
         }
 
@@ -1145,8 +1153,8 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
             saveOrUpdateEntity.setDictCode(vo.getDictCode());
             saveOrUpdateEntity.setDictTable(vo.getDictTable());
             saveOrUpdateEntity.setDictText(vo.getDictText());
-            saveOrUpdateEntity.setDictTableColumn(vo.getDictTableColumn());
-
+            saveOrUpdateEntity.setDictTableColumn(vo.getDictTableColumn());//1
+            saveOrUpdateEntity.setDictTextFormatter(vo.getDictTextFormatter());
             if (Func.isEmpty(vo.getId())) {//新增
                 addList.add(saveOrUpdateEntity);
             } else if (Func.equals(vo.getIsModify(), YNEnum.Y.getCode())) {//如果是N的时候，不修改
@@ -1447,6 +1455,8 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
         String newSubTableStr = String.join(",", newSubTableList);
         FormEntity updatEntity = new FormEntity();
         updatEntity.setId(mainFormEntity.getId());
+        updatEntity.setDesformWebId(mainFormEntity.getDesformWebId());
+        updatEntity.setGroupDbformId(mainFormEntity.getGroupDbformId());
         updatEntity.setSubTableListStr(newSubTableStr);
         baseMapper.updateById(updatEntity);
 
@@ -1483,6 +1493,8 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
 
             FormEntity updatMainEntity = new FormEntity();
             updatMainEntity.setId(mainFormEntity.getId());
+            updatMainEntity.setDesformWebId(mainFormEntity.getDesformWebId());
+            updatMainEntity.setGroupDbformId(mainFormEntity.getGroupDbformId());
             updatMainEntity.setSubTableListStr(newSubTableStr);
             baseMapper.updateById(updatMainEntity);
         });
@@ -1712,6 +1724,16 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
                         FormFieldEntity::getFieldCode,
                         fieldEntity -> JeeLowCodeFieldTypeEnum.getByFieldType(fieldEntity.getFieldType())
                 ));
+    }
+
+    //获取报表字段枚举
+    @Override
+    public Map<String, JeeLowCodeFieldTypeEnum> getReportFieldCodeAndTypeEnum(Long reportId) {
+        List<ReportFieldEntity> fieldList = reportFieldMapper.getByDbReportId(reportId);
+        return fieldList.stream().collect(Collectors.toMap(
+                ReportFieldEntity::getFieldCode,
+                fieldEntity -> JeeLowCodeFieldTypeEnum.getByFieldType(fieldEntity.getFieldType())
+        ));
     }
 
     //解析sql

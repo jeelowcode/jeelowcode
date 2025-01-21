@@ -67,15 +67,16 @@ public class DbFormRoleServiceImpl implements IDbFormRoleService {
     @Override
     public void saveOrUpdateRoleField(List<DbFormRoleFieldVo> voList) {
         voList.stream().forEach(vo -> {
+            Long tenantId = Func.toLong(vo.getTenantId());
             LambdaQueryWrapper<FormRoleFieldEntity> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(FormRoleFieldEntity::getTenantId, vo.getTenantId());
+            wrapper.eq(FormRoleFieldEntity::getTenantId, tenantId);
             wrapper.eq(FormRoleFieldEntity::getDbformId, vo.getDbformId());
             wrapper.eq(FormRoleFieldEntity::getFieldCode, vo.getFieldCode());
             FormRoleFieldEntity selectEntity = roleFieldMapper.selectOne(wrapper);
 
             //默认是开启的，所以只对关闭操作
             FormRoleFieldEntity entity = new FormRoleFieldEntity();
-            entity.setTenantId(vo.getTenantId());
+            entity.setTenantId(tenantId);
             entity.setDbformId(vo.getDbformId());
             entity.setFieldCode(vo.getFieldCode());
 
@@ -91,9 +92,9 @@ public class DbFormRoleServiceImpl implements IDbFormRoleService {
             }
 
             boolean publicExist = false;
-            if (!Func.equals(vo.getTenantId(), "1")) {
+            if (!Func.equals(tenantId, 1L)) {
                 LambdaQueryWrapper<FormRoleFieldEntity> pulbicwrapper = new LambdaQueryWrapper<>();
-                pulbicwrapper.eq(FormRoleFieldEntity::getTenantId, "1");
+                pulbicwrapper.eq(FormRoleFieldEntity::getTenantId, 1L);
                 pulbicwrapper.eq(FormRoleFieldEntity::getDbformId, vo.getDbformId());
                 pulbicwrapper.eq(FormRoleFieldEntity::getFieldCode, vo.getFieldCode());
                 FormRoleFieldEntity publicSelectEntity = roleFieldMapper.selectOne(pulbicwrapper);
@@ -118,20 +119,20 @@ public class DbFormRoleServiceImpl implements IDbFormRoleService {
 
     //字段权限列表
     @Override
-    public List<DbFormRoleFieldVo> listRoleField(String tenantId, Long dbFormId) {
+    public List<DbFormRoleFieldVo> listRoleField(Long tenantId, Long dbFormId) {
         return this.listRoleField(tenantId,dbFormId,true);
     }
 
     @JeelowCodeCache(cacheNames = "'DbFormRoleServiceImpl:listRoleField:' + #tenantId+'_'+#dbFormId+'_'+#enableFlag", reflexClass = DbFormRoleFieldVo.class,nullIsSave = true)
     @Override
-    public List<DbFormRoleFieldVo> listRoleField(String tenantId, Long dbFormId,Boolean enableFlag) {
-        if(Func.isEmpty(tenantId) || Func.equals(tenantId,"-1")){
+    public List<DbFormRoleFieldVo> listRoleField(Long tenantId, Long dbFormId,Boolean enableFlag) {
+        if(Func.isEmpty(tenantId) || Func.equals(tenantId, -1L)){
             return null;
         }
         List<FormFieldEntity> fieldEntityList = formService.getFieldList(dbFormId);
         //获取公共
         LambdaQueryWrapper<FormRoleFieldEntity> publicWrapper = new LambdaQueryWrapper<>();
-        publicWrapper.eq(FormRoleFieldEntity::getTenantId, "1");
+        publicWrapper.eq(FormRoleFieldEntity::getTenantId, 1L);
         publicWrapper.eq(FormRoleFieldEntity::getDbformId, dbFormId);
         List<FormRoleFieldEntity> publicEntityList = roleFieldMapper.selectList(publicWrapper);
         //转为map
@@ -191,15 +192,16 @@ public class DbFormRoleServiceImpl implements IDbFormRoleService {
     @Override
     public void saveOrUpdateRoleButton(List<DbFormRoleButtonVo> voList) {
         voList.stream().forEach(vo -> {
+            Long tenantId = Func.toLong(vo.getTenantId());
             LambdaQueryWrapper<FormRoleButtonEntity> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(FormRoleButtonEntity::getTenantId, vo.getTenantId());
+            wrapper.eq(FormRoleButtonEntity::getTenantId, tenantId);
             wrapper.eq(FormRoleButtonEntity::getDbformId, vo.getDbformId());
             wrapper.eq(FormRoleButtonEntity::getButtonCode, vo.getButtonCode());
             FormRoleButtonEntity selectEntity = roleButtonMapper.selectOne(wrapper);
 
             //默认是开启的，所以只对关闭操作
             FormRoleButtonEntity entity = new FormRoleButtonEntity();
-            entity.setTenantId(vo.getTenantId());
+            entity.setTenantId(tenantId);
             entity.setDbformId(vo.getDbformId());
             entity.setButtonCode(vo.getButtonCode());
             entity.setEnableState(vo.getEnableState());
@@ -210,9 +212,9 @@ public class DbFormRoleServiceImpl implements IDbFormRoleService {
                 roleButtonMapper.insert(entity);
             }
             boolean publicExist = false;
-            if (!Func.equals(vo.getTenantId(), "1")) {
+            if (!Func.equals(tenantId, 1L)) {
                 LambdaQueryWrapper<FormRoleButtonEntity> publicwrapper = new LambdaQueryWrapper<>();
-                publicwrapper.eq(FormRoleButtonEntity::getTenantId, vo.getTenantId());
+                publicwrapper.eq(FormRoleButtonEntity::getTenantId, tenantId);
                 publicwrapper.eq(FormRoleButtonEntity::getDbformId, vo.getDbformId());
                 publicwrapper.eq(FormRoleButtonEntity::getButtonCode, vo.getButtonCode());
                 FormRoleButtonEntity publicselectEntity = roleButtonMapper.selectOne(publicwrapper);
@@ -234,13 +236,13 @@ public class DbFormRoleServiceImpl implements IDbFormRoleService {
 
     //字段权限列表
     @Override
-    public List<DbFormRoleButtonVo> listRoleButton(String tenantId, Long dbFormId) {
+    public List<DbFormRoleButtonVo> listRoleButton(Long tenantId, Long dbFormId) {
         return listRoleButton(tenantId,dbFormId,true);
     }
 
     @JeelowCodeCache(cacheNames = "'DbFormRoleServiceImpl:listRoleButton:' + #tenantId+'_'+#dbFormId+'_'+#enableFlag", reflexClass = DbFormRoleButtonVo.class,nullIsSave = true)
     @Override
-    public List<DbFormRoleButtonVo> listRoleButton(String tenantId, Long dbFormId,Boolean enableFlag) {
+    public List<DbFormRoleButtonVo> listRoleButton(Long tenantId, Long dbFormId,Boolean enableFlag) {
         List<FormButtonEntity> buttonList = new ArrayList<>();
 
         FormEntity formEntity = formService.getFormEntityById(dbFormId);
@@ -270,7 +272,7 @@ public class DbFormRoleServiceImpl implements IDbFormRoleService {
 
         //获取公共
         LambdaQueryWrapper<FormRoleButtonEntity> publicWrapper = new LambdaQueryWrapper<>();
-        publicWrapper.eq(FormRoleButtonEntity::getTenantId, "1");
+        publicWrapper.eq(FormRoleButtonEntity::getTenantId, 1L);
         publicWrapper.eq(FormRoleButtonEntity::getDbformId, dbFormId);
         List<FormRoleButtonEntity> publicEntityList = roleButtonMapper.selectList(publicWrapper);
         //转为map
@@ -352,14 +354,15 @@ public class DbFormRoleServiceImpl implements IDbFormRoleService {
     @Override
     public void saveOrUpdateRoleDataTenant(List<DbFormRoleDataTenantVo> voList) {
         voList.stream().forEach(vo -> {
+            Long tenantId = Func.toLong(vo.getTenantId());
             LambdaQueryWrapper<FormRoleDataTenantEntity> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(FormRoleDataTenantEntity::getTenantId, vo.getTenantId());
+            wrapper.eq(FormRoleDataTenantEntity::getTenantId, tenantId);
             wrapper.eq(FormRoleDataTenantEntity::getDbformRoleDataRuleId, vo.getRuleId());
             FormRoleDataTenantEntity selectEntity = roleDataTenantMapper.selectOne(wrapper);
 
             //默认是开启的，所以只对关闭操作
             FormRoleDataTenantEntity entity = new FormRoleDataTenantEntity();
-            entity.setTenantId(vo.getTenantId());
+            entity.setTenantId(tenantId);
             entity.setDbformRoleDataRuleId(vo.getRuleId());
             entity.setEnableState(vo.getEnableState());
             if (Func.isNotEmpty(selectEntity)) {//更新
@@ -369,9 +372,9 @@ public class DbFormRoleServiceImpl implements IDbFormRoleService {
                 roleDataTenantMapper.insert(entity);
             }
             boolean publicExist = false;
-            if (!Func.equals(vo.getTenantId(), "1")) {
+            if (!Func.equals(tenantId, 1L)) {
                 LambdaQueryWrapper<FormRoleDataTenantEntity> publicwrapper = new LambdaQueryWrapper<>();
-                publicwrapper.eq(FormRoleDataTenantEntity::getTenantId, vo.getTenantId());
+                publicwrapper.eq(FormRoleDataTenantEntity::getTenantId, tenantId);
                 publicwrapper.eq(FormRoleDataTenantEntity::getDbformRoleDataRuleId, vo.getRuleId());
                 FormRoleDataTenantEntity publicselectEntity = roleDataTenantMapper.selectOne(publicwrapper);
                 if (Func.isNotEmpty(publicselectEntity)) {
@@ -393,7 +396,7 @@ public class DbFormRoleServiceImpl implements IDbFormRoleService {
     //字段权限列表
     @JeelowCodeCache(cacheNames = "'DbFormRoleServiceImpl:listRoleData' + #tenantId+'_'+#dbFormId", reflexClass = DbFormRoleDataRuleVo.class,nullIsSave = true)
     @Override
-    public List<DbFormRoleDataRuleVo> listRoleData(String tenantId, Long dbFormId) {
+    public List<DbFormRoleDataRuleVo> listRoleData(Long tenantId, Long dbFormId) {
         List<DbFormRoleDataRuleVo> resultList = new ArrayList<>();
 
         //获取所有规则
@@ -409,7 +412,7 @@ public class DbFormRoleServiceImpl implements IDbFormRoleService {
 
         //获取公共
         LambdaQueryWrapper<FormRoleDataTenantEntity> publicWrapper = new LambdaQueryWrapper<>();
-        publicWrapper.eq(FormRoleDataTenantEntity::getTenantId, "1");
+        publicWrapper.eq(FormRoleDataTenantEntity::getTenantId, 1L);
         publicWrapper.in(FormRoleDataTenantEntity::getDbformRoleDataRuleId, ruleIdList);
         List<FormRoleDataTenantEntity> publicEntityList = roleDataTenantMapper.selectList(publicWrapper);
 

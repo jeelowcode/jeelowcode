@@ -40,7 +40,7 @@ public class ExampleTrafficStatisticsReportEnhance implements ReportAfterAdviceP
     @Override
     public void execute(EnhanceReportContext enhanceContext) {
         Map<String, Object> params = enhanceContext.getParam().getParams();
-        String date = JeeLowCodeUtils.getMap2Str(params, "date");
+        String date = JeeLowCodeUtils.getMap2Str(params, "sj");
         // 开始结束日期相同则按小时，不同则按天
         String startDateStr;
         String endDateStr;
@@ -87,11 +87,11 @@ public class ExampleTrafficStatisticsReportEnhance implements ReportAfterAdviceP
             if (hourFlag) {
                 start = DateUtil.offsetHour(start, 1);
                 end = DateUtil.offsetHour(end, 1);
-                dataMap.put("date", DateUtil.format(start, "HH"));
+                dataMap.put("sj", DateUtil.format(start, "HH"));
             } else {
                 start = DateUtil.offsetDay(start, 1);
                 end = DateUtil.offsetDay(end, 1);
-                dataMap.put("date", DateUtil.format(start, DatePattern.NORM_DATE_PATTERN));
+                dataMap.put("sj", DateUtil.format(start, DatePattern.NORM_DATE_PATTERN));
             }
             if (start.getTime() <= dateNow.getTime()) {
                 dataMap.putAll(exampleReportMapper.getIpAndVisitsNum(start, end));

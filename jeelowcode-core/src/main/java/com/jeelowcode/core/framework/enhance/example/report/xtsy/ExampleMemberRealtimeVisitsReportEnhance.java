@@ -35,6 +35,6 @@ public class ExampleMemberRealtimeVisitsReportEnhance implements ReportAfterAdvi
         if (Func.isEmpty(records)) {
             return;
         }
-        records.forEach(item -> item.put("date", DateUtil.format(JeeLowCodeUtils.getMap2DateTime(item, "date"), "HH:mm")));
+        records.forEach(item -> item.put("sj", DateUtil.format(JeeLowCodeUtils.getMap2DateTime(item, "sj"), "HH:mm")));
     }
 }

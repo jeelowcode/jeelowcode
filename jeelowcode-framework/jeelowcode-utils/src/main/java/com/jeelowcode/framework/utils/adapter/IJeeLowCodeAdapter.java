@@ -42,7 +42,7 @@ import java.util.Set;
 public interface IJeeLowCodeAdapter {
 
     //获取当前在线人id
-    String getOnlineUserId();
+    Long getOnlineUserId();
 
     //获取当前在线人账号
     String getOnlineUserName();
@@ -51,10 +51,10 @@ public interface IJeeLowCodeAdapter {
     String getOnlineUserNickName();
 
     //获取当前在线人部门id
-    String getOnlineUserDeptId();
+    Long getOnlineUserDeptId();
 
     //获取当前在线人id
-    String getTenantId();
+    Long getTenantId();
 
     //获取部门id
     Long getDeptId(Long userId);

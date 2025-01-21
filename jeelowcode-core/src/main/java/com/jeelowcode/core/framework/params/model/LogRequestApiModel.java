@@ -28,7 +28,7 @@ public class LogRequestApiModel {
 
     private Long id;
 
-    private String tenantId;
+    private Long tenantId;
 
     private Long createUser;
 

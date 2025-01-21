@@ -47,7 +47,7 @@ public class ButtonReceiverDetail extends ButtonReceiverBase implements IButtonC
         IFrameService frameService = SpringUtils.getBean(IFrameService.class);
         IDbFormRoleService dbFormRoleService = SpringUtils.getBean(IDbFormRoleService.class);
         IJeeLowCodeAdapter jeeLowCodeAdapter = SpringUtils.getBean(IJeeLowCodeAdapter.class);
-        String tenantId = jeeLowCodeAdapter.getTenantId();
+        Long tenantId = jeeLowCodeAdapter.getTenantId();
 
         Long dbformId = param.getDbFormId();
         Long dataId = param.getDataId();

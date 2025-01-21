@@ -35,11 +35,14 @@ public interface IFrameSqlService {
     //查询数据相关
     //单个
     Map<String, Object> getDataOneByPlus(SqlInfoQueryWrapper.Wrapper wrapper);
+    Map<String, Object> getDataOneByPlus(SqlInfoQueryWrapper.Wrapper wrapper,Map<String,Object> params);
     //多个
     List<Map<String, Object>> getDataListByPlus(SqlInfoQueryWrapper.Wrapper wrapper);
+    List<Map<String, Object>> getDataListByPlus(SqlInfoQueryWrapper.Wrapper wrapper,Map<String,Object> params);
     List<Map<String, Object>> getDataListByPlus(String sql,Map<String,Object> params);
     //分页
     IPage<Map<String, Object>> getDataIPageByPlus(IPage page, SqlInfoQueryWrapper.Wrapper wrapper);
+    IPage<Map<String, Object>> getDataIPageByPlus(IPage page, SqlInfoQueryWrapper.Wrapper wrapper,Map<String,Object> params);
 
     //修改数据
     void updateDataByPlus(SqlInfoUpdateWrapper.Wrapper wrapper);

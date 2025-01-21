@@ -60,6 +60,9 @@ import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
@@ -574,24 +577,23 @@ public class Func extends FuncBase {
             paramMap.put(SqlParamEnum.JEELOWCODE_ID.getCode(),IdWorker.getId());
         }
         if(SqlParamEnumIsExist(executeSql,SqlParamEnum.JEELOWCODE_DATE_TIME)){
-            paramMap.put(SqlParamEnum.JEELOWCODE_DATE_TIME.getCode(),DateUtil.now());
+            paramMap.put(SqlParamEnum.JEELOWCODE_DATE_TIME.getCode(), LocalDateTime.now().withNano(0));
         }
         if(SqlParamEnumIsExist(executeSql,SqlParamEnum.JEELOWCODE_DATE)){
-            paramMap.put(SqlParamEnum.JEELOWCODE_DATE.getCode(),DateUtil.now());
-
+            paramMap.put(SqlParamEnum.JEELOWCODE_DATE.getCode(), LocalDate.now());
         }
         if(SqlParamEnumIsExist(executeSql,SqlParamEnum.JEELOWCODE_TIME)){
-            paramMap.put(SqlParamEnum.JEELOWCODE_TIME.getCode(),DateUtil.now());
+            paramMap.put(SqlParamEnum.JEELOWCODE_TIME.getCode(), LocalTime.now().withNano(0));
         }
         if(SqlParamEnumIsExist(executeSql,SqlParamEnum.JEELOWCODE_IS_DELETED)){
-            paramMap.put(SqlParamEnum.JEELOWCODE_IS_DELETED.getCode(),"0");
+            paramMap.put(SqlParamEnum.JEELOWCODE_IS_DELETED.getCode(),0);
         }
         if(SqlParamEnumIsExist(executeSql,SqlParamEnum.JEELOWCODE_TENANT_ID)){
-            String tenantId = jeeLowCodeAdapter.getTenantId();
+            Long tenantId = jeeLowCodeAdapter.getTenantId();
             paramMap.put(SqlParamEnum.JEELOWCODE_TENANT_ID.getCode(),tenantId);
         }
         if(SqlParamEnumIsExist(executeSql,SqlParamEnum.JEELOWCODE_USER_ID)){
-            String onlineUserId = jeeLowCodeAdapter.getOnlineUserId();
+            Long onlineUserId = jeeLowCodeAdapter.getOnlineUserId();
             paramMap.put(SqlParamEnum.JEELOWCODE_USER_ID.getCode(),onlineUserId);
         }
         if(SqlParamEnumIsExist(executeSql,SqlParamEnum.JEELOWCODE_USER_NAME)){
@@ -603,7 +605,7 @@ public class Func extends FuncBase {
             paramMap.put(SqlParamEnum.JEELOWCODE_USER_NICKNAME.getCode(),onlineUserNickName);
         }
         if(SqlParamEnumIsExist(executeSql,SqlParamEnum.JEELOWCODE_USER_DEPT)){
-            String onlineUserDeptId = jeeLowCodeAdapter.getOnlineUserDeptId();
+            Long onlineUserDeptId = jeeLowCodeAdapter.getOnlineUserDeptId();
             paramMap.put(SqlParamEnum.JEELOWCODE_USER_DEPT.getCode(),onlineUserDeptId);
         }
         if(SqlParamEnumIsExist(executeSql,SqlParamEnum.JEELOWCODE_USER_ALL_DEPT)){

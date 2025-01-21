@@ -54,7 +54,7 @@ public class ButtonReceiverExport  extends ButtonReceiverBase implements IButton
         IJeeLowCodeAdapter jeeLowCodeAdapter = SpringUtils.getBean(IJeeLowCodeAdapter.class);
 
 
-        String tenantId = jeeLowCodeAdapter.getTenantId();
+        Long tenantId = jeeLowCodeAdapter.getTenantId();
 
         Long dbFormId = param.getDbFormId();
         Map<String, Object> params = param.getParams();

@@ -179,7 +179,7 @@ public class DbFormController extends BaseController {
     public BaseWebResult getWebConfig(@RequestParam("dbformId")Long dbformId) {
         WebConfigVo webConfig = dbFormService.getWebConfig(dbformId);
         //判断是否有租户字段权限
-        String tenantId = jeeLowCodeAdapter.getTenantId();
+        Long tenantId = jeeLowCodeAdapter.getTenantId();
         if(Func.isNotEmpty(tenantId) && Func.notEquals(tenantId,"-1")){
             //字段权限->部分租户只能看到部分字段
             List<DbFormRoleFieldVo> roleFieldVoList = dbFormRoleService.listRoleField(tenantId, dbformId,false);

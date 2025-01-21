@@ -8,6 +8,25 @@ spring:
       primary: master
       datasource:
         master:
+
+#          # ORACLE数据库
+#          name: jeelowcode
+#          url: jdbc:oracle:thin:@127.0.0.1:1521:ORCL
+#          username: 'C##JEELOWCODE'
+#          password: 123456
+
+#          # 达梦数据库
+#          name: DB_JEELOWCODE
+#          url: jdbc:dm://127.0.0.1:5236?schema=${spring.datasource.dynamic.datasource.master.name}
+#          username: SYSDBA
+#          password: 123456
+
+#          # POSTGREA数据库
+#          name: jeelowcode
+#          url: jdbc:postgresql://127.0.0.1:5432/${spring.datasource.dynamic.datasource.master.name} # PostgreSQL 连接的示例
+#          username: postgres
+#          password: 123456
+
           # MYSQL数据库
           name: db_jeelowcode
           url: jdbc:mysql://127.0.0.1:3306/${spring.datasource.dynamic.datasource.master.name}?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例

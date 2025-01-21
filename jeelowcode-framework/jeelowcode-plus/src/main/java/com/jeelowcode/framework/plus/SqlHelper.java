@@ -105,7 +105,7 @@ public class SqlHelper {
 
         TenantIdFilterEntity tenantIdFilterEntity = new TenantIdFilterEntity();
         tenantIdFilterEntity.setEnable(tenantEnable);
-        tenantIdFilterEntity.setTenantId(Long.parseLong(adapter.getTenantId()));
+        tenantIdFilterEntity.setTenantId(adapter.getTenantId());
         tenantIdFilterEntity.setIgnore(adapter.getTenantIsIgnore());
         tenantIdFilterEntity.setIgnoreTables(tenantIgnoreTable);
         tenantIdFilterEntity.setIgnoreUrl(tenantIgnoreUrl);

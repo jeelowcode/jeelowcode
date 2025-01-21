@@ -29,6 +29,7 @@
                 is_deleted = 0
                 AND record_date >= #{begin}
                 AND record_date <= #{end}
+                AND model_title IS NOT NULL
             GROUP BY
                 model_title
             ) temp
@@ -51,6 +52,7 @@
                 is_deleted = 0
                 AND record_date >= #{begin}
                 AND record_date <= #{end}
+                AND model_title IS NOT NULL
             GROUP BY
                 model_title
             ) temp

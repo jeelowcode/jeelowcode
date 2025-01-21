@@ -60,6 +60,11 @@ public class FormFieldDictEntity extends BaseTenantEntity {
     /**
      * 表格字典显示列
      */
-    private String dictTableColumn;
+    private String dictTableColumn;//1
+
+    /**
+     * 表格字典格式化
+     */
+    private String dictTextFormatter;
 }
 

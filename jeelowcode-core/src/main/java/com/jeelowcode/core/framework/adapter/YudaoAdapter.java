@@ -75,9 +75,9 @@ public class YudaoAdapter implements IJeeLowCodeAdapter {
 
     //获取当前在线人id
     @Override
-    public String getOnlineUserId() {
+    public Long getOnlineUserId() {
         Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
-        return FuncBase.toStr(loginUserId);
+        return loginUserId;
     }
 
     //获取当前在线人账号
@@ -95,27 +95,26 @@ public class YudaoAdapter implements IJeeLowCodeAdapter {
     }
 
     @Override
-    public String getOnlineUserDeptId() {
+    public Long getOnlineUserDeptId() {
         Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
         Long deptId = adapterMapper.getDeptId(loginUserId);
-        return Func.toStr(deptId);
+        return deptId;
     }
 
     //获取当前在线人id
     @Override
-    public String getTenantId() {
+    public Long getTenantId() {
         //当前线程
         Long tenantId = TenantContextHolder.getTenantId();
         if (Func.isNotEmpty(tenantId) && tenantId > 0) {
-            return FuncBase.toStr(tenantId);
+            return tenantId;
         }
         //当前线程没有租户信息，则从登录用户获取
         LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
         if (FuncBase.isNotEmpty(loginUser)) {
-            tenantId = loginUser.getTenantId();
-            return FuncBase.toStr(tenantId);
+            return loginUser.getTenantId();
         }
-        return "-1";
+        return -1L;
     }
 
     //获取部门id
@@ -233,11 +232,9 @@ public class YudaoAdapter implements IJeeLowCodeAdapter {
         String type = Func.isEmpty(param.getType()) ? "all" : param.getType();
         List<Long> deptIdList = new ArrayList<>();//部门id列表,为空则查所有
         if (Func.equals(type, "now")) {//本级
-            String onlineUserDeptId = this.getOnlineUserDeptId();
-            deptIdList.add(Func.toLong(onlineUserDeptId));
+            deptIdList.add(this.getOnlineUserDeptId());
         } else if (Func.equals(type, "sub")) {//本级以及下级
-            String onlineUserDeptId = this.getOnlineUserDeptId();
-            deptIdList = this.getChildDeptIdList(Func.toLong(onlineUserDeptId));
+            deptIdList = this.getChildDeptIdList(this.getOnlineUserDeptId());
         }
 
         List<Long> finalDeptIdList = deptIdList;
@@ -342,11 +339,9 @@ public class YudaoAdapter implements IJeeLowCodeAdapter {
         List<Long> deptIdList = new ArrayList<>();//部门id列表
         if (Func.isEmpty(deptId)) {//部门为空的时候，type才生效
             if (Func.equals(type, "now")) {//本级
-                String onlineUserDeptId = this.getOnlineUserDeptId();
-                deptIdList.add(Func.toLong(onlineUserDeptId));
+                deptIdList.add(this.getOnlineUserDeptId());
             } else if (Func.equals(type, "sub")) {//本级以及下级
-                String onlineUserDeptId = this.getOnlineUserDeptId();
-                deptIdList = this.getChildDeptIdList(Func.toLong(onlineUserDeptId));
+                deptIdList = this.getChildDeptIdList(this.getOnlineUserDeptId());
             }
         } else {//指定部门
             deptIdList.add(deptId);
@@ -408,11 +403,11 @@ public class YudaoAdapter implements IJeeLowCodeAdapter {
             map.put(DefaultDbFieldEnum.ID.getFieldCode(), IdWorker.getId());
         }
 
-        map.put(DefaultDbFieldEnum.CREATE_USER.getFieldCode(), Func.toLong(this.getOnlineUserId()));
+        map.put(DefaultDbFieldEnum.CREATE_USER.getFieldCode(), this.getOnlineUserId());
         map.put(DefaultDbFieldEnum.CREATE_TIME.getFieldCode(), now);
-        map.put(DefaultDbFieldEnum.CREATE_DEPT.getFieldCode(), Func.toLong(this.getOnlineUserDeptId()));
+        map.put(DefaultDbFieldEnum.CREATE_DEPT.getFieldCode(), this.getOnlineUserDeptId());
         map.put(DefaultDbFieldEnum.IS_DELETED.getFieldCode(), 0);
-        map.put(DefaultDbFieldEnum.TENANT_ID.getFieldCode(), Func.toLong(this.getTenantId()));
+        map.put(DefaultDbFieldEnum.TENANT_ID.getFieldCode(), this.getTenantId());
     }
 
     //初始化-修改数据默认项
@@ -428,7 +423,7 @@ public class YudaoAdapter implements IJeeLowCodeAdapter {
         map.remove(DefaultDbFieldEnum.UPDATE_TIME.getFieldCode());
 
         DateTime now = DateUtil.date();
-        map.put(DefaultDbFieldEnum.UPDATE_USER.getFieldCode(), Func.toLong(this.getOnlineUserId()));
+        map.put(DefaultDbFieldEnum.UPDATE_USER.getFieldCode(), this.getOnlineUserId());
         map.put(DefaultDbFieldEnum.UPDATE_TIME.getFieldCode(), now);
 
     }

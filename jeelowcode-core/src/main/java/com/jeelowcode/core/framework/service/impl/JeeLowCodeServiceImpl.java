@@ -64,15 +64,15 @@ public class JeeLowCodeServiceImpl implements IJeeLowCodeService {
         List<Map<String, Object>> records = iApiLogService.countModelUsageRecords(begin, now);
         // 写入模块使用统计表
         for (Map<String, Object> record : records) {
-            String modelTitle = JeeLowCodeUtils.getMap2Str(record, "modelTitle");
-            Long usersNum = JeeLowCodeUtils.getMap2Long(record, "usersNum");
-            Long useNum = JeeLowCodeUtils.getMap2Long(record, "useNum");
+            String modelTitle = JeeLowCodeUtils.getMap2Str(record, "modeltitle");
+            Long usersNum = JeeLowCodeUtils.getMap2Long(record, "usersnum");
+            Long useNum = JeeLowCodeUtils.getMap2Long(record, "usenum");
             Long id = getLogModuleUsageRecordsId(modelTitle, today);
             LogModuleUsageRecordsEntity moduleEntity = new LogModuleUsageRecordsEntity();
             moduleEntity.setUsersNum(usersNum);
             moduleEntity.setUseNum(useNum);
             if (Func.isEmpty(id)) {
-                moduleEntity.setTenantId("1");
+                moduleEntity.setTenantId(1L);
                 moduleEntity.setCreateUser(1L);
                 moduleEntity.setCreateTime(dateTimeNow);
                 moduleEntity.setCreateDept(101L);

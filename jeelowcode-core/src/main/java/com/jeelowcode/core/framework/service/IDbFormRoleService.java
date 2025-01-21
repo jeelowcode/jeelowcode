@@ -29,14 +29,14 @@ public interface IDbFormRoleService {
     void saveOrUpdateRoleField(List<DbFormRoleFieldVo> voList);
 
     //字段权限列表
-    List<DbFormRoleFieldVo> listRoleField(String tenantId, Long dbFormId);
-    List<DbFormRoleFieldVo> listRoleField(String tenantId, Long dbFormId,Boolean enableFlag);
+    List<DbFormRoleFieldVo> listRoleField(Long tenantId, Long dbFormId);
+    List<DbFormRoleFieldVo> listRoleField(Long tenantId, Long dbFormId,Boolean enableFlag);
 
     //保存按钮权限
     void saveOrUpdateRoleButton(List<DbFormRoleButtonVo> voList);
     //按钮权限列表
-    List<DbFormRoleButtonVo> listRoleButton(String tenantId, Long dbFormId);
-    List<DbFormRoleButtonVo> listRoleButton(String tenantId, Long dbFormId,Boolean enableFlag);
+    List<DbFormRoleButtonVo> listRoleButton(Long tenantId, Long dbFormId);
+    List<DbFormRoleButtonVo> listRoleButton(Long tenantId, Long dbFormId,Boolean enableFlag);
 
     //保存数据权限-规则
     void saveOrUpdateRoleDataRule(DbFormRoleDataRuleVo vo);
@@ -48,7 +48,7 @@ public interface IDbFormRoleService {
     void saveOrUpdateRoleDataTenant(List<DbFormRoleDataTenantVo> voList);
 
     //数据权限列表
-    List<DbFormRoleDataRuleVo> listRoleData(String tenantId, Long dbFormId);
+    List<DbFormRoleDataRuleVo> listRoleData(Long tenantId, Long dbFormId);
 
 
 }

@@ -264,7 +264,7 @@ public class ExcelController extends BaseController {
     @ApiOperationSupport(order = 7)
     @Operation(tags = "Excel模块",summary = "获取导入列表")
     public BaseWebResult fileList(@PathVariable("dbformId") Long dbformId, PageVo pageVo) {
-        String tenantId = jeeLowCodeAdapter.getTenantId();
+        Long tenantId = jeeLowCodeAdapter.getTenantId();
         Integer excelFileDataDay = jeeLowCodeConfigService.getExcelFileDataDay();
 
         Page page = FuncWeb.getPage(pageVo.getPageNo(), pageVo.getPageSize());
@@ -296,13 +296,10 @@ public class ExcelController extends BaseController {
     @ApiOperationSupport(order = 7)
     @Operation(tags = "Excel模块",summary = "撤回(只允许本人撤销)")
     public BaseWebResult fileList(@PathVariable("dbformId") Long dbformId, Long batchCode) {
-
-        String onlineUserId = jeeLowCodeAdapter.getOnlineUserId();
-
         LambdaQueryWrapper<ExcelFileEntity> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(ExcelFileEntity::getDbformId, dbformId);
         wrapper.eq(ExcelFileEntity::getId, batchCode);
-        wrapper.eq(ExcelFileEntity::getCreateUser,onlineUserId);
+        wrapper.eq(ExcelFileEntity::getCreateUser, jeeLowCodeAdapter.getOnlineUserId());
         ExcelFileEntity excelFileEntity = excelFileService.getOne(wrapper);
         if (Func.isEmpty(excelFileEntity)) {
             return BaseWebResult.error(FrameErrorCodeConstants.FRAME_IMPORT_EXCEL_NOT_DATA);

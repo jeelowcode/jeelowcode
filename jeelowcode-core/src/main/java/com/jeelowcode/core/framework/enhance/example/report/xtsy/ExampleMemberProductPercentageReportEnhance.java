@@ -35,6 +35,6 @@ public class ExampleMemberProductPercentageReportEnhance implements ReportAfterA
         if (Func.isEmpty(records)) {
             return;
         }
-        records.forEach(item -> item.put("date", DateUtil.format(JeeLowCodeUtils.getMap2DateTime(item, "date"), "yyyy-MM")));
+        records.forEach(item -> item.put("sj", DateUtil.format(JeeLowCodeUtils.getMap2DateTime(item, "sj"), "yyyy-MM")));
     }
 }

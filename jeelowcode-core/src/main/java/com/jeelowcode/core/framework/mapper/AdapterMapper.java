@@ -55,7 +55,7 @@ public interface AdapterMapper {
      * @param params
      * @return
      */
-    IPage<JeeLowCodeUser> getUserPageByDeptId(String tenantId,IPage page, List<Long> deptIdList, @Param("params") Map<String, Object> params);
+    IPage<JeeLowCodeUser> getUserPageByDeptId(Long tenantId,IPage page, List<Long> deptIdList, @Param("params") Map<String, Object> params);
 
     /**
      * 根据角色获取用户列表
@@ -65,7 +65,7 @@ public interface AdapterMapper {
      * @param params
      * @return
      */
-    IPage<JeeLowCodeUser> getUserPageByRoleId(String tenantId,IPage page, Long roleId, List<Long> deptIdList, @Param("params") Map<String, Object> params);
+    IPage<JeeLowCodeUser> getUserPageByRoleId(Long tenantId,IPage page, Long roleId, List<Long> deptIdList, @Param("params") Map<String, Object> params);
 
     /**
      * 根据表单id获取表单的字段对应的字典

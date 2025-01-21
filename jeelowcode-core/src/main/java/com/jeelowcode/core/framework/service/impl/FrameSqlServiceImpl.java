@@ -71,6 +71,26 @@ public class FrameSqlServiceImpl implements IFrameSqlService {
 		}
 		return dataMapList.get(0);
 	}
+	@Override
+	public Map<String, Object> getDataOneByPlus(SqlInfoQueryWrapper.Wrapper wrapper,Map<String,Object> params){
+		SqlFormatModel sqlFormatModel = wrapper.buildSql();
+		Map<String, Object> dataMap = sqlFormatModel.getDataMap();
+		if(FuncBase.isNotEmpty(params)){
+			for (Map.Entry<String, Object> entry : params.entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
+				// 如果map1中不存在该键，则添加
+				if (!dataMap.containsKey(key)) {
+					dataMap.put(key, value);
+				}
+			};
+		}
+		List<Map<String, Object>> dataMapList = sqlMapper.selectData(formatSql2EW(sqlFormatModel.getSql()),dataMap);
+		if(FuncBase.isEmpty(dataMapList)){
+			return new HashMap<>();
+		}
+		return dataMapList.get(0);
+	}
 	//多个
 	@Override
 	public List<Map<String, Object>> getDataListByPlus(SqlInfoQueryWrapper.Wrapper wrapper){
@@ -82,6 +102,27 @@ public class FrameSqlServiceImpl implements IFrameSqlService {
 		return dataMapList;
 	}
 	@Override
+	public List<Map<String, Object>> getDataListByPlus(SqlInfoQueryWrapper.Wrapper wrapper,Map<String,Object> params){
+		SqlFormatModel sqlFormatModel = wrapper.buildSql();
+		Map<String, Object> dataMap = sqlFormatModel.getDataMap();
+		if(FuncBase.isNotEmpty(params)){
+			for (Map.Entry<String, Object> entry : params.entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
+				// 如果map1中不存在该键，则添加
+				if (!dataMap.containsKey(key)) {
+					dataMap.put(key, value);
+				}
+			}
+		}
+		List<Map<String, Object>> dataMapList = sqlMapper.selectData(formatSql2EW(sqlFormatModel.getSql()),dataMap);
+		if(FuncBase.isEmpty(dataMapList)){
+			return dataMapList;
+		}
+		return dataMapList;
+	}
+
+	@Override
 	public List<Map<String, Object>> getDataListByPlus(String sql,Map<String,Object> params){
 		String publicSql = SqlHelper.getPublicSql(sql);
 
@@ -90,6 +131,24 @@ public class FrameSqlServiceImpl implements IFrameSqlService {
 	}
 
 	//分页
+	@Override
+	public IPage<Map<String, Object>> getDataIPageByPlus(IPage page,SqlInfoQueryWrapper.Wrapper wrapper,Map<String,Object> params){
+		SqlFormatModel sqlFormatModel = wrapper.buildSql();
+		Map<String, Object> dataMap = sqlFormatModel.getDataMap();
+		if(FuncBase.isNotEmpty(params)){
+			for (Map.Entry<String, Object> entry : params.entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
+				// 如果map1中不存在该键，则添加
+				if (!dataMap.containsKey(key)) {
+					dataMap.put(key, value);
+				}
+			};
+		}
+		IPage<Map<String, Object>> pages = sqlMapper.selectPageData(page, formatSql2EW(sqlFormatModel.getSql()),dataMap);
+		return pages;
+	}
+
 	@Override
 	public IPage<Map<String, Object>> getDataIPageByPlus(IPage page,SqlInfoQueryWrapper.Wrapper wrapper){
 		SqlFormatModel sqlFormatModel = wrapper.buildSql();

@@ -35,6 +35,6 @@ public class ExampleMemberSaleReportEnhance implements ReportAfterAdvicePlugin {
         if (Func.isEmpty(records)) {
             return;
         }
-        records.forEach(item -> item.put("date", DateUtil.dayOfMonth(JeeLowCodeUtils.getMap2DateTime(item, "date")) + "日"));
+        records.forEach(item -> item.put("sj", DateUtil.dayOfMonth(JeeLowCodeUtils.getMap2DateTime(item, "sj")) + "日"));
     }
 }

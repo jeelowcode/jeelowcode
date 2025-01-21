@@ -77,7 +77,7 @@
         <xercesImpl.version>2.12.2</xercesImpl.version>
         <weixin-java.version>4.6.0</weixin-java.version>
         <!--                 低代码             -->
-        <jeelowcode.version>1.0.0</jeelowcode.version>
+        <jeelowcode.version>1.0.1</jeelowcode.version>
 
         <jsqlparser.version>4.3</jsqlparser.version>
         <servlet.version>4.0.4</servlet.version>

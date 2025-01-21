@@ -39,7 +39,7 @@ public class ExampleStudentAroundEnhanceDetail implements AroundAdvicePlugin {
     public void beforeExecute(EnhanceContext enhanceContext) {
         log.info("进入=======>studentAroundEnhanceDetail=======>beforeExecute");
         Map<String, Object> params = enhanceContext.getParam().getParams();
-        String id = JeeLowCodeUtils.getMap2Str(params, "id");
+        Long id = JeeLowCodeUtils.getMap2Long(params, "id");
         // 手动编写sql语句
         Map<String, Object> map = exampleDbFormMapper.getStudentById(id);
         FuncWeb.setDetailResult(enhanceContext, map);

@@ -435,3 +435,15 @@ pnpm run dev-server
     </tr>
 </table>
 
+## 10.微信交流群
+
+<table>
+  <tr>
+    <td >微信交流群（添加时备注：进群）</td>
+    <td >官方公众号</td>
+  </tr>
+  <tr>
+    <td ><img height="320" width="250" src="https://ai.oss.mj.ink/chatgpt/jeelowcode/gitee/jeelowcode-kf.png"/></td>  
+    <td ><img height="250" width="250" src="https://ai.oss.mj.ink/chatgpt/jeelowcode/gitee/wxgzh.jpg"/></td>  
+  </tr>
+</table>

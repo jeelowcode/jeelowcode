@@ -51,7 +51,7 @@ public interface FormFieldDictMapper extends BaseMapper<FormFieldDictEntity> {
 
         //获取字典表信息
         LambdaQueryWrapper<FormFieldDictEntity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.select(FormFieldDictEntity::getDictType, FormFieldDictEntity::getDictCode, FormFieldDictEntity::getDictTable, FormFieldDictEntity::getDictText, FormFieldDictEntity::getDictTableColumn);
+        wrapper.select(FormFieldDictEntity::getDictType, FormFieldDictEntity::getDictCode, FormFieldDictEntity::getDictTable, FormFieldDictEntity::getDictText, FormFieldDictEntity::getDictTableColumn,FormFieldDictEntity::getDictTextFormatter);
         wrapper.eq(FormFieldDictEntity::getDbformId, dbformId);
         wrapper.eq(FormFieldDictEntity::getFieldCode, fieldCode);
         wrapper.isNotNull(FormFieldDictEntity::getDictCode);

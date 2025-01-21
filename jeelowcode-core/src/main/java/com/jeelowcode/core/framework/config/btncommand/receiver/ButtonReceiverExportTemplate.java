@@ -48,7 +48,7 @@ public class ButtonReceiverExportTemplate extends ButtonReceiverBase implements 
         IExcelService excelService = SpringUtils.getBean(IExcelService.class);
         IDbFormRoleService dbFormRoleService = SpringUtils.getBean(IDbFormRoleService.class);
         IJeeLowCodeAdapter jeeLowCodeAdapter = SpringUtils.getBean(IJeeLowCodeAdapter.class);
-        String tenantId = jeeLowCodeAdapter.getTenantId();
+        Long tenantId = jeeLowCodeAdapter.getTenantId();
 
         Long dbFormId = param.getDbFormId();
         ExcelTemplateModel excelTemplateModel = excelService.getExportExcelTemplate(dbFormId);

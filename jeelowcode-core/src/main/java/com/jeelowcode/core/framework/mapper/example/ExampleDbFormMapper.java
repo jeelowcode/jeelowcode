@@ -25,18 +25,14 @@ public interface ExampleDbFormMapper {
 
     IPage<Map<String, Object>> getStudentPage(Page page, Map<String, Object> params);
 
-    Long getStudentBySon(String sno);
+    Long getStudentBySon(Long sno);
 
-    Integer delScoreByStudentId(List<String> studentIdList);
+    Integer delScoreByStudentId(List<Long> studentIdList);
 
-    Long getStudentExcludIdBySon(String id, String sno);
+    Long getStudentExcludIdBySon(Long id, Long sno);
 
-    Map<String, Object> getStudentById(String id);
-
-    Integer insertStudent(Map<String, Object> map);
-
-    Integer insertStudent1(Long id, String name, Date birthday);
+    Map<String, Object> getStudentById(Long id);
 
     // 通过日程管理id获取日历管理附表数据
-    List<Map<String, Object>> getSubmoredateByMainDateId(String mainDateId);
+    List<Map<String, Object>> getSubmoredateByMainDateId(Long mainDateId);
 }

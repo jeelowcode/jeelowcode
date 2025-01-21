@@ -158,6 +158,9 @@ public interface IFormService extends IService<FormEntity> {
     //获取字段枚举
     Map<String,JeeLowCodeFieldTypeEnum> getFieldCodeAndTypeEnum(Long dbformId);
 
+    //获取报表字段枚举
+    Map<String,JeeLowCodeFieldTypeEnum> getReportFieldCodeAndTypeEnum(Long reportId);
+
     //解析sql
     Map<String,Object> explainSqlField(List<ExplainSqlFieldModel> modelList);
 

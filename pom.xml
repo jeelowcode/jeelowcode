@@ -29,7 +29,7 @@
 
     <properties>
         <revision>2.0.1-jdk8-snapshot</revision>
-        <jeelowcode.version>1.0.0</jeelowcode.version>
+        <jeelowcode.version>1.0.1</jeelowcode.version>
         <!-- Maven 相关 -->
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>

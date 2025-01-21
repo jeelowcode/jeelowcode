@@ -58,7 +58,7 @@ public class ExampleMainDateAroundEnhanceList implements AroundAdvicePlugin {
     public void afterExecute(EnhanceContext enhanceContext) {
         List<Map<String, Object>> records = enhanceContext.getResult().getRecords();
         for (Map<String, Object> record : records) {
-            String id = JeeLowCodeUtils.getMap2Str(record, "id");
+            Long id = JeeLowCodeUtils.getMap2Long(record, "id");
             // 获取附表数据转json字符串
             List<Map<String, Object>> list = exampleDbFormMapper.getSubmoredateByMainDateId(id);
             record.put("sub_more_date", JSONUtil.toJsonStr(list));

@@ -128,7 +128,7 @@ public class EnhanceJavaServiceImpl extends ServiceImpl<EnhanceJavaMapper, Enhan
         HistoryDbformEntity entity=new HistoryDbformEntity();
         entity.setId(IdWorker.getId());
         entity.setTenantId(jeeLowCodeAdapter.getTenantId());
-        entity.setCreateUser(FuncBase.toLong(jeeLowCodeAdapter.getOnlineUserId()));
+        entity.setCreateUser(jeeLowCodeAdapter.getOnlineUserId());
         entity.setCreateTime(LocalDateTime.now());
         entity.setCreateUserName(jeeLowCodeAdapter.getOnlineUserName());
 
@@ -145,6 +145,7 @@ public class EnhanceJavaServiceImpl extends ServiceImpl<EnhanceJavaMapper, Enhan
         LambdaQueryWrapper<EnhanceJavaEntity> javaWrapper=new LambdaQueryWrapper<>();
         javaWrapper.eq(EnhanceJavaEntity::getActiveStatus,YNEnum.Y.getCode());
         javaWrapper.isNotNull(EnhanceJavaEntity::getJavaClassUrl);
+        javaWrapper.isNotNull(EnhanceJavaEntity::getDbformId);
         List<EnhanceJavaEntity> enhanceJavaEntities = baseMapper.selectList(javaWrapper);
         return enhanceJavaEntities;
     }

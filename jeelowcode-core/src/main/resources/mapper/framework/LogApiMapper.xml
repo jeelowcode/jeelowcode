@@ -5,9 +5,9 @@
     <select id="countModelUsageRecords" resultType="java.util.Map">
         <![CDATA[
         SELECT
-            model_title AS modelTitle,
-            COUNT( DISTINCT ip ) AS usersNum,
-            COUNT( id ) AS useNum
+            model_title AS modeltitle,
+            COUNT( DISTINCT ip ) AS usersnum,
+            COUNT( id ) AS usenum
         FROM
             lowcode_log_api
         WHERE

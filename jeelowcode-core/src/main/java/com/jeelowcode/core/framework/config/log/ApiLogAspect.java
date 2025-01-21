@@ -137,18 +137,10 @@ public class ApiLogAspect {
 
 			YudaoAdapter jeeLowCodeAdapter = SpringUtils.getBean(YudaoAdapter.class);
 
-			String tenantId ="";
-			try{
-				tenantId = jeeLowCodeAdapter.getTenantId();
-			}catch (Exception e){
-
-			}
-			String onlineUserId = jeeLowCodeAdapter.getOnlineUserId();
-
 			LogRequestApiModel logApiModel=new LogRequestApiModel();
 			logApiModel.setId(IdWorker.getId());
-			logApiModel.setTenantId(tenantId);
-			logApiModel.setCreateUser(FuncBase.toLong(onlineUserId));
+			logApiModel.setTenantId(jeeLowCodeAdapter.getTenantId());
+			logApiModel.setCreateUser(jeeLowCodeAdapter.getOnlineUserId());
 			logApiModel.setCreateUserName(jeeLowCodeAdapter.getOnlineUserName());
 			logApiModel.setCreateTime(LocalDateTime.now());
 

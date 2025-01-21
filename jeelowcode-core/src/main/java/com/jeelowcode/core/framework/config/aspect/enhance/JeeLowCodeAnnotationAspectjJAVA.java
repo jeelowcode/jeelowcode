@@ -247,7 +247,8 @@ public class JeeLowCodeAnnotationAspectjJAVA {
         List<EnhanceJavaEntity> enhanceJavaEntityList=new ArrayList<>();
         for(EnhanceJavaEntity javaEntity:enhanceJavaEntityAllList){
             String javaClassUrl = javaEntity.getJavaClassUrl();//
-            BaseAdvicePlugin plugin = PluginManager.getPlugin(javaClassUrl);
+            String javaType = javaEntity.getJavaType();
+            BaseAdvicePlugin plugin = PluginManager.getPlugin(javaClassUrl);//只有class spring 方式
             switch (type) {
                 case "start"://前置增强
                     if (!(plugin instanceof BeforeAdvicePlugin)) {
@@ -262,6 +263,16 @@ public class JeeLowCodeAnnotationAspectjJAVA {
                     enhanceJavaEntityList.add(javaEntity);
                     break;
                 case "around":
+                    //如果是在线编辑和http增强，只有环绕
+                    if (FuncBase.equals(javaType, JavaEnhanceEnum.ONLINIE.getType())) {
+                        //执行在线增强
+                        enhanceJavaEntityList.add(javaEntity);
+                        break;
+                    } else if (FuncBase.equals(javaType, JavaEnhanceEnum.HTTP.getType())) {
+                        //执行http增强
+                        enhanceJavaEntityList.add(javaEntity);
+                        break;
+                    }
                     if (!(plugin instanceof AroundAdvicePlugin)) {
                         break;
                     }
@@ -659,6 +670,7 @@ public class JeeLowCodeAnnotationAspectjJAVA {
                 BaseAdvicePlugin plugin = (BaseAdvicePlugin) enhanceClass.newInstance();
                 PluginManager.addPlugin(javaEntity.getJavaClassUrl(), plugin);
             }
+
         } catch (Exception e) {
             throw new JeeLowCodeException("增强插件加载失败");
         }

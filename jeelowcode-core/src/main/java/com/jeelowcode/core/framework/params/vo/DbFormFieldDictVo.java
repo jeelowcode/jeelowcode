@@ -36,7 +36,10 @@ public class DbFormFieldDictVo extends DbFormFieldIdVo {
     private String dictText;
 
     @Schema(description = "表格字典显示列")
-    private String dictTableColumn;
+    private String dictTableColumn;//1
+
+    @Schema(description = "表格字典格式化")
+    private String dictTextFormatter;
 
     @Schema(description = "字段是否有修改;如果是N并且有id的情况下，不修改")
     private String isModify;

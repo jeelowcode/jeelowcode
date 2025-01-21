@@ -49,8 +49,8 @@ public class ExampleStudentBeforeEnhanceEdit implements BeforeAdvicePlugin {
      * @param map
      */
     private void checkData(Map<String, Object> map) {
-        String id = JeeLowCodeUtils.getMap2Str(map, "id");
-        String sno = JeeLowCodeUtils.getMap2Str(map, "sno");
+        Long id = JeeLowCodeUtils.getMap2Long(map, "id");
+        Long sno = JeeLowCodeUtils.getMap2Long(map, "sno");
         Long oldId = exampleDbFormMapper.getStudentExcludIdBySon(id, sno);
         if (FuncBase.isNotEmpty(oldId)) {
             throw new JeeLowCodeException("学号[" + sno + "]已存在！");

@@ -26,6 +26,6 @@ public abstract class BaseTenantEntity extends BaseEntity {
     /**
      * 租户id
      */
-    private String tenantId;
+    private Long tenantId;
 
 }

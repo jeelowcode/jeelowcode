@@ -123,9 +123,9 @@ public class DefaultValAspect {
         }
 
         LocalDateTime current = LocalDateTime.now();
-        String userId = proxyAdapter.getOnlineUserId();
-        String tenantId = proxyAdapter.getTenantId();
-        String deptId = proxyAdapter.getOnlineUserDeptId();
+        Long userId = proxyAdapter.getOnlineUserId();
+        Long tenantId = proxyAdapter.getTenantId();
+        Long deptId = proxyAdapter.getOnlineUserDeptId();
 
         //基本类
         if (obj instanceof BaseEntity) {//我们自定义的实体
@@ -137,16 +137,16 @@ public class DefaultValAspect {
                 baseEntity.setCreateTime(current);
             }
             if (FuncBase.isNotEmpty(userId) && FuncBase.isEmpty(createUser)) {
-                baseEntity.setCreateUser(FuncBase.toLong(userId));
+                baseEntity.setCreateUser(userId);
             }
             if (FuncBase.isNotEmpty(deptId) && FuncBase.isEmpty(createDept)) {
-                baseEntity.setCreateDept(FuncBase.toLong(deptId));
+                baseEntity.setCreateDept(deptId);
             }
         }
 
         if (obj instanceof BaseTenantEntity) {//我们自定义的实体
             BaseTenantEntity baseEntity = (BaseTenantEntity) obj;
-            String selectTenantId = baseEntity.getTenantId();
+            Long selectTenantId = baseEntity.getTenantId();
 
             if (FuncBase.isEmpty(selectTenantId) && FuncBase.isNotEmpty(tenantId)) {
                 baseEntity.setTenantId(tenantId);
@@ -200,13 +200,13 @@ public class DefaultValAspect {
             return;
         }
 
-        String userId = proxyAdapter.getOnlineUserId();
+        Long userId = proxyAdapter.getOnlineUserId();
         BaseEntity baseEntity = (BaseEntity) obj;
         Long updateUser = baseEntity.getUpdateUser();
 
         baseEntity.setUpdateTime(current);
         if (FuncBase.isEmpty(updateUser) && FuncBase.isNotEmpty(userId)) {
-            baseEntity.setUpdateUser(FuncBase.toLong(userId));
+            baseEntity.setUpdateUser(userId);
         }
 
     }

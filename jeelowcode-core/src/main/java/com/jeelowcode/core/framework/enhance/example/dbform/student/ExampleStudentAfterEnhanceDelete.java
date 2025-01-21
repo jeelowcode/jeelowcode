@@ -17,6 +17,7 @@ package com.jeelowcode.core.framework.enhance.example.dbform.student;
 import com.jeelowcode.core.framework.config.aspect.enhance.model.EnhanceContext;
 import com.jeelowcode.core.framework.config.aspect.enhance.plugin.AfterAdvicePlugin;
 import com.jeelowcode.core.framework.mapper.example.ExampleDbFormMapper;
+import com.jeelowcode.core.framework.utils.Func;
 import com.jeelowcode.framework.utils.utils.JeeLowCodeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,11 @@ public class ExampleStudentAfterEnhanceDelete implements AfterAdvicePlugin {
         // 删除其他表数据
         Map<String, Object> params = enhanceContext.getParam().getParams();
         // 单条删除和批量删除的数据的id都是在dateIdList中
-        List<String> studentIdList = JeeLowCodeUtils.getMap2List(params, "dateIdList");
+        Object dateIdList = params.get("dataIdList");
+        if (Func.isEmpty(dateIdList)) {
+            return;
+        }
+        List<Long> studentIdList = (List<Long>) dateIdList;
         exampleDbFormMapper.delScoreByStudentId(studentIdList);
     }
 }

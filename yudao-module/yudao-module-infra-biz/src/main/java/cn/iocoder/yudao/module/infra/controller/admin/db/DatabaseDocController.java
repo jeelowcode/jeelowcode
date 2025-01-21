@@ -100,6 +100,8 @@ public class DatabaseDocController {
             new DocumentationExecute(config).execute();
 
             return FILE_OUTPUT_DIR + File.separator + fileName + fileOutputType.getFileSuffix();
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
         }
     }
 
