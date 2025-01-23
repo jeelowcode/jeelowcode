@@ -19,6 +19,7 @@ import com.jeelowcode.core.framework.config.aspect.enhance.model.*;
 import com.jeelowcode.core.framework.config.aspect.enhance.plugin.*;
 import com.jeelowcode.core.framework.config.listener.JeeLowCodeListener;
 import com.jeelowcode.core.framework.entity.EnhanceJavaEntity;
+import com.jeelowcode.core.framework.params.SaveImportDataParam;
 import com.jeelowcode.core.framework.utils.Func;
 import com.jeelowcode.framework.exception.JeeLowCodeException;
 import com.jeelowcode.framework.utils.model.ExecuteEnhanceModel;
@@ -177,9 +178,6 @@ public class JeeLowCodeAnnotationAspectjJAVA {
                 break;
             }
         }
-        if (Func.isEmpty(context.getResult()) || Func.isEmpty(context.getResult().getRecords())) {
-            return joinPoint.proceed();
-        }
 
         return getResult(context);
     }
@@ -302,6 +300,11 @@ public class JeeLowCodeAnnotationAspectjJAVA {
         param.setDbFormId(dbFormId);
         param.setList((ArrayList) paramMap.getOrDefault("dataList", null));
         param.setParams((Map<String, Object>) paramMap.getOrDefault("params", null));
+        Object importDataParam = paramMap.get("param");
+        if(Func.isNotEmpty(importDataParam) && importDataParam instanceof SaveImportDataParam){
+            param.setImportDataParam((SaveImportDataParam)importDataParam);
+        }
+
 
         //把参数放入到上下文
         EnhanceContext context = new EnhanceContext();
@@ -358,7 +361,7 @@ public class JeeLowCodeAnnotationAspectjJAVA {
                 //环绕-前置
                 PluginManager.executeAroundBeforePlugin(plugin, context);
 
-                if (Func.isEmpty(context.getResult()) || Func.isEmpty(context.getResult().getRecords())) {
+                if (Func.isEmpty(context.getResult())) {
                     context.setResult(new EnhanceResult());
                 }
                 if (context.getResult().isExitFlag()) {//说明终止，不用往下走

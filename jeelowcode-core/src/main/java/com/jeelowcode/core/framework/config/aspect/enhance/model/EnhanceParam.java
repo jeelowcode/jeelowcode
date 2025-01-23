@@ -14,6 +14,7 @@ http://www.apache.org/licenses/
 package com.jeelowcode.core.framework.config.aspect.enhance.model;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jeelowcode.core.framework.params.SaveImportDataParam;
 
 import java.io.Serializable;
 import java.util.List;
@@ -37,6 +38,9 @@ public class EnhanceParam implements Serializable {
     private Page page;
 
     private List<Long> dataIdList;
+
+    private SaveImportDataParam importDataParam;
+
     public Long getDbFormId() {
         return dbFormId;
     }
@@ -86,6 +90,14 @@ public class EnhanceParam implements Serializable {
 
     public void setDataIdList(List<Long> dataIdList) {
         this.dataIdList = dataIdList;
+    }
+
+    public SaveImportDataParam getImportDataParam() {
+        return importDataParam;
+    }
+
+    public void setImportDataParam(SaveImportDataParam importDataParam) {
+        this.importDataParam = importDataParam;
     }
 
     public EnhanceParam(Long dbFormId, Map<String, Object> params, List<Map<String, Object>> list) {
