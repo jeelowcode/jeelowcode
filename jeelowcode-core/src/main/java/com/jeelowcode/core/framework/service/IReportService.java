@@ -60,7 +60,7 @@ public interface IReportService extends IService<ReportEntity> {
     WebConfigVo getWebConfig(String reportCode);
 
     //回显字典
-    void dictView(Long reportId,List<Map<String, Object>> records);
+    void formatDataList(Long reportId,List<Map<String, Object>> records);
 
     //初始化增强插件
     void initEnhancePluginManager();

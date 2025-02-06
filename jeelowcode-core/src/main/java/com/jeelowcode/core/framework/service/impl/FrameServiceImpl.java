@@ -661,8 +661,8 @@ public class FrameServiceImpl implements IFrameService {
         Map<String, JeeLowCodeFieldTypeEnum> fieldTypeEnumMap = dbFormService.getReportFieldCodeAndTypeEnum(reportEntity.getId());
         Func.handlePlusDataList(dataList, fieldTypeEnumMap);
 
-        //处理字典回显
-        reportService.dictView(reportEntity.getId(), dataList);
+        //处理字典、日期等值回显
+        reportService.formatDataList(reportEntity.getId(), dataList);
         //返回结果
         return ResultDataModel.fomat(total, dataList);
     }

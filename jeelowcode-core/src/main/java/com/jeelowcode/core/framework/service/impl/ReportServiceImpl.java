@@ -50,6 +50,7 @@ import com.jeelowcode.framework.utils.model.JeeLowCodeDict;
 import com.jeelowcode.framework.utils.params.JeeLowCodeDictParam;
 import com.jeelowcode.framework.utils.tool.spring.SpringUtils;
 import com.jeelowcode.framework.utils.utils.FuncBase;
+import com.jeelowcode.framework.utils.utils.JeeLowCodeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
@@ -211,7 +212,7 @@ public class ReportServiceImpl extends ServiceImpl<ReportMapper, ReportEntity> i
 
     //回显字典
     @Override
-    public void dictView(Long reportId, List<Map<String, Object>> records) {
+    public void formatDataList(Long reportId, List<Map<String, Object>> records) {
         //获取字典code
         LambdaQueryWrapper<ReportFieldEntity> fieldWrapper = new LambdaQueryWrapper<>();
         fieldWrapper.isNotNull(ReportFieldEntity::getDictCode);
@@ -250,6 +251,17 @@ public class ReportServiceImpl extends ServiceImpl<ReportMapper, ReportEntity> i
         }
         //遍历数据
         for (Map<String, Object> dataMap : records) {
+            // 转换并格式化所有值
+            Map<String, String> formattedMap = dataMap.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            entry -> JeeLowCodeUtils.formatDate(entry.getValue())
+                    ));
+
+            // 使用格式化后的映射替换原始映射
+            dataMap.clear();
+            dataMap.putAll(formattedMap);
+
 
             Set<Map.Entry<String, Map<String, String>>> entries = field2DictMap.entrySet();
             Iterator<Map.Entry<String, Map<String, String>>> iterator = entries.iterator();
