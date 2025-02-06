@@ -1761,6 +1761,22 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
             if (Func.equals(controlType, "text") && Func.equals("field", type)) {
                 Long dbFormId = this.getDbFormIdByTableName(tableName);
                 if (Func.isEmpty(dbFormId)) {
+                    //构建空的
+                    FormFieldEntity fieldEntity = new FormFieldEntity();
+                    fieldEntity.setFieldCode(fieldCode);
+                    fieldList.add(fieldEntity);
+
+                    FormFieldDictEntity fieldDictEntity = new FormFieldDictEntity();
+                    fieldDictEntity.setFieldCode(fieldCode);
+                    dictList.add(fieldDictEntity);
+
+                    FormFieldQueryEntity formFieldQueryEntity = new FormFieldQueryEntity();
+                    formFieldQueryEntity.setFieldCode(fieldCode);
+                    queryList.add(formFieldQueryEntity);
+
+                    FormFieldWebEntity formFieldWebEntity = new FormFieldWebEntity();
+                    formFieldWebEntity.setFieldCode(fieldCode);
+                    webList.add(formFieldWebEntity);
                     continue;
                 }
                 //处理字段表

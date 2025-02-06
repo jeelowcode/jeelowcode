@@ -469,6 +469,9 @@ public class FrameServiceImpl implements IFrameService {
 
             for (String subTable : allSubTableNameList) {
                 Long subDbFormId = dbFormService.getDbFormIdByTableName(subTable);
+                if(Func.isEmpty(subDbFormId)){
+                    continue;
+                }
 
                 //获取外键
                 FormFieldForeignkeyEntity foreignkeyEntity = dbFormService.getFieldForeignkeyEntity(subDbFormId, formEntity.getTableName());

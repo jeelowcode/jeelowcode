@@ -55,6 +55,9 @@ public interface FormMapper extends BaseMapper<FormEntity> {
         wrapper.eq(FormEntity::getTableName, tableName);
         wrapper.select(FormEntity::getId);
         FormEntity formEntity = this.selectOne(wrapper);
+        if(Func.isEmpty(formEntity)){
+            return null;
+        }
         return formEntity.getId();
     }
     default FormEntity getByTableName(String tableName){
