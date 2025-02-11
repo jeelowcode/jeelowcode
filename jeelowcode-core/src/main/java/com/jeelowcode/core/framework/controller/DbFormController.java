@@ -330,10 +330,13 @@ public class DbFormController extends BaseController {
     @Operation(tags = "表单开发",summary = "解释数据源SQL的运行结果")
     public BaseWebResult explainDatasourceSql(@RequestBody ExplainDatasourceSqlModel model) {
         Page page = FuncWeb.getPage(1, 10);
+        Map<String, Object> params=new HashMap<>();
         SqlInfoQueryWrapper.Wrapper queryWrapper = SqlHelper.getQueryWrapper();
-        queryWrapper.setTableSql(model.getExplainSql());
+        //处理占位符参数
+        Func.replaceParam(model.getExplainSql(), params, null, jeeLowCodeAdapter);
+        queryWrapper.setTableSql(model.getExplainSql());//sql
         try{
-            IPage<Map<String, Object>> pages = sqlService.getDataIPageByPlus(page, queryWrapper);
+            IPage<Map<String, Object>> pages = sqlService.getDataIPageByPlus(page, queryWrapper,params);
             return BaseWebResult.success(pages);
         }catch (Exception  e){
             throw new JeeLowCodeMoreException("SQL执行错误",e.getMessage());

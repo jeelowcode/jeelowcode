@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jeelowcode.framework.utils.enums.YNEnum;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,6 +34,17 @@ public interface FormFieldMapper extends BaseMapper<FormFieldEntity> {
         formWrapper.orderByAsc(FormFieldEntity::getSortNum);
         List<FormFieldEntity> formFieldList = this.selectList(formWrapper);
         return formFieldList;
+    }
+
+    default Map<String,FormFieldEntity> getByDbFormMap(Long dbFormId){
+        LambdaQueryWrapper<FormFieldEntity> formWrapper = new LambdaQueryWrapper<>();
+        formWrapper.eq(FormFieldEntity::getDbformId, dbFormId);
+        formWrapper.orderByAsc(FormFieldEntity::getSortNum);
+        List<FormFieldEntity> formFieldList = this.selectList(formWrapper);
+
+        Map<String, FormFieldEntity> map = formFieldList.stream()
+                .collect(Collectors.toMap(FormFieldEntity::getFieldCode, entity -> entity));
+        return map;
     }
 
     default List<FormFieldEntity> getAllList(){

@@ -110,6 +110,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         }
         //清空缓存
         permissionService.clearCache(user.getId());
+        permissionService.clearCacheIgnoreTenant(user.getId());
         try{
             Thread.sleep(2000L);
         }catch (Exception e){

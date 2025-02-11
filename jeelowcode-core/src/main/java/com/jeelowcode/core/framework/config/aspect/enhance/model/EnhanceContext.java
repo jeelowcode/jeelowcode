@@ -78,8 +78,8 @@ public class EnhanceContext extends BaseEnhanceContext implements Serializable{
         this.result = new EnhanceResult(exitFlag,id,total,records);
     }
 
-    public void  setParam(Long dbFormId, Map<String, Object> params, List<Map<String, Object>> list, Long dataId, Page page, List<Long> dataIdList){
-        this.param = new EnhanceParam(dbFormId,params,list,dataId,page,dataIdList);
+    public void  setParam(Long dbFormId, Map<String, Object> params, List<Map<String, Object>> list, Long dataId, Page page){
+        this.param = new EnhanceParam(dbFormId,params,list,dataId,page);
     }
 }
 

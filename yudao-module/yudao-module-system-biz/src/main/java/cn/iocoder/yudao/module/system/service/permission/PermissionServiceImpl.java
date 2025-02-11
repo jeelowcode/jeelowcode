@@ -7,6 +7,7 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.datapermission.core.annotation.DataPermission;
+import cn.iocoder.yudao.framework.tenant.core.aop.TenantIgnore;
 import cn.iocoder.yudao.module.system.api.permission.dto.DeptDataPermissionRespDTO;
 import cn.iocoder.yudao.module.system.dal.dataobject.permission.MenuDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.permission.RoleDO;
@@ -356,6 +357,19 @@ public class PermissionServiceImpl implements PermissionService {
        }catch (Exception e){
 
        }
+        return true;
+    }
+
+    //清除缓存忽略租户
+    @TenantIgnore
+    public Boolean clearCacheIgnoreTenant(Long userId){
+        try{
+            PermissionServiceImpl bean = SpringUtil.getBean(PermissionServiceImpl.class);
+            bean.clearCache(userId);
+            Thread.sleep(500L);
+        }catch (Exception e){
+
+        }
         return true;
     }
 

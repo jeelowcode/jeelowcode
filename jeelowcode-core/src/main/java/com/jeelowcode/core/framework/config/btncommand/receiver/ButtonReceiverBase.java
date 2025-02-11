@@ -13,7 +13,9 @@ http://www.apache.org/licenses/
 */
 package com.jeelowcode.core.framework.config.btncommand.receiver;
 
+import com.jeelowcode.core.framework.entity.FormFieldEntity;
 import com.jeelowcode.core.framework.entity.ReportEntity;
+import com.jeelowcode.core.framework.mapper.FormFieldMapper;
 import com.jeelowcode.core.framework.params.vo.role.DbFormRoleFieldVo;
 import com.jeelowcode.framework.excel.model.ExcelTitleModel;
 import com.jeelowcode.framework.exception.JeeLowCodeException;
@@ -107,10 +109,14 @@ public class ButtonReceiverBase {
      */
     public void webViewAppend(Long dbFormId, List<Map<String, Object>> records) {
         FormFieldWebMapper fieldWebMapper = SpringUtils.getBean(FormFieldWebMapper.class);
+        FormFieldMapper fieldMapper = SpringUtils.getBean(FormFieldMapper.class);
 
         // 获取表单的字段对应的字典
         IFormService formService = SpringUtils.getBean(IFormService.class);
         Map<String, Map<String, Object>> fieldDictMap = formService.getFieldDict(dbFormId);
+
+        //表单map
+        Map<String, FormFieldEntity> dbFormMap = fieldMapper.getByDbFormMap(dbFormId);
 
         List<FormFieldWebEntity> webEntityList = fieldWebMapper.webEntityListAndFormatConfigIsNotNull(dbFormId);
         webEntityList.stream().forEach(web->{
@@ -119,6 +125,16 @@ public class ButtonReceiverBase {
             if(Func.isEmpty(formatConfig)){
                 return;
             }
+            FormFieldEntity formFieldEntity = dbFormMap.get(fieldCode);
+            if(Func.isEmpty(formFieldEntity)){
+                return;
+            }
+            String isDb = formFieldEntity.getIsDb();
+            if(Func.equals(isDb,YNEnum.Y.getCode())){
+                return;
+            }
+
+
             WebFormatConfigModel webFormatConfigModel = Func.json2Bean(formatConfig, WebFormatConfigModel.class);
             if(Func.isEmpty(webFormatConfigModel)){
                 return;

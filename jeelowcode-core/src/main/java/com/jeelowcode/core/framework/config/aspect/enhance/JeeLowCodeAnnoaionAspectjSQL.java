@@ -16,6 +16,7 @@ package com.jeelowcode.core.framework.config.aspect.enhance;
 import cn.hutool.core.date.DateUtil;
 import com.jeelowcode.core.framework.config.aspect.enhance.model.BuildSqlEnhanceContext;
 import com.jeelowcode.core.framework.config.aspect.enhance.model.EnhanceContext;
+import com.jeelowcode.core.framework.config.aspect.enhance.model.EnhanceParam;
 import com.jeelowcode.core.framework.config.aspect.enhance.model.EnhanceResult;
 import com.jeelowcode.core.framework.entity.EnhanceSqlEntity;
 import com.jeelowcode.core.framework.mapper.JeeLowCodeMapper;
@@ -75,31 +76,31 @@ public class JeeLowCodeAnnoaionAspectjSQL {
 
 
     @AfterReturning(value = EXPRESSION, returning = "returnVal")
-    public Object afterReturingAdvice(JoinPoint joinPoint, Object returnVal){
+    public Object afterReturingAdvice(JoinPoint joinPoint, Object returnVal) {
         BuildSqlEnhanceContext contextAndPlugins = getContextAndPlugins(joinPoint, returnVal);
-        if (FuncBase.isEmpty(contextAndPlugins)){
+        if (FuncBase.isEmpty(contextAndPlugins)) {
             return returnVal;
         }
         EnhanceContext context = contextAndPlugins.getContext();
         //判断结果类型
-        ExecuteEnhanceModel formModel =null; //表单类
-        ResultDataModel listModel =null; //查询类
+        ExecuteEnhanceModel formModel = null; //表单类
+        ResultDataModel listModel = null; //查询类
 
         Boolean resultFlag = false;
-        if(Func.isNotEmpty(returnVal) && returnVal instanceof ExecuteEnhanceModel){//表单类
+        if (Func.isNotEmpty(returnVal) && returnVal instanceof ExecuteEnhanceModel) {//表单类
             formModel = (ExecuteEnhanceModel) returnVal;
             resultFlag = true;
         }
-        if(Func.isNotEmpty(returnVal) && returnVal instanceof ResultDataModel){//列表类
+        if (Func.isNotEmpty(returnVal) && returnVal instanceof ResultDataModel) {//列表类
             listModel = (ResultDataModel) returnVal;
         }
 
         //把结果放到上下文中再执行插件
-        if(resultFlag){
+        if (resultFlag) {
             String id = formModel.getId();
             context.getResult().setId(id);
             context.getResult().setExitFlag(formModel.isExitFlag());
-        }else {
+        } else {
             context.getResult().setRecords(listModel.getRecords());
             context.getResult().setTotal(listModel.getTotal());
             context.getResult().setExitFlag(listModel.isExitFlag());
@@ -107,9 +108,9 @@ public class JeeLowCodeAnnoaionAspectjSQL {
 
         //集合操作的插件
         List<EnhanceSqlEntity> setOperations = contextAndPlugins.getSetOperations();
-        if(CollectionUtils.isNotEmpty(setOperations)){
+        if (CollectionUtils.isNotEmpty(setOperations)) {
             //执行
-            executeEnhanceSetOperation(context,setOperations);
+            executeEnhanceSetOperation(context, setOperations);
             listModel.setTotal(context.getResult().getTotal());
             listModel.setRecords(context.getResult().getRecords());
         }
@@ -118,11 +119,11 @@ public class JeeLowCodeAnnoaionAspectjSQL {
         List<EnhanceSqlEntity> enhanceSqlEntityList = contextAndPlugins.getEntitys();
 
         for (EnhanceSqlEntity enhanceSqlEntity : enhanceSqlEntityList) {
-            if (setOperations.contains(enhanceSqlEntity)){
+            if (setOperations.contains(enhanceSqlEntity)) {
                 continue;
             }
-            this.executSQLPlugin(context,enhanceSqlEntity);
-            if (FuncBase.isNotEmpty(context.getResult()) && context.getResult().isExitFlag()){
+            this.executSQLPlugin(context, enhanceSqlEntity);
+            if (FuncBase.isNotEmpty(context.getResult()) && context.getResult().isExitFlag()) {
                 listModel.setTotal(context.getResult().getTotal());
                 listModel.setRecords(context.getResult().getRecords());
                 return listModel;
@@ -130,18 +131,18 @@ public class JeeLowCodeAnnoaionAspectjSQL {
 
         }
 
-        if(resultFlag){//结果类型
-            ExecuteEnhanceModel executeEnhanceModel=new ExecuteEnhanceModel();
+        if (resultFlag) {//结果类型
+            ExecuteEnhanceModel executeEnhanceModel = new ExecuteEnhanceModel();
             executeEnhanceModel.setId(context.getResult().getId());
             return executeEnhanceModel;
-        }else {
+        } else {
             listModel.setTotal(context.getResult().getTotal());
             listModel.setRecords(context.getResult().getRecords());
         }
         return listModel;
     }
 
-    public BuildSqlEnhanceContext getContextAndPlugins(JoinPoint joinPoint,Object returnVal){
+    public BuildSqlEnhanceContext getContextAndPlugins(JoinPoint joinPoint, Object returnVal) {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         // 获取方法名称
         String methodName = methodSignature.getName();
@@ -157,9 +158,9 @@ public class JeeLowCodeAnnoaionAspectjSQL {
         }
 
         Long dbFormId = (Long) paramMap.getOrDefault("dbFormId", null);
-        Long dataId = (Long)paramMap.getOrDefault("id",null);
-        Page page = (Page)paramMap.getOrDefault("page", null);
-        List<Long> dataIdList =(List)paramMap.getOrDefault("dataIdList",null);
+        Long dataId = (Long) paramMap.getOrDefault("id", null);
+        Page page = (Page) paramMap.getOrDefault("page", null);
+
         String buttonCode = aspectMethodNameMap.get(methodName);
         String key = dbFormId + "_" + buttonCode;
         List<EnhanceSqlEntity> allPlugins = sqlPlugins.getOrDefault(key, null);
@@ -177,15 +178,15 @@ public class JeeLowCodeAnnoaionAspectjSQL {
                 setOperation.clear();
             }
         }
-        List<Map<String,Object>> dataList = new ArrayList<>();
-        if(returnVal instanceof ResultDataModel){
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        if (returnVal instanceof ResultDataModel) {
             dataList = ((ResultDataModel) returnVal).getRecords();
         }
         EnhanceContext context = new EnhanceContext();
         Map<String, Object> params = JeeLowCodeUtils.getMap2Map(paramMap, "params");
-        context.setParam(dbFormId, params, dataList, dataId, page, dataIdList);
+        context.setParam(dbFormId, params, dataList, dataId, page);
         context.setResult(new EnhanceResult());
-        return new BuildSqlEnhanceContext(context, allPlugins,setOperation);
+        return new BuildSqlEnhanceContext(context, allPlugins, setOperation);
     }
 
     public static void initSqlPlugins(Map<String, List<EnhanceSqlEntity>> initSQLPlugins) {
@@ -194,7 +195,7 @@ public class JeeLowCodeAnnoaionAspectjSQL {
 
     public void executSQLPlugin(EnhanceContext context, EnhanceSqlEntity enhanceSqlEntity) {
 
-        switch (enhanceSqlEntity.getButtonCode()){
+        switch (enhanceSqlEntity.getButtonCode()) {
             case ENHANCE_ADD:
                 //新增
                 this.executeEnhanceAfterAdd(context, enhanceSqlEntity);
@@ -219,9 +220,9 @@ public class JeeLowCodeAnnoaionAspectjSQL {
                 //列表 前端只保留了一个
                 Map<String, Object> params = context.getParam().getParams();
                 Integer pageSize = JeeLowCodeUtils.getMap2Integer(params, "pageSize");
-                if(Func.isEmpty(pageSize) || pageSize==-1 || Func.equals(pageSize, JeeLowCodeConstant.NOT_PAGE)){
+                if (Func.isEmpty(pageSize) || pageSize == -1 || Func.equals(pageSize, JeeLowCodeConstant.NOT_PAGE)) {
                     this.executeEnhanceAfterList(context, enhanceSqlEntity);
-                }else{
+                } else {
                     this.executeEnhanceAfterPage(context, enhanceSqlEntity);
                 }
                 break;
@@ -235,75 +236,78 @@ public class JeeLowCodeAnnoaionAspectjSQL {
                 break;
         }
     }
+
     //新增
-    public void executeEnhanceAfterAdd(EnhanceContext context,EnhanceSqlEntity sqlEntity) {
+    public void executeEnhanceAfterAdd(EnhanceContext context, EnhanceSqlEntity sqlEntity) {
         Long dbFormId = context.getParam().getDbFormId();
-        Map<String,Object> paramMap = context.getParam().getParams();
-        if(FuncBase.isNotEmpty(context.getParam().getDataId())){//把id放入到参数
-            paramMap.put("id",context.getParam().getDataId());
+        Map<String, Object> paramMap = context.getParam().getParams();
+        if (FuncBase.isNotEmpty(context.getParam().getDataId())) {//把id放入到参数
+            paramMap.put("id", context.getParam().getDataId());
         }
 
         this.executeSql(sqlEntity.getExecuteSql(), paramMap);
 
     }
+
     //删除
-    public void executeEnhanceAfterDelete(EnhanceContext context,EnhanceSqlEntity sqlEntity){
-        List<Long> dataIdList = context.getParam().getDataIdList();
+    public void executeEnhanceAfterDelete(EnhanceContext context, EnhanceSqlEntity sqlEntity) {
+        EnhanceParam param = context.getParam();
+        Map<String, Object> params = param.getParams();
+        List<Long> dataIdList = (List<Long>) params.getOrDefault("dataIdList", null);
 
+        String executeSql = sqlEntity.getExecuteSql();
+        if (FuncBase.isEmpty(executeSql)) {
+            return;
+        }
+        //因为是批量删除的，需要拆分出来
+        for (Long dataId : dataIdList) {
+            Map<String, Object> dataMap = new HashMap<>();
+            dataMap.put("id", dataId);
 
-            String executeSql = sqlEntity.getExecuteSql();
-            if(FuncBase.isEmpty(executeSql)){
-                return ;
-            }
-            //因为是批量删除的，需要拆分出来
-            for(Long dataId:dataIdList){
-                Map<String,Object> dataMap =new HashMap<>();
-                dataMap.put("id",dataId);
-
-                //执行sql
-                this.executeSql(executeSql,dataMap);
-            }
+            //执行sql
+            this.executeSql(executeSql, dataMap);
+        }
 
 
     }
 
     //编辑
-    public void executeEnhanceAfterEdit(EnhanceContext context,EnhanceSqlEntity sqlEntity){
+    public void executeEnhanceAfterEdit(EnhanceContext context, EnhanceSqlEntity sqlEntity) {
         Long dataId = context.getParam().getDataId();
-        Map<String,Object> paramMap = context.getParam().getParams();
+        Map<String, Object> paramMap = context.getParam().getParams();
 
         paramMap.put("id", dataId);//把id放到json里面传递
 
-        this.executeSql(sqlEntity.getExecuteSql(),paramMap);
+        this.executeSql(sqlEntity.getExecuteSql(), paramMap);
 
     }
 
     //详情
-    public void executeEnhanceAfterDetail(EnhanceContext context,EnhanceSqlEntity sqlEntity){
+    public void executeEnhanceAfterDetail(EnhanceContext context, EnhanceSqlEntity sqlEntity) {
 
         Long dbFormId = context.getParam().getDbFormId();
         Long id = (Long) context.getParam().getDataId();
         Map<String, Object> params = context.getParam().getParams();
-        params.put("id",id);//把id放入参数集
-        
+        params.put("id", id);//把id放入参数集
+
         String autoWhereSql = this.getAutoWhereSql(dbFormId, params);
 
         String executeSql = sqlEntity.getExecuteSql();
         List<Map<String, Object>> dataMapList = this.executeSelectListSql(executeSql, params, autoWhereSql);
-        context.setResult( ResultDataModel.fomatList(dataMapList));
+        context.setResult(ResultDataModel.fomatList(dataMapList));
 
     }
 
     //导入
-    public void executeEnhanceAfterImport(EnhanceContext context,EnhanceSqlEntity sqlEntity){
+    public void executeEnhanceAfterImport(EnhanceContext context, EnhanceSqlEntity sqlEntity) {
 
-        Map<String,Object> paramMap = context.getParam().getParams();
+        Map<String, Object> paramMap = context.getParam().getParams();
 
-        this.executeSql(sqlEntity.getExecuteSql(),paramMap);
+        this.executeSql(sqlEntity.getExecuteSql(), paramMap);
     }
 
     //列表
-    public void executeEnhanceAfterList(EnhanceContext context,EnhanceSqlEntity sqlEntity){
+    public void executeEnhanceAfterList(EnhanceContext context, EnhanceSqlEntity sqlEntity) {
         Long dbFormId = context.getParam().getDbFormId();
         Map<String, Object> params = context.getParam().getParams();
         String executeSql = sqlEntity.getExecuteSql();
@@ -315,7 +319,7 @@ public class JeeLowCodeAnnoaionAspectjSQL {
     }
 
     // 分页
-    public void executeEnhanceAfterPage(EnhanceContext context,EnhanceSqlEntity sqlEntity){
+    public void executeEnhanceAfterPage(EnhanceContext context, EnhanceSqlEntity sqlEntity) {
         Long dbFormId = context.getParam().getDbFormId();
         Map<String, Object> params = context.getParam().getParams();
         Integer pageNo = JeeLowCodeUtils.getMap2Integer(params, "pageNo");
@@ -328,21 +332,24 @@ public class JeeLowCodeAnnoaionAspectjSQL {
     }
 
     //导出
-    public void executeEnhanceAfterExport(EnhanceContext context, EnhanceSqlEntity sqlEntity){
+    public void executeEnhanceAfterExport(EnhanceContext context, EnhanceSqlEntity sqlEntity) {
         Long dbFormId = context.getParam().getDbFormId();
         Map<String, Object> params = context.getParam().getParams();
         String executeSql = sqlEntity.getExecuteSql();
 
         String autoWhereSql = this.getAutoWhereSql(dbFormId, params);
         List<Map<String, Object>> dataMapList = this.executeSelectListSql(executeSql, params, autoWhereSql);
+        if (FuncBase.isEmpty(dataMapList)) {
+            dataMapList = new ArrayList<>();
+        }
         context.getResult().setRecords(dataMapList);
         context.getResult().setExitFlag(true);
     }
 
     //执行集合操作
-    public void executeEnhanceSetOperation(EnhanceContext context,List<EnhanceSqlEntity> sqlEntitys){
-        sqlEntitys.sort(Comparator.comparing(EnhanceSqlEntity::getSort,Comparator.nullsLast(Integer::compareTo)));
-        for (int i = 0; i < sqlEntitys.size()-1; i++) {
+    public void executeEnhanceSetOperation(EnhanceContext context, List<EnhanceSqlEntity> sqlEntitys) {
+        sqlEntitys.sort(Comparator.comparing(EnhanceSqlEntity::getSort, Comparator.nullsLast(Integer::compareTo)));
+        for (int i = 0; i < sqlEntitys.size() - 1; i++) {
             EnhanceSqlEntity leftEntity = null;
             EnhanceSqlEntity rightEntity = null;
             if (i == 0) {
@@ -382,30 +389,30 @@ public class JeeLowCodeAnnoaionAspectjSQL {
 
     //执行合集操作
     private void executSetOperationOr(EnhanceSqlEntity leftEntity, EnhanceSqlEntity rightEntity, EnhanceContext context) {
-        List<Map<String, Object>> leftRecords ;
-      if(FuncBase.isNotEmpty(leftEntity)){
-          EnhanceContext leftContext = context.clone();
-          executSQLPlugin(leftContext, leftEntity);
-          leftRecords = leftContext.getResult().getRecords();
-      }else {
-          leftRecords = context.getResult().getRecords();
-      }
+        List<Map<String, Object>> leftRecords;
+        if (FuncBase.isNotEmpty(leftEntity)) {
+            EnhanceContext leftContext = context.clone();
+            executSQLPlugin(leftContext, leftEntity);
+            leftRecords = leftContext.getResult().getRecords();
+        } else {
+            leftRecords = context.getResult().getRecords();
+        }
         EnhanceContext rightContext = context.clone();
         executSQLPlugin(rightContext, rightEntity);
         List<Map<String, Object>> rightRecords = rightContext.getResult().getRecords();
-        CollectionUtils.addAll(leftRecords,rightRecords);
+        CollectionUtils.addAll(leftRecords, rightRecords);
         context.getResult().setRecords(leftRecords);
 
     }
 
-    private void executSetOperationDiffer(EnhanceSqlEntity leftEntity, EnhanceSqlEntity rightEntity, EnhanceContext context){
-        List<Map<String,Object>> differ;
-        List<Map<String, Object>> leftRecords ;
-        if(FuncBase.isNotEmpty(leftEntity)){
+    private void executSetOperationDiffer(EnhanceSqlEntity leftEntity, EnhanceSqlEntity rightEntity, EnhanceContext context) {
+        List<Map<String, Object>> differ;
+        List<Map<String, Object>> leftRecords;
+        if (FuncBase.isNotEmpty(leftEntity)) {
             EnhanceContext leftContext = context.clone();
             executSQLPlugin(leftContext, leftEntity);
             leftRecords = leftContext.getResult().getRecords();
-        }else {
+        } else {
             leftRecords = context.getResult().getRecords();
         }
         EnhanceContext rightContext = context.clone();
@@ -415,17 +422,19 @@ public class JeeLowCodeAnnoaionAspectjSQL {
         context.getResult().setRecords(differ);
 
 
+    }
 
-    };
+    ;
+
     //并集
-    public void executSetOperationUnion(EnhanceSqlEntity leftEntity, EnhanceSqlEntity rightEntity, EnhanceContext context){
-        List<Map<String,Object>> union;
-        List<Map<String, Object>> leftRecords ;
-        if(FuncBase.isNotEmpty(leftEntity)){
+    public void executSetOperationUnion(EnhanceSqlEntity leftEntity, EnhanceSqlEntity rightEntity, EnhanceContext context) {
+        List<Map<String, Object>> union;
+        List<Map<String, Object>> leftRecords;
+        if (FuncBase.isNotEmpty(leftEntity)) {
             EnhanceContext leftContext = context.clone();
             executSQLPlugin(leftContext, leftEntity);
             leftRecords = leftContext.getResult().getRecords();
-        }else {
+        } else {
             leftRecords = context.getResult().getRecords();
         }
         EnhanceContext rightContext = context.clone();
@@ -436,14 +445,14 @@ public class JeeLowCodeAnnoaionAspectjSQL {
     }
 
     //交集
-    public void executSetOperationInterSerction(EnhanceSqlEntity leftEntity, EnhanceSqlEntity rightEntity, EnhanceContext context){
-        List<Map<String,Object>> intersection;
-        List<Map<String, Object>> leftRecords ;
-        if(FuncBase.isNotEmpty(leftEntity)){
+    public void executSetOperationInterSerction(EnhanceSqlEntity leftEntity, EnhanceSqlEntity rightEntity, EnhanceContext context) {
+        List<Map<String, Object>> intersection;
+        List<Map<String, Object>> leftRecords;
+        if (FuncBase.isNotEmpty(leftEntity)) {
             EnhanceContext leftContext = context.clone();
             executSQLPlugin(leftContext, leftEntity);
             leftRecords = leftContext.getResult().getRecords();
-        }else {
+        } else {
             leftRecords = context.getResult().getRecords();
         }
         EnhanceContext rightContext = context.clone();
@@ -454,17 +463,18 @@ public class JeeLowCodeAnnoaionAspectjSQL {
     }
 
     //串行
-    public void executSetOperationAnd(EnhanceSqlEntity leftEntity, EnhanceSqlEntity rightEntity, EnhanceContext context){
+    public void executSetOperationAnd(EnhanceSqlEntity leftEntity, EnhanceSqlEntity rightEntity, EnhanceContext context) {
         executSQLPlugin(context, leftEntity);
         executSQLPlugin(context, rightEntity);
     }
 
     /**
      * 获取自动构建where的语句
+     *
      * @param dbFormId
      * @return
      */
-    public String getAutoWhereSql(Long dbFormId, Map<String, Object> params){
+    public String getAutoWhereSql(Long dbFormId, Map<String, Object> params) {
         SqlInfoQueryWrapper.Wrapper queryWrapper = SqlHelper.getQueryWrapper();
 
         List<Map<String, String>> whereFieldMapList = jeeLowCodeMapper.getDbWhereFieldList(dbFormId);
@@ -474,17 +484,17 @@ public class JeeLowCodeAnnoaionAspectjSQL {
             SqlFormatModel sqlFormatModel = queryWrapper.buildSql();
             String whereSql = sqlFormatModel.getSql();
             Map<String, Object> paramMap = sqlFormatModel.getDataMap();
-            if(Func.isNotEmpty(paramMap)){
+            if (Func.isNotEmpty(paramMap)) {
                 params.putAll(paramMap);
             }
-            whereSql=whereSql.substring(6);//因为是where开头要去掉
+            whereSql = whereSql.substring(6);//因为是where开头要去掉
             return whereSql;
         }
 
         //如果是多选的时候，要做特殊处理，因为多选的时候 ，数据库存储的是 11,22,33
-        String moreSelectFieldListStr = (String)params.get(ParamEnum.MORE_SELECT_FIELD.getCode());
-        List<String> moreSelectFieldList=null;
-        if(FuncBase.isNotEmpty(moreSelectFieldListStr)){
+        String moreSelectFieldListStr = (String) params.get(ParamEnum.MORE_SELECT_FIELD.getCode());
+        List<String> moreSelectFieldList = null;
+        if (FuncBase.isNotEmpty(moreSelectFieldListStr)) {
             moreSelectFieldList = FuncBase.toStrList(moreSelectFieldListStr);
         }
 
@@ -511,16 +521,16 @@ public class JeeLowCodeAnnoaionAspectjSQL {
             Object finalObj = obj;
             //类型转换 111,22,33
             if (FuncBase.equals(query_mode, QueryModelEnum.EQ.getCode())) {//精确
-                if(FuncBase.isNotEmpty(moreSelectFieldList) && moreSelectFieldList.contains(field_code)){//在多选里面
+                if (FuncBase.isNotEmpty(moreSelectFieldList) && moreSelectFieldList.contains(field_code)) {//在多选里面
 
-                    queryWrapper.setWhere(where->{
-                        where.and(w->w.eq(field_code, finalObj)
-                                .or().likeLeft(field_code,","+ finalObj)
-                                .or().likeRight(field_code, finalObj +",")
-                                .or().like(field_code,","+ finalObj +","));
+                    queryWrapper.setWhere(where -> {
+                        where.and(w -> w.eq(field_code, finalObj)
+                                .or().likeLeft(field_code, "," + finalObj)
+                                .or().likeRight(field_code, finalObj + ",")
+                                .or().like(field_code, "," + finalObj + ","));
                     });
-                }else{
-                    queryWrapper.setWhere(where->{
+                } else {
+                    queryWrapper.setWhere(where -> {
                         where.eq(field_code, finalObj);
                     });
                 }
@@ -537,22 +547,22 @@ public class JeeLowCodeAnnoaionAspectjSQL {
                 if (FuncBase.isNotEmpty(leftVal) && FuncBase.isNotEmpty(rightVal)) {
                     Object finalLeftVal = leftVal;
                     Object finalRightVal = rightVal;
-                    queryWrapper.setWhere(where->{
+                    queryWrapper.setWhere(where -> {
                         where.between(field_code, finalLeftVal, finalRightVal);//区间
                     });
                 } else if (FuncBase.isNotEmpty(leftVal)) {//>=
                     Object finalLeftVal1 = leftVal;
-                    queryWrapper.setWhere(where->{
+                    queryWrapper.setWhere(where -> {
                         where.ge(field_code, finalLeftVal1);
                     });
                 } else if (FuncBase.isNotEmpty(rightVal)) {//<=
                     Object finalRightVal1 = rightVal;
-                    queryWrapper.setWhere(where->{
+                    queryWrapper.setWhere(where -> {
                         where.le(field_code, finalRightVal1);
                     });
                 }
             } else {
-                queryWrapper.setWhere(where->{
+                queryWrapper.setWhere(where -> {
                     where.like(field_code, finalObj);
                 });
             }
@@ -564,22 +574,23 @@ public class JeeLowCodeAnnoaionAspectjSQL {
             return whereSql;
         }
         Map<String, Object> paramMap = sqlFormatModel.getDataMap();
-        if(Func.isNotEmpty(paramMap)){
+        if (Func.isNotEmpty(paramMap)) {
             params.putAll(paramMap);
         }
-        whereSql=whereSql.substring(6);//因为是where开头要去掉
+        whereSql = whereSql.substring(6);//因为是where开头要去掉
         return whereSql;
     }
 
     /**
      * 运行增删改
+     *
      * @param executeSql
      * @param paramMap
      * @throws Throwable
      */
-    public void executeSql(String executeSql, Map<String, Object> paramMap)  {
+    public void executeSql(String executeSql, Map<String, Object> paramMap) {
         String sql = this.getSql(executeSql, paramMap);
-        this.execute(sql,paramMap);
+        this.execute(sql, paramMap);
     }
 
     /**
@@ -592,64 +603,67 @@ public class JeeLowCodeAnnoaionAspectjSQL {
      */
     public List<Map<String, Object>> executeSelectListSql(String executeSql, Map<String, Object> paramMap, String autoWhereSql) {
         String sql = this.getSql(executeSql, paramMap, autoWhereSql);
-        Object obj = this.execute(sql,paramMap);
-        return (List<Map<String, Object>>)obj;
+        Object obj = this.execute(sql, paramMap);
+        return (List<Map<String, Object>>) obj;
     }
 
     //分页
     public IPage<Map<String, Object>> executeSelectPageSql(String executeSql, Map<String, Object> paramMap, String autoWhereSql, Page page) {
         String sql = this.getSql(executeSql, paramMap, autoWhereSql);
-        Object obj = this.execute(sql, paramMap,page);
-        return (IPage<Map<String, Object>>)obj;
+        Object obj = this.execute(sql, paramMap, page);
+        return (IPage<Map<String, Object>>) obj;
     }
 
     /**
      * 获取执行sql
+     *
      * @param executeSql
      * @param paramMap
      * @return
      */
-    private String getSql(String executeSql, Map<String, Object> paramMap){
-        return this.getSql(executeSql,paramMap,null);
+    private String getSql(String executeSql, Map<String, Object> paramMap) {
+        return this.getSql(executeSql, paramMap, null);
     }
-    private String getSql(String executeSql, Map<String, Object> paramMap, String autoWhereSql){
+
+    private String getSql(String executeSql, Map<String, Object> paramMap, String autoWhereSql) {
 
         //替换参数
-        executeSql = Func.replaceParam(executeSql,paramMap,autoWhereSql,jeeLowCodeAdapter);
+        executeSql = Func.replaceParam(executeSql, paramMap, autoWhereSql, jeeLowCodeAdapter);
 
         return executeSql.trim();
     }
 
     /**
      * 执行sql
+     *
      * @param sql
      * @return
      */
-    private Object execute(String sql,Map<String,Object> dataMap){
-        return execute(sql,dataMap,null);
+    private Object execute(String sql, Map<String, Object> dataMap) {
+        return execute(sql, dataMap, null);
     }
 
-    private Object execute(String sql,Map<String,Object> dataMap, Page page){
-        sql=sql.trim();
+    private Object execute(String sql, Map<String, Object> dataMap, Page page) {
+        sql = sql.trim();
         //执行sql
         if (sql.startsWith("insert") || sql.startsWith("INSERT")) {
-            sqlMapper.insertData(sql,dataMap);
+            sqlMapper.insertData(sql, dataMap);
         } else if (sql.startsWith("update") || sql.startsWith("UPDATE")) {
-            sqlMapper.updateData(sql,dataMap);
+            sqlMapper.updateData(sql, dataMap);
         } else if (sql.startsWith("delete") || sql.startsWith("DELETE")) {
-            sqlMapper.deleteData(sql,dataMap);
+            sqlMapper.deleteData(sql, dataMap);
         } else if (sql.startsWith("select") || sql.startsWith("SELECT")) {
-            if(FuncBase.isNotEmpty(page)){
-                return sqlMapper.selectPageData(page, sql,dataMap);
+            if (FuncBase.isNotEmpty(page)) {
+                return sqlMapper.selectPageData(page, sql, dataMap);
             }
-            return sqlMapper.selectData(sql,dataMap);
+            return sqlMapper.selectData(sql, dataMap);
         }
         return null;
     }
 
     // 新增增强
-    public static void addPlugin(EnhanceSqlEntity sqlEntity){
-        String key = sqlEntity.getDbformId()+"_"+sqlEntity.getButtonCode();
+    public static void addPlugin(EnhanceSqlEntity sqlEntity) {
+        String key = sqlEntity.getDbformId() + "_" + sqlEntity.getButtonCode();
         sqlPlugins.merge(key, new ArrayList<>(Collections.singletonList(sqlEntity)), (oldValue, newValue) -> {
             oldValue.addAll(newValue);
             return oldValue;
@@ -668,7 +682,7 @@ public class JeeLowCodeAnnoaionAspectjSQL {
     }
 
     // 删除增强
-    public static void removePlugin(EnhanceSqlEntity sqlEntity){
+    public static void removePlugin(EnhanceSqlEntity sqlEntity) {
         String key = sqlEntity.getDbformId() + "_" + sqlEntity.getButtonCode();
         List<EnhanceSqlEntity> sqlEntityList = sqlPlugins.getOrDefault(key, new ArrayList<>());
         // id相同则删除

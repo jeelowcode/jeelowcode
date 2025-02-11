@@ -36,4 +36,6 @@ public interface EnhanceConstant {
 
     String ENHANCE_EVENT_START = "start";//开始
     String ENHANCE_EVENT_END = "end";//结束
+
+
 }

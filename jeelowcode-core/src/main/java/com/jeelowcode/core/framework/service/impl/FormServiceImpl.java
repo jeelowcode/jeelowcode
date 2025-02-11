@@ -1094,7 +1094,7 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
             entity.setSortNum(++sortNum);
             if (FuncBase.isEmpty(vo.getId())) {//新增
                 addList.add(entity);
-            } else if (Func.equals(vo.getIsModify(), YNEnum.Y.getCode())) {//如果是N的时候，不修改
+            } else if (Func.isEmpty(vo.getIsModify()) || Func.equals(vo.getIsModify(), YNEnum.Y.getCode())) {//如果是N的时候，不修改
                 updateList.add(entity);
             }
 
@@ -1157,7 +1157,7 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
             saveOrUpdateEntity.setDictTextFormatter(vo.getDictTextFormatter());
             if (Func.isEmpty(vo.getId())) {//新增
                 addList.add(saveOrUpdateEntity);
-            } else if (Func.equals(vo.getIsModify(), YNEnum.Y.getCode())) {//如果是N的时候，不修改
+            } else if (Func.isEmpty(vo.getIsModify()) || Func.equals(vo.getIsModify(), YNEnum.Y.getCode())) {//如果是N的时候，不修改
                 updateList.add(saveOrUpdateEntity);
             }
         });
@@ -1197,7 +1197,7 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
 
             if (Func.isEmpty(vo.getId())) {//新增
                 addList.add(saveOrUpdateEntity);
-            } else if (Func.equals(vo.getIsModify(), YNEnum.Y.getCode())) {//如果是N的时候，不修改
+            } else if (Func.isEmpty(vo.getIsModify()) || Func.equals(vo.getIsModify(), YNEnum.Y.getCode())) {//如果是N的时候，不修改
                 updateList.add(saveOrUpdateEntity);
             }
         });
@@ -1233,7 +1233,7 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
             saveOrUpdateEntity.setMainField(vo.getMainField());
             if (Func.isEmpty(vo.getId())) {//新增
                 addList.add(saveOrUpdateEntity);
-            } else if (Func.equals(vo.getIsModify(), YNEnum.Y.getCode())) {//如果是N的时候，不修改
+            } else if (Func.isEmpty(vo.getIsModify()) || Func.equals(vo.getIsModify(), YNEnum.Y.getCode())) {//如果是N的时候，不修改
                 updateList.add(saveOrUpdateEntity);
             }
         });
@@ -1281,7 +1281,7 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
             saveOrUpdateEntity.setFormatConfig(vo.getFormatConfig());
             if (Func.isEmpty(vo.getId())) {//新增
                 addList.add(saveOrUpdateEntity);
-            } else if (Func.equals(vo.getIsModify(), YNEnum.Y.getCode())) {//如果是N的时候，不修改
+            } else if (Func.isEmpty(vo.getIsModify()) || Func.equals(vo.getIsModify(), YNEnum.Y.getCode())) {//如果是N的时候，不修改
                 updateList.add(saveOrUpdateEntity);
             }
 
@@ -1361,7 +1361,7 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
             saveOrUpdateEntity.setSummaryJson(vo.getSummaryJson());
             if (Func.isEmpty(vo.getId())) {//新增
                 addList.add(saveOrUpdateEntity);
-            } else if (Func.equals(vo.getIsModify(), YNEnum.Y.getCode())) {//如果是N的时候，不修改
+            } else if (Func.isEmpty(vo.getIsModify()) || Func.equals(vo.getIsModify(), YNEnum.Y.getCode())) {//如果是N的时候，不修改
                 updateList.add(saveOrUpdateEntity);
             }
 
@@ -1402,7 +1402,7 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
             saveOrUpdateEntity.setIndexType(vo.getIndexType());
             if (Func.isEmpty(vo.getId())) {//新增
                 addList.add(saveOrUpdateEntity);
-            } else if (Func.equals(vo.getIsModify(), YNEnum.Y.getCode())) {//如果是N的时候，不修改
+            } else if (Func.isEmpty(vo.getIsModify()) || Func.equals(vo.getIsModify(), YNEnum.Y.getCode())) {//如果是N的时候，不修改
                 updateList.add(saveOrUpdateEntity);
             }
         });
@@ -1752,10 +1752,15 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
         for (ExplainSqlFieldModel model : modelList) {
             String fieldCode = model.getValue();//字段 nj_name
             String alias = model.getAlias();
+            String finaiFieldCode=Func.isNotEmpty(alias)?alias.toLowerCase():fieldCode.toLowerCase();
             String tableName = model.getTableName();//表名称
             String type = model.getType();//field=表字段
             String controlType = model.getControlType();//控件类型 //text控件    custom=自定义
             String value = model.getValue();
+            DefaultDbFieldEnum defaultDbFieldEnum = DefaultDbFieldEnum.getByFieldCode(fieldCode.toLowerCase());
+            if(Func.isNotEmpty(defaultDbFieldEnum)){
+                continue;
+            }
 
             //控件类型
             if (Func.equals(controlType, "text") && Func.equals("field", type)) {
@@ -1763,19 +1768,19 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
                 if (Func.isEmpty(dbFormId)) {
                     //构建空的
                     FormFieldEntity fieldEntity = new FormFieldEntity();
-                    fieldEntity.setFieldCode(fieldCode);
+                    fieldEntity.setFieldCode(finaiFieldCode);
                     fieldList.add(fieldEntity);
 
                     FormFieldDictEntity fieldDictEntity = new FormFieldDictEntity();
-                    fieldDictEntity.setFieldCode(fieldCode);
+                    fieldDictEntity.setFieldCode(finaiFieldCode);
                     dictList.add(fieldDictEntity);
 
                     FormFieldQueryEntity formFieldQueryEntity = new FormFieldQueryEntity();
-                    formFieldQueryEntity.setFieldCode(fieldCode);
+                    formFieldQueryEntity.setFieldCode(finaiFieldCode);
                     queryList.add(formFieldQueryEntity);
 
                     FormFieldWebEntity formFieldWebEntity = new FormFieldWebEntity();
-                    formFieldWebEntity.setFieldCode(fieldCode);
+                    formFieldWebEntity.setFieldCode(finaiFieldCode);
                     webList.add(formFieldWebEntity);
                     continue;
                 }

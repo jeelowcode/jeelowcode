@@ -14,6 +14,11 @@ http://www.apache.org/licenses/
 package com.jeelowcode.framework.utils.enums;
 
 
+import com.jeelowcode.framework.utils.utils.FuncBase;
+
+import java.util.Arrays;
+import java.util.Optional;
+
 /**
  * 数据库默认字段
  */
@@ -46,5 +51,17 @@ public enum DefaultDbFieldEnum {
     DefaultDbFieldEnum(String fieldCode, String fieldName) {
         this.fieldCode = fieldCode;
         this.fieldName = fieldName;
+    }
+
+    public static DefaultDbFieldEnum getByFieldCode(String fieldCode) {
+        Optional<DefaultDbFieldEnum> matchingEnum = Arrays.stream(DefaultDbFieldEnum.values())
+                .filter(DefaultDbFieldEnum -> FuncBase.equals(DefaultDbFieldEnum.getFieldCode(), fieldCode))
+                .findFirst(); // findFirst()会返回第一个匹配的元素，或者如果找不到则返回一个空的Optional
+        // 检查是否找到了匹配的枚举项
+        if (matchingEnum.isPresent()) {
+            return matchingEnum.get();
+        }
+        return null;
+
     }
 }

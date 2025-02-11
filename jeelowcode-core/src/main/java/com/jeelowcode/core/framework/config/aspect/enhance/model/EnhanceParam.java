@@ -37,8 +37,6 @@ public class EnhanceParam implements Serializable {
 
     private Page page;
 
-    private List<Long> dataIdList;
-
     private SaveImportDataParam importDataParam;
 
     public Long getDbFormId() {
@@ -84,14 +82,6 @@ public class EnhanceParam implements Serializable {
         this.page = page;
     }
 
-    public List<Long> getDataIdList() {
-        return dataIdList;
-    }
-
-    public void setDataIdList(List<Long> dataIdList) {
-        this.dataIdList = dataIdList;
-    }
-
     public SaveImportDataParam getImportDataParam() {
         return importDataParam;
     }
@@ -106,12 +96,11 @@ public class EnhanceParam implements Serializable {
         this.list = list;
     }
 
-    public EnhanceParam(Long dbFormId, Map<String, Object> params, List<Map<String, Object>> list, Long dataId, Page page, List<Long> dataIdList) {
+    public EnhanceParam(Long dbFormId, Map<String, Object> params, List<Map<String, Object>> list, Long dataId, Page page) {
         this.dbFormId = dbFormId;
         this.params = params;
         this.list = list;
         this.dataId = dataId;
         this.page = page;
-        this.dataIdList = dataIdList;
     }
 }

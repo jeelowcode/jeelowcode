@@ -298,6 +298,7 @@ public class JeeLowCodeAnnotationAspectjJAVA {
 
         EnhanceParam param = new EnhanceParam();
         param.setDbFormId(dbFormId);
+        param.setDataId((Long)paramMap.getOrDefault("id", null));
         param.setList((ArrayList) paramMap.getOrDefault("dataList", null));
         param.setParams((Map<String, Object>) paramMap.getOrDefault("params", null));
         Object importDataParam = paramMap.get("param");

@@ -18,6 +18,7 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.jeelowcode.core.framework.config.btncommand.receiver.ButtonReceiverBase;
 import com.jeelowcode.framework.plus.component.DbManager;
 import com.jeelowcode.core.framework.entity.*;
 import com.jeelowcode.core.framework.mapper.FormFieldForeignkeyMapper;
@@ -448,6 +449,9 @@ public class FrameServiceImpl implements IFrameService {
 
         //查所有
         SqlInfoQueryWrapper.Wrapper wrapper = this.getDataQueryWrapper(formEntity, params);
+        if (Func.isEmpty(wrapper)) {
+            return new ResultDataModel();
+        }
         Map<String, Object> dataMap = sqlService.getDataOneByPlus(wrapper);
         if (FuncBase.isEmpty(dataMap)) {
             return new ResultDataModel();
@@ -489,6 +493,7 @@ public class FrameServiceImpl implements IFrameService {
                 ResultDataModel subDataModel = proxyService.getDataList(subDbFormId,subParamMap);
 
                 List<Map<String, Object>> subDataList = subDataModel.getRecords();
+                new ButtonReceiverBase().webViewAppend(subDbFormId,subDataList);
                 subTableDataMap.put(subTable, subDataList);
             }
         }
@@ -651,10 +656,10 @@ public class FrameServiceImpl implements IFrameService {
 
         long size = Func.isEmpty(page)?JeeLowCodeConstant.NOT_PAGE: page.getSize();
         if (size == JeeLowCodeConstant.NOT_PAGE) {//列表
-            dataList = sqlService.getDataListByPlus(wrapper);
+            dataList = sqlService.getDataListByPlus(wrapper,params);
             total = (long) dataList.size();
         } else {//分页
-            IPage<Map<String, Object>> pages = sqlService.getDataIPageByPlus(page, wrapper);
+            IPage<Map<String, Object>> pages = sqlService.getDataIPageByPlus(page, wrapper,params);
             //处理字典回显
             dataList = pages.getRecords();
             total = pages.getTotal();
@@ -692,10 +697,10 @@ public class FrameServiceImpl implements IFrameService {
     //编辑数据
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public ExecuteEnhanceModel editData(Long dbFormId, Long dataId, Map<String, Object> params) {
+    public ExecuteEnhanceModel editData(Long dbFormId, Long id, Map<String, Object> params) {
         FrameServiceImpl proxyService = SpringUtils.getBean(FrameServiceImpl.class);
         //编辑主表
-        ExecuteEnhanceModel enhanceModel = proxyService.editPublicData(dbFormId, dataId, params);
+        ExecuteEnhanceModel enhanceModel = proxyService.editPublicData(dbFormId, id, params);
 
         List<String> allSubTableNameList = dbFormService.getAllSubTableNameList(dbFormId);
         if (Func.isEmpty(allSubTableNameList)) {//当前不是主表
@@ -703,7 +708,7 @@ public class FrameServiceImpl implements IFrameService {
         }
 
         //保存子表数据-新增或者修改
-        this.saveOrUpdateSubTableData(dbFormId, dataId, params);
+        this.saveOrUpdateSubTableData(dbFormId, id, params);
         return enhanceModel;
 
     }
@@ -730,7 +735,7 @@ public class FrameServiceImpl implements IFrameService {
 
         boolean serviceTableFlag = dbFormService.isServiceTable(dbFormId);
         if (!serviceTableFlag) {//当前不是业务表
-            return null;
+            return new ExecuteEnhanceModel();
         }
         String tableName = dbFormService.getTableName(dbFormId);//获取表名
 
@@ -797,7 +802,7 @@ public class FrameServiceImpl implements IFrameService {
     public ExecuteEnhanceModel savePublicData(Long dbFormId, Map<String, Object> params) {
         boolean serviceTableFlag = dbFormService.isServiceTable(dbFormId);
         if (!serviceTableFlag) {//当前不是业务表
-            return null;
+            return new ExecuteEnhanceModel();
         }
 
         String tableName = dbFormService.getTableName(dbFormId);//获取表名
@@ -816,11 +821,11 @@ public class FrameServiceImpl implements IFrameService {
 
 
     //公共编辑
-    public ExecuteEnhanceModel editPublicData(Long dbFormId, Long dataId, Map<String, Object> params) {
+    public ExecuteEnhanceModel editPublicData(Long dbFormId, Long id, Map<String, Object> params) {
 
         boolean serviceTableFlag = dbFormService.isServiceTable(dbFormId);
         if (!serviceTableFlag) {//当前不是业务表
-            return null;
+            return new ExecuteEnhanceModel();
         }
 
         String tableName = dbFormService.getTableName(dbFormId);//获取表名
@@ -834,13 +839,13 @@ public class FrameServiceImpl implements IFrameService {
                 .setTableName(tableName)
                 .setMap(dataMap)
                 .setWhere(where -> {
-                    where.eq("id", dataId);
+                    where.eq("id", id);
                 }).build();
 
         sqlService.updateDataByPlus(wrapper);
 
         ExecuteEnhanceModel saveDataModel = new ExecuteEnhanceModel();
-        saveDataModel.setId(FuncBase.toStr(dataId));
+        saveDataModel.setId(FuncBase.toStr(id));
         return saveDataModel;
     }
 
@@ -1008,6 +1013,8 @@ public class FrameServiceImpl implements IFrameService {
             }
             //直接执行数据源
             queryWrapper.setTableSql(dataSourceConfigModel.getExecuteSql());
+            //处理占位符参数
+            Func.replaceParam(dataSourceConfigModel.getExecuteSql(), params, null, jeeLowCodeAdapter);
         }
 
         //处理排序排序================
@@ -1045,6 +1052,9 @@ public class FrameServiceImpl implements IFrameService {
         }
         //直接执行数据源
         queryWrapper.setTableSql(dataSourceConfigModel.getExecuteSql());
+
+        //处理占位符参数
+        Func.replaceParam(dataSourceConfigModel.getExecuteSql(), params, null, jeeLowCodeAdapter);
 
         //处理排序排序================
         this.handleOrderBy(queryWrapper, params, null);

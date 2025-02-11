@@ -74,7 +74,7 @@ public interface IFrameService {
     List<String> saveBatchData(Long dbformId, List<JSONObject> dataMapList);
 
     //编辑数据
-    ExecuteEnhanceModel editData(Long dbformId, Long dataId, Map<String,Object> params);
+    ExecuteEnhanceModel editData(Long dbformId, Long id, Map<String,Object> params);
 
     //编辑数据-批量
     void editBatchData(Long dbformId,List<JSONObject> jsonObjectList);
