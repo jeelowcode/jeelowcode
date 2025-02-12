@@ -3492,25 +3492,6 @@ INSERT INTO `system_login_log`(`id`, `log_type`, `trace_id`, `user_id`, `user_ty
 
 INSERT INTO `system_login_log`(`id`, `log_type`, `trace_id`, `user_id`, `user_type`, `username`, `result`, `user_ip`, `user_agent`, `creator`, `create_time`, `updater`, `update_time`, `deleted`, `tenant_id`) VALUES (4592, 100, '', 1, 2, 'admin', 0, '192.168.5.30', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0', NULL, '2025-01-20 14:44:30', NULL, '2025-01-20 14:44:30', 0, 1);
 
-DELETE FROM `system_menu` WHERE `id` = 1090;
-
-DELETE FROM `system_menu` WHERE `id` = 1237;
-
-DELETE FROM `system_menu` WHERE `id` = 1238;
-
-DELETE FROM `system_menu` WHERE `id` = 1239;
-
-DELETE FROM `system_menu` WHERE `id` = 1240;
-
-DELETE FROM `system_menu` WHERE `id` = 1241;
-
-DELETE FROM `system_menu` WHERE `id` = 1242;
-
-DELETE FROM `system_menu` WHERE `id` = 1243;
-
-DELETE FROM `system_menu` WHERE `id` = 2930;
-
-DELETE FROM `system_menu` WHERE `id` = 2931;
 
 INSERT INTO `system_menu`(`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (5, 'OA 示例', '', 1, 40, 1185, 'oa', 'eos-icons:content-lifecycle-management', NULL, NULL, 0, 1, 1, 1, 'admin', '2021-09-20 16:26:19', '1', '2024-08-08 17:20:44', 0);
 
