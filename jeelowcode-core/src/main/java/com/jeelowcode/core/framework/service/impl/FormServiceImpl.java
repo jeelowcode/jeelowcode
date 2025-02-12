@@ -855,7 +855,7 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
     public List<AllTableModel> getAllTable(String systemFlag) {
 
         LambdaQueryWrapper<FormEntity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.select(FormEntity::getId, FormEntity::getTableName, FormEntity::getTableDescribe, FormEntity::getTableType, FormEntity::getSubTableListStr);//获取表名和表描述
+        wrapper.select(FormEntity::getId, FormEntity::getTableName, FormEntity::getTableDescribe,FormEntity::getTableClassify, FormEntity::getTableType, FormEntity::getSubTableListStr);//获取表名和表描述
         wrapper.orderByDesc(FormEntity::getId);
         List<FormEntity> formList = baseMapper.selectList(wrapper);
 
@@ -886,6 +886,7 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
                     tableModel.setTableId(FuncBase.toStr(form.getId()));
                     tableModel.setTableName(form.getTableName());
                     tableModel.setTableDescribe(form.getTableDescribe());
+                    tableModel.setTableClassify(form.getTableClassify());
                     tableModel.setSubTableListStr(form.getSubTableListStr());
                     tableModel.setFieldModelList(fieldModelList);
                     tableModel.setTableType(form.getTableType());
@@ -908,6 +909,7 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
         List<AllTableModel> resultList = new ArrayList<>();
         for (FormEntity formEntity : formList) {
             Long dbformId = formEntity.getId();
+
             if (!tableMap.containsKey(dbformId)) {
                 continue;
             }
@@ -953,6 +955,7 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
                 AllTableModel allTableModel = new AllTableModel();
                 allTableModel.setTableId(tableName);
                 allTableModel.setTableName(tableName);
+                allTableModel.setTableClassify(TableClassifyEnum.SERVICE.getType());
                 allTableModel.setTableDescribe(tableDescribe);
                 allTableModel.setFieldModelList(fieldModelList);
                 if (Func.isNotEmpty(resultList)) {

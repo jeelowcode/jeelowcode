@@ -22,6 +22,7 @@ public class AllTableModel {
     String tableId;
     String tableName;
     String tableDescribe;
+    Integer tableClassify;//表分类
     String subTableListStr;
     Integer tableType;
     String authType;//授权类型
