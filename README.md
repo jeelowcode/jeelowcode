@@ -32,9 +32,9 @@
 
 [社区地址：http://doc.jeelowcode.com](http://doc.jeelowcode.com/)
 
-[启动文档：http://doc.jeelowcode.com/doc/1-5](http://doc.jeelowcode.com/doc/1-5)
+[启动文档：http://doc.jeelowcode.com/doc/1-7-2](http://doc.jeelowcode.com/doc/1-7-2)
 
-[视频教程：http://doc.jeelowcode.com/doc/1-6](http://doc.jeelowcode.com/doc/1-6)
+[视频教程：http://doc.jeelowcode.com/doc/1-8-0](http://doc.jeelowcode.com/doc/1-8-0)
 
 ## 3.代码架构
 ``` 
