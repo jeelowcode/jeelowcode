@@ -109,6 +109,8 @@ ALTER TABLE `lowcode_dbform_field` MODIFY COLUMN `tenant_id` bigint(0) NULL DEFA
 
 ALTER TABLE `lowcode_dbform_field_dict` MODIFY COLUMN `tenant_id` bigint(0) NULL DEFAULT NULL COMMENT '租户编号' AFTER `id`;
 
+ALTER TABLE `lowcode_dbform_field_dict` ADD COLUMN `dict_text_formatter` varchar(1024) NULL DEFAULT NULL COMMENT '字典格式化' AFTER `dict_table_column`;
+
 ALTER TABLE `lowcode_dbform_field_export` MODIFY COLUMN `tenant_id` bigint(0) NULL DEFAULT NULL COMMENT '租户编号' AFTER `id`;
 
 ALTER TABLE `lowcode_dbform_field_foreignkey` MODIFY COLUMN `tenant_id` bigint(0) NULL DEFAULT NULL COMMENT '租户编号' AFTER `id`;
