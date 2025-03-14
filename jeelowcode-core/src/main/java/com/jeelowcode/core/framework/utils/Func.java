@@ -821,25 +821,5 @@ public class Func extends FuncBase {
         return copyEnhanceParam;
     }
 
-    /**
-     * 自定义ForkJoinPool
-     */
-    public static ForkJoinPool jeelowcodeForkJoinPool(){
-       return jeelowcodeForkJoinPool(20);
-    }
-
-    /**
-     * 自定义ForkJoinPool
-     *
-     * @param poolSize
-     */
-    public static ForkJoinPool jeelowcodeForkJoinPool(Integer poolSize){
-        ForkJoinPool.ForkJoinWorkerThreadFactory factory = pool -> {
-            ForkJoinWorkerThread thread = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
-            thread.setName("jeelowcodeForkJoinPool-worker-"+IdWorker.getIdStr());
-            return thread;
-        };
-        return new ForkJoinPool(poolSize, factory, null, false);
-    }
 }
 

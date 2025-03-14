@@ -17,6 +17,7 @@ package com.jeelowcode.framework.utils.utils;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.jeelowcode.framework.utils.tool.CollectionUtil;
 import com.jeelowcode.framework.utils.tool.NumberUtil;
 import com.jeelowcode.framework.utils.tool.StringPool;
@@ -30,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.stream.Collectors;
 
 /**
@@ -1016,5 +1019,25 @@ public class FuncBase {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 自定义ForkJoinPool
+     */
+    public static ForkJoinPool jeelowcodeForkJoinPool(){
+        return jeelowcodeForkJoinPool(20);
+    }
+
+    /**
+     * 自定义ForkJoinPool
+     *
+     * @param poolSize
+     */
+    public static ForkJoinPool jeelowcodeForkJoinPool(Integer poolSize){
+        ForkJoinPool.ForkJoinWorkerThreadFactory factory = pool -> {
+            ForkJoinWorkerThread thread = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
+            thread.setName("jeelowcodeForkJoinPool-worker-"+ IdWorker.getIdStr());
+            return thread;
+        };
+        return new ForkJoinPool(poolSize, factory, null, false);
+    }
 
 }

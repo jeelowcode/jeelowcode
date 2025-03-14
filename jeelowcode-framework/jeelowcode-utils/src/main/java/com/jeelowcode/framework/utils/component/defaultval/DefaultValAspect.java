@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,7 +43,8 @@ public class DefaultValAspect {
     private final IJeeLowCodeAdapter proxyAdapter;
 
     public final static String JEELOWCODE_EXPRESSION = "execution(* "+ JeeLowCodeBaseConstant.BASE_PACKAGES_CODE+".framework.service.impl.FrameServiceImpl.*(..))";//jeelowcode
-    public final static String MYBATIS_EXPRESSION = "execution(* "+JeeLowCodeBaseConstant.BASE_PACKAGES_CODE+".*.mapper.*.*(..))";//mybatis
+    public final static String MYBATIS_EXPRESSION = "execution(* "+JeeLowCodeBaseConstant.BASE_PACKAGES_CODE+".*.mapper..*.*(..))";//mybatis
+    public final static String SERVICE_EXPRESSION = "execution(* "+ JeeLowCodeBaseConstant.BASE_PACKAGES_CODE+".framework.service..*.*(..))";//mybatis
 
 
     //需要拦截的方法名称
@@ -55,6 +57,10 @@ public class DefaultValAspect {
     private static String saveImportData="saveImportData";
     private static String insert="insert";
     private static String updateById="updateById";
+    private static String update = "update";
+    private static String saveBatch = "saveBatch";
+    private static String saveOrUpdate = "saveOrUpdate";
+    private static String saveOrUpdateBatch = "saveOrUpdateBatch";
 
     static {
         aspectMethodNameMapp.put(savePublicData, "新增");
@@ -64,10 +70,18 @@ public class DefaultValAspect {
 
         aspectMethodNameMapp.put(insert, "mybatis-plus 自带新增");
         aspectMethodNameMapp.put(updateById, "mybatis-plus 自带编辑");
+        aspectMethodNameMapp.put(update, "mybatis-plus 自带编辑");
+        aspectMethodNameMapp.put(saveBatch, "mybatis-plus 自带批量新增");
+        aspectMethodNameMapp.put(saveOrUpdate, "mybatis-plus 自带新增修改");
+        aspectMethodNameMapp.put(saveOrUpdateBatch, "mybatis-plus 自带批量新增修改");
     }
 
     public DefaultValAspect(IJeeLowCodeAdapter proxyAdapter) {
         this.proxyAdapter = proxyAdapter;
+    }
+
+    @Pointcut(value = SERVICE_EXPRESSION)
+    private void aspectServicePlus() {
     }
 
     @Pointcut(value = JEELOWCODE_EXPRESSION)
@@ -79,7 +93,7 @@ public class DefaultValAspect {
     }
 
 
-    @Around("aspectJeeLowCode() || aspectPlus()")
+    @Around("aspectJeeLowCode() || aspectPlus() || aspectServicePlus()")
     public Object all(ProceedingJoinPoint joinPoint) throws Throwable {
         // 获取方法签名
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
@@ -100,8 +114,14 @@ public class DefaultValAspect {
             this.baseUpdateDataByField(args);
         }else if(FuncBase.equals(methodName,insert)){
             this.insertPlus(args);
-        }else if(FuncBase.equals(methodName,updateById)){
+        }else if(FuncBase.equals(methodName,updateById) || FuncBase.equals(methodName, update)){
             this.updateByIdPlus(args);
+        } else if(FuncBase.equals(methodName, saveBatch)){
+            this.saveBatchPlus(args);
+        } else if (FuncBase.equals(methodName, saveOrUpdate)){
+            this.saveOrUpdatePlus(args);
+        } else if (FuncBase.equals(methodName, saveOrUpdateBatch)){
+            this.saveOrUpdateBatchPlus(args);
         }
         return joinPoint.proceed();
 
@@ -156,6 +176,145 @@ public class DefaultValAspect {
 
     }
 
+    // plus批量新增
+    private void saveBatchPlus(Object[] args) throws Throwable {
+        List list = (List) args[0];
+        Object o = list.get(0);
+        if (!(o instanceof BaseEntity || o instanceof BaseTenantEntity)) {//不属于我们的类型
+            return;
+        }
+
+        LocalDateTime current = LocalDateTime.now();
+        Long userId = proxyAdapter.getOnlineUserId();
+        Long tenantId = proxyAdapter.getTenantId();
+        Long deptId = proxyAdapter.getOnlineUserDeptId();
+
+        FuncBase.jeelowcodeForkJoinPool().submit(() -> list.parallelStream().forEach(obj -> {
+            //基本类
+            if (obj instanceof BaseEntity) {//我们自定义的实体
+                BaseEntity baseEntity = (BaseEntity) obj;
+                Long createUser = baseEntity.getCreateUser();
+                Long createDept = baseEntity.getCreateDept();
+
+                if (FuncBase.isNotEmpty(current)) {
+                    baseEntity.setCreateTime(current);
+                }
+                if (FuncBase.isNotEmpty(userId) && FuncBase.isEmpty(createUser)) {
+                    baseEntity.setCreateUser(userId);
+                }
+                if (FuncBase.isNotEmpty(deptId) && FuncBase.isEmpty(createDept)) {
+                    baseEntity.setCreateDept(deptId);
+                }
+            }
+
+            if (obj instanceof BaseTenantEntity) {//我们自定义的实体
+                BaseTenantEntity baseEntity = (BaseTenantEntity) obj;
+                Long selectTenantId = baseEntity.getTenantId();
+
+                if (FuncBase.isEmpty(selectTenantId) && FuncBase.isNotEmpty(tenantId)) {
+                    baseEntity.setTenantId(tenantId);
+                }
+            }
+        })).get();
+    }
+
+    // plus新增修改
+    private void saveOrUpdatePlus(Object[] args) throws Throwable {
+        Object obj = (Object) args[0];
+        if (!(obj instanceof BaseEntity || obj instanceof BaseTenantEntity)) {//不属于我们的类型
+            return;
+        }
+
+        LocalDateTime current = LocalDateTime.now();
+        Long userId = proxyAdapter.getOnlineUserId();
+        Long tenantId = proxyAdapter.getTenantId();
+        Long deptId = proxyAdapter.getOnlineUserDeptId();
+
+        //基本类
+        if (obj instanceof BaseEntity) {//我们自定义的实体
+            BaseEntity baseEntity = (BaseEntity) obj;
+            if (FuncBase.isEmpty(baseEntity.getId())) {
+                Long createUser = baseEntity.getCreateUser();
+                Long createDept = baseEntity.getCreateDept();
+                if (FuncBase.isNotEmpty(current)) {
+                    baseEntity.setCreateTime(current);
+                }
+                if (FuncBase.isNotEmpty(userId) && FuncBase.isEmpty(createUser)) {
+                    baseEntity.setCreateUser(userId);
+                }
+                if (FuncBase.isNotEmpty(deptId) && FuncBase.isEmpty(createDept)) {
+                    baseEntity.setCreateDept(deptId);
+                }
+            } else {
+                baseEntity.setUpdateTime(current);
+                if (FuncBase.isEmpty(baseEntity.getUpdateUser()) && FuncBase.isNotEmpty(userId)) {
+                    baseEntity.setUpdateUser(userId);
+                }
+            }
+        }
+
+        if (obj instanceof BaseTenantEntity) {//我们自定义的实体
+            BaseTenantEntity baseEntity = (BaseTenantEntity) obj;
+            if (FuncBase.isNotEmpty(baseEntity.getId())){
+                return;
+            }
+            Long selectTenantId = baseEntity.getTenantId();
+            if (FuncBase.isEmpty(selectTenantId) && FuncBase.isNotEmpty(tenantId)) {
+                baseEntity.setTenantId(tenantId);
+            }
+        }
+    }
+
+    // plus批量新增修改
+    private void saveOrUpdateBatchPlus(Object[] args) throws Throwable {
+        List list = (List) args[0];
+        Object o = list.get(0);
+        if (!(o instanceof BaseEntity || o instanceof BaseTenantEntity)) {//不属于我们的类型
+            return;
+        }
+
+        LocalDateTime current = LocalDateTime.now();
+        Long userId = proxyAdapter.getOnlineUserId();
+        Long tenantId = proxyAdapter.getTenantId();
+        Long deptId = proxyAdapter.getOnlineUserDeptId();
+
+        FuncBase.jeelowcodeForkJoinPool().submit(() -> list.parallelStream().forEach(obj -> {
+            //基本类
+            if (obj instanceof BaseEntity) {//我们自定义的实体
+                BaseEntity baseEntity = (BaseEntity) obj;
+                if (FuncBase.isEmpty(baseEntity.getId())) {
+                    Long createUser = baseEntity.getCreateUser();
+                    Long createDept = baseEntity.getCreateDept();
+                    if (FuncBase.isNotEmpty(current)) {
+                        baseEntity.setCreateTime(current);
+                    }
+                    if (FuncBase.isNotEmpty(userId) && FuncBase.isEmpty(createUser)) {
+                        baseEntity.setCreateUser(userId);
+                    }
+                    if (FuncBase.isNotEmpty(deptId) && FuncBase.isEmpty(createDept)) {
+                        baseEntity.setCreateDept(deptId);
+                    }
+                } else {
+                    baseEntity.setUpdateTime(current);
+                    if (FuncBase.isEmpty(baseEntity.getUpdateUser()) && FuncBase.isNotEmpty(userId)) {
+                        baseEntity.setUpdateUser(userId);
+                    }
+                }
+            }
+
+            if (obj instanceof BaseTenantEntity) {//我们自定义的实体
+                BaseTenantEntity baseEntity = (BaseTenantEntity) obj;
+                if (FuncBase.isNotEmpty(baseEntity.getId())){
+                    return;
+                }
+                Long selectTenantId = baseEntity.getTenantId();
+                if (FuncBase.isEmpty(selectTenantId) && FuncBase.isNotEmpty(tenantId)) {
+                    baseEntity.setTenantId(tenantId);
+                }
+            }
+        })).get();
+    }
+
     //编辑
     private void editPublicData(Object[] args) throws Throwable {
         Map<String, Object> updateDataMap = (Map<String, Object>) args[2];
@@ -191,7 +350,7 @@ public class DefaultValAspect {
 
     //plus 根据id来修改
     private void updateByIdPlus(Object[] args) throws Throwable {
-       LocalDateTime current = LocalDateTime.now();
+        LocalDateTime current = LocalDateTime.now();
 
 
         Object obj = (Object) args[0];
