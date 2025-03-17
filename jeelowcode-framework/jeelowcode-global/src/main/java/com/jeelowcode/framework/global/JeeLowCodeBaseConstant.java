@@ -20,4 +20,5 @@ public interface JeeLowCodeBaseConstant {
     String REQUEST_URL_START="/admin-api/jeelowcode";//公共请求
     String BASE_PACKAGES="com.jeelowcode";//公共包名称
     String BASE_PACKAGES_CODE=BASE_PACKAGES+".core";//核心包名
+    String BASE_PACKAGES_MODULE = BASE_PACKAGES+".module";//低代码模块
 }

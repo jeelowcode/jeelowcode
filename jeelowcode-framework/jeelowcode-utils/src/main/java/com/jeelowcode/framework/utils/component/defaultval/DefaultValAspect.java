@@ -42,10 +42,10 @@ public class DefaultValAspect {
 
     private final IJeeLowCodeAdapter proxyAdapter;
 
-    public final static String JEELOWCODE_EXPRESSION = "execution(* "+ JeeLowCodeBaseConstant.BASE_PACKAGES_CODE+".framework.service.impl.FrameServiceImpl.*(..))";//jeelowcode
-    public final static String MYBATIS_EXPRESSION = "execution(* "+JeeLowCodeBaseConstant.BASE_PACKAGES_CODE+".*.mapper..*.*(..))";//mybatis
-    public final static String SERVICE_EXPRESSION = "execution(* "+ JeeLowCodeBaseConstant.BASE_PACKAGES_CODE+".framework.service..*.*(..))";//mybatis
-
+    public final static String MYBATIS_EXPRESSION = "execution(* "+JeeLowCodeBaseConstant.BASE_PACKAGES_CODE+"..mapper..*.*(..))";
+    public final static String SERVICE_EXPRESSION = "execution(* "+ JeeLowCodeBaseConstant.BASE_PACKAGES_CODE+"..service..*.*(..))";
+    public final static String MODULE_SERVICE_EXPRESSION = "execution(* "+ JeeLowCodeBaseConstant.BASE_PACKAGES_MODULE+"..service..*.*(..))";
+    public final static String MODULE_MYBATIS_EXPRESSION = "execution(* "+JeeLowCodeBaseConstant.BASE_PACKAGES_MODULE+"..mapper..*.*(..))";
 
     //需要拦截的方法名称
     private static Map<String, String> aspectMethodNameMapp = new HashMap<>();
@@ -84,16 +84,19 @@ public class DefaultValAspect {
     private void aspectServicePlus() {
     }
 
-    @Pointcut(value = JEELOWCODE_EXPRESSION)
-    private void aspectJeeLowCode() {
-    }
-
     @Pointcut(value = MYBATIS_EXPRESSION)
     private void aspectPlus() {
     }
 
+    @Pointcut(value = MODULE_SERVICE_EXPRESSION)
+    private void aspectModelServicePlus() {
+    }
 
-    @Around("aspectJeeLowCode() || aspectPlus() || aspectServicePlus()")
+    @Pointcut(value = MODULE_MYBATIS_EXPRESSION)
+    private void aspectModelMapperPlus() {
+    }
+
+    @Around("aspectPlus() || aspectServicePlus() || aspectModelServicePlus() || aspectModelMapperPlus()")
     public Object all(ProceedingJoinPoint joinPoint) throws Throwable {
         // 获取方法签名
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
