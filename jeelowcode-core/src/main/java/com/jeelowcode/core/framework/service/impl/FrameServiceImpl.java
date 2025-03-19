@@ -304,6 +304,12 @@ public class FrameServiceImpl implements IFrameService {
             total = pages.getTotal();
         }
 
+        //处理树结构
+        Long pid = Func.getMap2Long(params, "pid");
+        if (Func.isNotEmpty(pid) && Func.equals(dbFormService.getTableType(dbFormId), TableTypeEnum.TREE.getType())) {//当前是树结构，并且是懒加载模式
+            this.checkTreehasChildren(formEntity.getTableName(), dataList);
+        }
+
         //处理blob等特殊字段
         Map<String, JeeLowCodeFieldTypeEnum> fieldTypeEnumMap = dbFormService.getFieldCodeAndTypeEnum(dbFormId);
         Func.handlePlusDataList(dataList, fieldTypeEnumMap);
