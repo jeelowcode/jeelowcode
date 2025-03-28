@@ -66,6 +66,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 @Tag(name = "低代码框架-框架接口")
@@ -232,8 +233,10 @@ public class DbFormController extends BaseController {
         }
         Map<String, List<Map<String, Object>>> resultMap = new ConcurrentHashMap<>();
 
+        ForkJoinPool pool = null;
         try {
-            Func.jeelowcodeForkJoinPool().submit(() -> labelParamList.parallelStream().forEach(labelParam ->{
+            pool = FuncBase.jeelowcodeForkJoinPool();
+            pool.submit(() -> labelParamList.parallelStream().forEach(labelParam ->{
                 Long dbformId = labelParam.getDbformId();
                 List<String> fieldList = labelParam.getFieldList();
                 String code = labelParam.getCode();
@@ -279,6 +282,10 @@ public class DbFormController extends BaseController {
             })).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            if (pool != null) {
+                pool.shutdown();
+            }
         }
 
         return BaseWebResult.success(resultMap);

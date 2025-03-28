@@ -31,6 +31,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * 默认值切面
@@ -180,7 +182,7 @@ public class DefaultValAspect {
     }
 
     // plus批量新增
-    private void saveBatchPlus(Object[] args) throws Throwable {
+    private void saveBatchPlus(Object[] args) {
         List list = (List) args[0];
         Object o = list.get(0);
         if (!(o instanceof BaseEntity || o instanceof BaseTenantEntity)) {//不属于我们的类型
@@ -192,33 +194,43 @@ public class DefaultValAspect {
         Long tenantId = proxyAdapter.getTenantId();
         Long deptId = proxyAdapter.getOnlineUserDeptId();
 
-        FuncBase.jeelowcodeForkJoinPool().submit(() -> list.parallelStream().forEach(obj -> {
-            //基本类
-            if (obj instanceof BaseEntity) {//我们自定义的实体
-                BaseEntity baseEntity = (BaseEntity) obj;
-                Long createUser = baseEntity.getCreateUser();
-                Long createDept = baseEntity.getCreateDept();
+        ForkJoinPool pool = null;
+        try {
+            pool = FuncBase.jeelowcodeForkJoinPool();
+            pool.submit(() -> list.parallelStream().forEach(obj -> {
+                //基本类
+                if (obj instanceof BaseEntity) {//我们自定义的实体
+                    BaseEntity baseEntity = (BaseEntity) obj;
+                    Long createUser = baseEntity.getCreateUser();
+                    Long createDept = baseEntity.getCreateDept();
 
-                if (FuncBase.isNotEmpty(current)) {
-                    baseEntity.setCreateTime(current);
+                    if (FuncBase.isNotEmpty(current)) {
+                        baseEntity.setCreateTime(current);
+                    }
+                    if (FuncBase.isNotEmpty(userId) && FuncBase.isEmpty(createUser)) {
+                        baseEntity.setCreateUser(userId);
+                    }
+                    if (FuncBase.isNotEmpty(deptId) && FuncBase.isEmpty(createDept)) {
+                        baseEntity.setCreateDept(deptId);
+                    }
                 }
-                if (FuncBase.isNotEmpty(userId) && FuncBase.isEmpty(createUser)) {
-                    baseEntity.setCreateUser(userId);
+
+                if (obj instanceof BaseTenantEntity) {//我们自定义的实体
+                    BaseTenantEntity baseEntity = (BaseTenantEntity) obj;
+                    Long selectTenantId = baseEntity.getTenantId();
+
+                    if (FuncBase.isEmpty(selectTenantId) && FuncBase.isNotEmpty(tenantId)) {
+                        baseEntity.setTenantId(tenantId);
+                    }
                 }
-                if (FuncBase.isNotEmpty(deptId) && FuncBase.isEmpty(createDept)) {
-                    baseEntity.setCreateDept(deptId);
-                }
+            })).get();
+        } catch (InterruptedException | ExecutionException e){
+            throw new RuntimeException(e.getMessage());
+        } finally {
+            if (pool != null) {
+                pool.shutdown();
             }
-
-            if (obj instanceof BaseTenantEntity) {//我们自定义的实体
-                BaseTenantEntity baseEntity = (BaseTenantEntity) obj;
-                Long selectTenantId = baseEntity.getTenantId();
-
-                if (FuncBase.isEmpty(selectTenantId) && FuncBase.isNotEmpty(tenantId)) {
-                    baseEntity.setTenantId(tenantId);
-                }
-            }
-        })).get();
+        }
     }
 
     // plus新增修改
@@ -269,7 +281,7 @@ public class DefaultValAspect {
     }
 
     // plus批量新增修改
-    private void saveOrUpdateBatchPlus(Object[] args) throws Throwable {
+    private void saveOrUpdateBatchPlus(Object[] args) {
         List list = (List) args[0];
         Object o = list.get(0);
         if (!(o instanceof BaseEntity || o instanceof BaseTenantEntity)) {//不属于我们的类型
@@ -281,41 +293,51 @@ public class DefaultValAspect {
         Long tenantId = proxyAdapter.getTenantId();
         Long deptId = proxyAdapter.getOnlineUserDeptId();
 
-        FuncBase.jeelowcodeForkJoinPool().submit(() -> list.parallelStream().forEach(obj -> {
-            //基本类
-            if (obj instanceof BaseEntity) {//我们自定义的实体
-                BaseEntity baseEntity = (BaseEntity) obj;
-                if (FuncBase.isEmpty(baseEntity.getId())) {
-                    Long createUser = baseEntity.getCreateUser();
-                    Long createDept = baseEntity.getCreateDept();
-                    if (FuncBase.isNotEmpty(current)) {
-                        baseEntity.setCreateTime(current);
-                    }
-                    if (FuncBase.isNotEmpty(userId) && FuncBase.isEmpty(createUser)) {
-                        baseEntity.setCreateUser(userId);
-                    }
-                    if (FuncBase.isNotEmpty(deptId) && FuncBase.isEmpty(createDept)) {
-                        baseEntity.setCreateDept(deptId);
-                    }
-                } else {
-                    baseEntity.setUpdateTime(current);
-                    if (FuncBase.isEmpty(baseEntity.getUpdateUser()) && FuncBase.isNotEmpty(userId)) {
-                        baseEntity.setUpdateUser(userId);
+        ForkJoinPool pool = null;
+        try {
+            pool = FuncBase.jeelowcodeForkJoinPool();
+            pool.submit(() -> list.parallelStream().forEach(obj -> {
+                //基本类
+                if (obj instanceof BaseEntity) {//我们自定义的实体
+                    BaseEntity baseEntity = (BaseEntity) obj;
+                    if (FuncBase.isEmpty(baseEntity.getId())) {
+                        Long createUser = baseEntity.getCreateUser();
+                        Long createDept = baseEntity.getCreateDept();
+                        if (FuncBase.isNotEmpty(current)) {
+                            baseEntity.setCreateTime(current);
+                        }
+                        if (FuncBase.isNotEmpty(userId) && FuncBase.isEmpty(createUser)) {
+                            baseEntity.setCreateUser(userId);
+                        }
+                        if (FuncBase.isNotEmpty(deptId) && FuncBase.isEmpty(createDept)) {
+                            baseEntity.setCreateDept(deptId);
+                        }
+                    } else {
+                        baseEntity.setUpdateTime(current);
+                        if (FuncBase.isEmpty(baseEntity.getUpdateUser()) && FuncBase.isNotEmpty(userId)) {
+                            baseEntity.setUpdateUser(userId);
+                        }
                     }
                 }
-            }
 
-            if (obj instanceof BaseTenantEntity) {//我们自定义的实体
-                BaseTenantEntity baseEntity = (BaseTenantEntity) obj;
-                if (FuncBase.isNotEmpty(baseEntity.getId())){
-                    return;
+                if (obj instanceof BaseTenantEntity) {//我们自定义的实体
+                    BaseTenantEntity baseEntity = (BaseTenantEntity) obj;
+                    if (FuncBase.isNotEmpty(baseEntity.getId())){
+                        return;
+                    }
+                    Long selectTenantId = baseEntity.getTenantId();
+                    if (FuncBase.isEmpty(selectTenantId) && FuncBase.isNotEmpty(tenantId)) {
+                        baseEntity.setTenantId(tenantId);
+                    }
                 }
-                Long selectTenantId = baseEntity.getTenantId();
-                if (FuncBase.isEmpty(selectTenantId) && FuncBase.isNotEmpty(tenantId)) {
-                    baseEntity.setTenantId(tenantId);
-                }
+            })).get();
+        } catch (InterruptedException | ExecutionException e){
+            throw new RuntimeException(e.getMessage());
+        } finally {
+            if (pool != null) {
+                pool.shutdown();
             }
-        })).get();
+        }
     }
 
     //编辑

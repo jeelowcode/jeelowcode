@@ -28,10 +28,12 @@ import com.jeelowcode.core.framework.mapper.FormFieldWebMapper;
 import com.jeelowcode.core.framework.params.model.WebFormatConfigModel;
 import com.jeelowcode.core.framework.service.IFormService;
 import com.jeelowcode.core.framework.utils.Func;
+import com.jeelowcode.framework.utils.utils.FuncBase;
 import org.apache.commons.collections4.map.LinkedMap;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 /**
@@ -81,8 +83,10 @@ public class ButtonReceiverBase {
         Set<String> webViewFieldSet = new HashSet<>(formService.getWebViewFieldList(dbFormId));
 
         Map<String, DbFormRoleFieldVo> finalRoleDisableMap = roleDisableMap;
+        ForkJoinPool pool = null;
         try {
-            Func.jeelowcodeForkJoinPool().submit(() -> records.parallelStream().forEach(recordMap -> recordMap.keySet().removeIf(key -> {
+            pool = FuncBase.jeelowcodeForkJoinPool();
+            pool.submit(() -> records.parallelStream().forEach(recordMap -> recordMap.keySet().removeIf(key -> {
                 if(Func.equals(key,"jeelowcode_subtable_data") || Func.equals(key,"hasChildren") || Func.equals(key,"leaf")){
                     return false;
                 }
@@ -98,6 +102,10 @@ public class ButtonReceiverBase {
             }))).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            if (pool != null) {
+                pool.shutdown();
+            }
         }
     }
 

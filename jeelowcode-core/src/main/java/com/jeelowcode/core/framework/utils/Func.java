@@ -459,12 +459,18 @@ public class Func extends FuncBase {
 
 
     public static void handlePlusDataList(List<Map<String, Object>> records, Map<String, JeeLowCodeFieldTypeEnum> fieldTypeEnumMap) {
+        ForkJoinPool pool = null;
         try {
-            Func.jeelowcodeForkJoinPool().submit(() -> records.parallelStream().forEach(recordMap -> {
+            pool = FuncBase.jeelowcodeForkJoinPool();
+            pool.submit(() -> records.parallelStream().forEach(recordMap -> {
                 handlePlusDataMap(recordMap, fieldTypeEnumMap);
             })).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            if (pool != null) {
+                pool.shutdown();
+            }
         }
     }
 

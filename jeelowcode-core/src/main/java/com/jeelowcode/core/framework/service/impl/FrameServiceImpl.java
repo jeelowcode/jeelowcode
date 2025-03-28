@@ -62,6 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -363,8 +364,10 @@ public class FrameServiceImpl implements IFrameService {
         if (Func.isNotEmpty(summaryTopList)) {
             Map<Long, SummaryTopModel> topMap = new ConcurrentHashMap();
             //并行流处理
+            ForkJoinPool pool = null;
             try {
-                Func.jeelowcodeForkJoinPool().submit(() -> summaryTopList.parallelStream().forEach(summaryEntity -> {
+                pool = FuncBase.jeelowcodeForkJoinPool();
+                pool.submit(() -> summaryTopList.parallelStream().forEach(summaryEntity -> {
                     Long id = summaryEntity.getId();
                     String summarySql = summaryEntity.getSummarySql();
                     String summaryLabel = summaryEntity.getSummaryLabel();
@@ -396,6 +399,10 @@ public class FrameServiceImpl implements IFrameService {
                 })).get();
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e.getMessage());
+            } finally {
+                if (pool != null) {
+                    pool.shutdown();
+                }
             }
             //按顺序取出来
             summaryTopList.stream().forEach(summaryEntity -> {
@@ -566,8 +573,10 @@ public class FrameServiceImpl implements IFrameService {
         AtomicReference<Integer> importState = new AtomicReference<>(1);//成功
         String redisKey = "excel:import:task_" + fieldId;//判断是否
         AtomicReference<Boolean> breakFlag = new AtomicReference<>(false);
+        ForkJoinPool pool = null;
         try {
-            Func.jeelowcodeForkJoinPool().submit(() -> entityList.parallelStream().forEach(entity -> {
+            pool = FuncBase.jeelowcodeForkJoinPool();
+            pool.submit(() -> entityList.parallelStream().forEach(entity -> {
                 if (breakFlag.get()) {//说明退出
                     return;
                 }
@@ -615,6 +624,10 @@ public class FrameServiceImpl implements IFrameService {
             })).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            if (pool != null) {
+                pool.shutdown();
+            }
         }
 
         //如果是取消的话，需要回滚事务
@@ -1370,8 +1383,10 @@ public class FrameServiceImpl implements IFrameService {
         if (Func.isEmpty(treeDataList)) {
             return;
         }
+        ForkJoinPool pool = null;
         try {
-            Func.jeelowcodeForkJoinPool().submit(() -> treeDataList.parallelStream().forEach(dataMap -> {
+            pool = FuncBase.jeelowcodeForkJoinPool();
+            pool.submit(() -> treeDataList.parallelStream().forEach(dataMap -> {
                 Long id = Func.getMap2Long(dataMap, "id");
 
                 SqlInfoQueryWrapper.Wrapper wrapper = SqlHelper.getQueryWrapper()
@@ -1388,6 +1403,10 @@ public class FrameServiceImpl implements IFrameService {
             })).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            if (pool != null) {
+                pool.shutdown();
+            }
         }
     }
 

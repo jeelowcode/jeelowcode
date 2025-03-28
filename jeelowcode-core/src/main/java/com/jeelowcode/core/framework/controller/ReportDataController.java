@@ -20,6 +20,7 @@ import com.jeelowcode.core.framework.utils.Func;
 import com.jeelowcode.core.framework.utils.FuncWeb;
 import com.jeelowcode.framework.exception.JeeLowCodeException;
 import com.jeelowcode.framework.utils.model.ResultDataModel;
+import com.jeelowcode.framework.utils.utils.FuncBase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -59,8 +60,10 @@ public class ReportDataController extends BaseController {
         Map<String, Object> params = FuncWeb.getParameterBodyMap(req);
         List<String> reportCodeList = Func.toStrList(reportCodeListStr);
         Map<String, ResultDataModel> resultMap = new ConcurrentHashMap<>();
+        ForkJoinPool pool = null;
         try {
-            Func.jeelowcodeForkJoinPool().submit(() -> reportCodeList.parallelStream().forEach(reportCode -> {
+            pool = FuncBase.jeelowcodeForkJoinPool();
+            pool.submit(() -> reportCodeList.parallelStream().forEach(reportCode -> {
                 // 处理代码
                 Map<String, Object> subParam = (Map) params.get(reportCode);
                 if (Func.isEmpty(subParam)) {
@@ -71,6 +74,10 @@ public class ReportDataController extends BaseController {
             })).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            if (pool != null) {
+                pool.shutdown();
+            }
         }
         return BaseWebResult.success(resultMap);
     }

@@ -32,11 +32,13 @@ import com.jeelowcode.framework.utils.model.ExecuteEnhanceModel;
 import com.jeelowcode.framework.utils.model.ResultDataModel;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jeelowcode.framework.utils.utils.FuncBase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 
 @Tag(name = "低代码框架-公共框架接口")
 public class BaseController {
@@ -326,8 +328,10 @@ public class BaseController {
 
 
     protected void formatFormEntityPageVo(List<FormEntityPageVo> records, IFormService dbFormService){
+        ForkJoinPool pool = null;
         try {
-            Func.jeelowcodeForkJoinPool().submit(() -> records.parallelStream().forEach(vo ->{
+            pool = FuncBase.jeelowcodeForkJoinPool();
+            pool.submit(() -> records.parallelStream().forEach(vo ->{
                 Map<String, Object> couMap = dbFormService.getFormCou(vo.getId());
                 Integer js_cou = Func.getMap2IntDefault(couMap, "js_cou",0);
                 Integer scss_cou = Func.getMap2IntDefault(couMap, "scss_cou",0);
@@ -345,6 +349,10 @@ public class BaseController {
             })).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            if (pool != null) {
+                pool.shutdown();
+            }
         }
     }
 
