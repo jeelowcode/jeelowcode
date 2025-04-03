@@ -226,7 +226,7 @@ public class ExcelServiceImpl implements IExcelService {
         param.setFieldId(fieldId);
         param.setEntityList(entityList);
         param.setDictModel(dictModel);
-        frameService.saveImportData(dbFormId,param);
+        frameService.handleImportData(dbFormId,param);
     }
 
 

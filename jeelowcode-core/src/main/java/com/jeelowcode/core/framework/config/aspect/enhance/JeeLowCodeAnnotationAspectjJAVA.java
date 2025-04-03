@@ -301,10 +301,6 @@ public class JeeLowCodeAnnotationAspectjJAVA {
         param.setDataId((Long)paramMap.getOrDefault("id", null));
         param.setList((ArrayList) paramMap.getOrDefault("dataList", null));
         param.setParams((Map<String, Object>) paramMap.getOrDefault("params", null));
-        Object importDataParam = paramMap.get("param");
-        if(Func.isNotEmpty(importDataParam) && importDataParam instanceof SaveImportDataParam){
-            param.setImportDataParam((SaveImportDataParam)importDataParam);
-        }
 
 
         //把参数放入到上下文

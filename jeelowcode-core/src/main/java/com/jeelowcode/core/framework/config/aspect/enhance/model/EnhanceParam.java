@@ -37,7 +37,6 @@ public class EnhanceParam implements Serializable {
 
     private Page page;
 
-    private SaveImportDataParam importDataParam;
 
     public Long getDbFormId() {
         return dbFormId;
@@ -80,14 +79,6 @@ public class EnhanceParam implements Serializable {
 
     public void setPage(Page page) {
         this.page = page;
-    }
-
-    public SaveImportDataParam getImportDataParam() {
-        return importDataParam;
-    }
-
-    public void setImportDataParam(SaveImportDataParam importDataParam) {
-        this.importDataParam = importDataParam;
     }
 
     public EnhanceParam(Long dbFormId, Map<String, Object> params, List<Map<String, Object>> list) {

@@ -86,7 +86,8 @@ public interface IFrameService {
     //获取导出数据
     ResultDataModel getExportDataList(Long dbFormId, Map<String, Object> params);
     //保存导入数据
-    void saveImportData(Long dbformId, SaveImportDataParam param);
+    void handleImportData(Long dbformId, SaveImportDataParam param);
+    ExecuteEnhanceModel saveImportData(Long dbformId, Map<String,Object> params);
     /*------------------报表相关----------------------*/
 
     //获取数据表数据 -分页

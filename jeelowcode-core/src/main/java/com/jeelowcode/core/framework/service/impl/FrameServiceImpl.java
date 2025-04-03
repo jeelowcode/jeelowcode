@@ -18,6 +18,7 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.dynamic.datasource.annotation.DSTransactional;
 import com.jeelowcode.core.framework.config.btncommand.receiver.ButtonReceiverBase;
 import com.jeelowcode.framework.plus.component.DbManager;
 import com.jeelowcode.core.framework.entity.*;
@@ -548,9 +549,10 @@ public class FrameServiceImpl implements IFrameService {
 
 
     //增强切面
-    @Transactional(rollbackFor = Exception.class)
+    //增强切面
+    @DSTransactional(rollbackFor = Exception.class)
     @Override
-    public void saveImportData(Long dbFormId, SaveImportDataParam param) {
+    public void handleImportData(Long dbFormId, SaveImportDataParam param) {
 
         Long fieldId = param.getFieldId();
         List<ExcelFileDataEntity> entityList = param.getEntityList();
@@ -567,7 +569,7 @@ public class FrameServiceImpl implements IFrameService {
         }
 
         // 获取表名
-        String tableName = dbFormService.getTableName(dbFormId);
+        IFrameService proxyFrameService = SpringUtils.getBean(IFrameService.class);
 
         //处理id
         AtomicReference<Integer> importState = new AtomicReference<>(1);//成功
@@ -585,7 +587,13 @@ public class FrameServiceImpl implements IFrameService {
                 String handleResult = "";
                 try {
                     //单条入库
-                    this.saveImportDataMap(entity.getDataJson(), fieldCodeSet, dictModel, tableName);
+                    Map<String, Object> dataMap = Func.json2Bean(entity.getDataJson(), Map.class);
+                    Map<String, Object> saveDataMap = dataMap.entrySet().stream().filter(item -> fieldCodeSet.contains(item.getKey()))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));//移除不属于数据库的列
+                    this.handleDict(dictModel, saveDataMap);//处理字典，字典值回显
+                    //新增入库
+                    proxyFrameService.saveImportData(dbFormId,saveDataMap);
+
                     handleResult = "SUCCESS";
                 } catch (JeeLowCodeException e) {
                     errorReason = e.getMessage();
@@ -658,6 +666,14 @@ public class FrameServiceImpl implements IFrameService {
         fileEntity.setErrorNum(Func.toInt(failNum));
         excelFileService.updateById(fileEntity);
 
+    }
+
+    //保存导入数据
+    @Override
+    public ExecuteEnhanceModel saveImportData(Long dbFormId, Map<String,Object> params){
+        FrameServiceImpl proxyService = SpringUtils.getBean(FrameServiceImpl.class);
+        ExecuteEnhanceModel mainModel = proxyService.savePublicData(dbFormId, params);
+        return mainModel;
     }
 
     //获取数据报表数据-分页
