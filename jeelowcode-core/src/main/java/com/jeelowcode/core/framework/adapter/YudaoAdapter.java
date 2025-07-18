@@ -67,7 +67,7 @@ public class YudaoAdapter implements IJeeLowCodeAdapter {
     @Autowired
     private IFrameSqlService sqlService;
 
-    @Autowired
+    @Autowired(required = false) // 由于 jeelowcode.tenant.enable 配置项，可以关闭多租户的功能，所以这里只能不强制注入
     private TenantProperties tenantProperties;
 
     @Autowired
@@ -431,11 +431,17 @@ public class YudaoAdapter implements IJeeLowCodeAdapter {
     //获取所有不用租户的表
     @Override
     public Set<String> getTenantIgnoreTable() {
+        if (FuncBase.isEmpty(tenantProperties)) {
+            return Collections.emptySet();
+        }
         return tenantProperties.getIgnoreTables();
     }
 
     @Override
     public Set<String> getTenantIgnoreUrl() {
+        if (FuncBase.isEmpty(tenantProperties)) {
+            return Collections.emptySet();
+        }
         return tenantProperties.getIgnoreUrls().stream()
                 .filter(url -> !url.contains("jeelowcode"))
                 .collect(Collectors.toCollection(HashSet::new));
@@ -444,6 +450,9 @@ public class YudaoAdapter implements IJeeLowCodeAdapter {
     //判断多租户是否启用
     @Override
     public boolean getTenantEnable() {
+        if (FuncBase.isEmpty(tenantProperties)) {
+            return false;
+        }
         return tenantProperties.getEnable();
     }
 

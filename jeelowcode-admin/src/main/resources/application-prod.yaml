@@ -45,9 +45,6 @@ spring:
     database: 9 # 数据库索引
     #  password: 123456 # 密码，建议生产环境开启
 
-logging:
-  file:
-    name: /data/mjkj/webapp/mjkj_jeelowcode/webapp/logs/${spring.application.name}.log # 日志文件名，全路径
 --- #################### 芋道相关配置 ####################
 
 # 芋道配置项，设置当前项目所有自定义的配置

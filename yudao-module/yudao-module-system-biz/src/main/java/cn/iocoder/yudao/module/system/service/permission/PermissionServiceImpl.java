@@ -360,18 +360,6 @@ public class PermissionServiceImpl implements PermissionService {
         return true;
     }
 
-    //清除缓存忽略租户
-    @TenantIgnore
-    public Boolean clearCacheIgnoreTenant(Long userId){
-        try{
-            PermissionServiceImpl bean = SpringUtil.getBean(PermissionServiceImpl.class);
-            bean.clearCache(userId);
-            Thread.sleep(500L);
-        }catch (Exception e){
-
-        }
-        return true;
-    }
 
     /**
      * 获得自身的代理对象，解决 AOP 生效问题

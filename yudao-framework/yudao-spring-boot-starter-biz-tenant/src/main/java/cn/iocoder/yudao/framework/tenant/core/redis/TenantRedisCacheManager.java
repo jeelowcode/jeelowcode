@@ -26,10 +26,10 @@ public class TenantRedisCacheManager extends TimeoutRedisCacheManager {
     @Override
     public Cache getCache(String name) {
         // 如果开启多租户，则 name 拼接租户后缀
-        if (!TenantContextHolder.isIgnore()
+        /*if (!TenantContextHolder.isIgnore()
             && TenantContextHolder.getTenantId() != null) {
             name = name + ":" + TenantContextHolder.getTenantId();
-        }
+        }*/
 
         // 继续基于父方法
         return super.getCache(name);

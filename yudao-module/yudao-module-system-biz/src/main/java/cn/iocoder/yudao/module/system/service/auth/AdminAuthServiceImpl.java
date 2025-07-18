@@ -110,12 +110,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         }
         //清空缓存
         permissionService.clearCache(user.getId());
-        permissionService.clearCacheIgnoreTenant(user.getId());
-        try{
-            Thread.sleep(2000L);
-        }catch (Exception e){
 
-        }
         // 创建 Token 令牌，记录登录日志
         return createTokenAfterLoginSuccess(user.getId(), reqVO.getUsername(), LoginLogTypeEnum.LOGIN_USERNAME);
     }

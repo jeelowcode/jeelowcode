@@ -146,6 +146,4 @@ public interface PermissionService {
     //清除缓存
     Boolean clearCache(Long userId);
 
-    //清除缓存忽略租户
-    Boolean clearCacheIgnoreTenant(Long userId);
 }

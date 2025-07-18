@@ -1,38 +1,37 @@
-
-
-<a href="http://doc.jeelowcode.com/club" target="_blank">
-
-<p align="center">
-	<img alt="logo"  src="https://oss.mj.ink/chatgpt/jeelowcode/gitee/xct.jpg">
-</p>
+<a href="https://doc.jeelowcode.com/app/1" target="_blank">
+    <p align="center">
+        <img alt="logo"  src="https://oss.mj.ink/chatgpt/jeelowcode/gitee/xct.jpg">
+    </p>
 </a>
+
+[点击前往查看：https://doc.jeelowcode.com/app/1](https://doc.jeelowcode.com/app/1)
 
 <p align="center">
 	<img alt="logo" width=200" src="https://oss.mj.ink/chatgpt/jeelowcode/gitee/logo.png">
 </p>
-<h4 align="center">在线轻松驾驭99.99%编程挑战</h4>
+<h4 align="center">在线轻松驾驭99.99%编程挑战。</h4>
 <p align="center">
  <img src="https://img.shields.io/badge/JeeLowCode-1.0.0-red.svg" alt="Downloads">
  <img src="https://img.shields.io/badge/Spring%20Boot-2.7.18-yellow.svg" alt="Downloads">
  <img src="https://img.shields.io/badge/Vue-3.2-blue.svg" alt="Downloads">
  <img src="https://img.shields.io/badge/license-Apache 2.0-green.svg" alt="Downloads">
+ <img src="https://gitee.com/jeelowecode/JeeLowCode/badge/star.svg" alt="Downloads">
+ <img src="https://img.shields.io/github/stars/jeelowcode/jeelowcode.svg" alt="Downloads">
+ <img src="https://gitcode.com/jeelowcode/jeelowcode/star/badge.svg" alt="Downloads">
  <img src="https://img.shields.io/badge/可商用-免费-purple.svg" alt="Downloads">
 </p>
 
 ## 1.项目简介
 
-**JeeLowCode** 是一款基于芋道源码（ruoyi-vue-pro）精心二次封装的企业级低代码开发框架。在探索市场上众多低代码平台时，我们发现它们不仅价格昂贵，而且功能上往往不尽人意，难以仅通过简单的界面配置就满足我们的开发需求。在这样的背景下，寻找一款既免费又稳定，同时易于使用的全开源低代码开发平台变得尤为困难。JeeLowCode 正是为了填补这一市场空缺而诞生的。
+**JeeLowCode** 是一款专为企业打造的低代码开发框架，以低代码为核心，实现快速开发。它提供可视化界面，拖拽组件即可搭建应用，无需复杂代码编写，极大提升开发效率。企业可免费使用，灵活适配业务需求，助力高效数字化转型，是企业降本增效的利器。
 <br><br>
-<img src="https://img.shields.io/badge/注意:-JeeLowCode 不允许任何形式的二次开源-red.svg" alt="Downloads">
+<img src="https://img.shields.io/badge/注意:-JeeLowCode 可以用于个人或公司的项目，不允许任何形式的二次开源并且禁止售卖源代码-red.svg" alt="Downloads">
 ## 2.在线体验
 
 [体验地址：http://demo.jeelowcode.com](http://demo.jeelowcode.com)
 
-[社区地址：http://doc.jeelowcode.com](http://doc.jeelowcode.com/)
+[社区/文档地址：http://doc.jeelowcode.com](http://doc.jeelowcode.com/)
 
-[启动文档：http://doc.jeelowcode.com/doc/1-7-2](http://doc.jeelowcode.com/doc/1-7-2)
-
-[视频教程：http://doc.jeelowcode.com/doc/1-8-0](http://doc.jeelowcode.com/doc/1-8-0)
 
 ## 3.代码架构
 ``` 
@@ -53,7 +52,7 @@ com.jeelowcode
     ├── yudao-module                         // 芋道核心模块
 ```
 
-## 4.项目关系/微信交流
+## 4.项目关系
 **后端项目**
 
 | 项目 | Star | 简介      |
@@ -66,24 +65,13 @@ com.jeelowcode
 |--|--|---------------------------------------|
 | [jeelowcode-ui-admin-vue3](https://gitcode.com/jeelowcode/jeelowcode-ui-admin-vue3)| [![Gitee star](https://gitee.com/jeelowecode/jeelowcode-ui-admin-vue3/badge/star.svg)](https://gitee.com/jeelowecode/jeelowcode-ui-admin-vue3) [![GitHub stars](https://img.shields.io/github/stars/jeelowcode/jeelowcode-ui-admin-vue3.svg?style=social&label=Stars)](https://github.com/jeelowcode/jeelowcode-ui-admin-vue3) [![star](https://gitcode.com/jeelowcode/jeelowcode-ui-admin-vue3/star/badge.svg)](https://gitcode.com/jeelowcode/jeelowcode-ui-admin-vue3)      | 基于 Vue3 + Element Plus + Avue 实现的后台管理 |
 
-<table>
-  <tr>
-    <td >微信交流群（添加时备注：进群）</td>
-    <td >官方公众号</td>
-  </tr>
-  <tr>
-    <td ><img height="320" width="250" src="https://oss.mj.ink/chatgpt/jeelowcode/gitee/jeelowcode-kf.png"/></td>  
-    <td ><img height="250" width="250" src="https://oss.mj.ink/chatgpt/jeelowcode/gitee/wxgzh.jpg"/></td>  
-  </tr>
-</table>
-
 ## 5.系统架构图
 
 <img src="https://oss.mj.ink/chatgpt/jeelowcode/gitee/jsjg2.png"/>
 
 
 ## 6.Hello World入门
-只需要**4步**带你了解低代码JeeLowCode
+只需要**4步** 带你了解低代码JeeLowCode
 <table>
     <tr>
         <td ><img src="https://oss.mj.ink/chatgpt/jeelowcode/gitee/hello1.png"/></td>

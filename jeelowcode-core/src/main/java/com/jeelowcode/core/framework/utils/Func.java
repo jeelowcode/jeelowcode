@@ -404,6 +404,7 @@ public class Func extends FuncBase {
         // 使用 Stream API 优化代码
         Map<String, Object> dataMap = fieldList.stream()
                 .filter(entity -> params.containsKey(entity.getFieldCode())) // 只处理 params 中存在的字段
+                .filter(entity -> params.get(entity.getFieldCode()) != null) // 确保值不为 null
                 .collect(Collectors.toMap(
                         entity -> entity.getFieldCode(),
                         entity -> {
