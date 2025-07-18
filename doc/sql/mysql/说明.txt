@@ -1,2 +1,0 @@
-db_jeelowcode.sql   ->主数据库
-db_jeelowcodelog.sql  -> 日志数据库
