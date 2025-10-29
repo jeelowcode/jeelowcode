@@ -1,6 +1,3 @@
-## 年度开源项目评选
-感谢您对 JeeLowCode 开源项目的支持，诚邀您投出宝贵一票！<br>
-投票链接：https://gitee.com/activity/2025opensource?ident=IZQSAP
 <p align="center">
 	<img alt="logo" width=200" src="https://oss.mj.ink/chatgpt/jeelowcode/gitee/logo.png">
 </p>
