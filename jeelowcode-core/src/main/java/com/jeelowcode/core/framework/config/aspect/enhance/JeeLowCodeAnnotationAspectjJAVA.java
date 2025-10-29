@@ -1,16 +1,4 @@
-/*
-Apache License
-Version 2.0, January 2004
-http://www.apache.org/licenses/
-本软件受适用的国家软件著作权法（包括国际条约）和开源协议 双重保护许可。
 
-开源协议中文释意如下：
-1.JeeLowCode开源版本无任何限制，在遵循本开源协议（Apache2.0）条款下，【允许商用】使用，不会造成侵权行为。
-2.允许基于本平台软件开展业务系统开发。
-3.在任何情况下，您不得使用本软件开发可能被认为与【本软件竞争】的软件。
-
-最终解释权归：http://www.jeelowcode.com
-*/
 package com.jeelowcode.core.framework.config.aspect.enhance;
 
 
@@ -19,7 +7,6 @@ import com.jeelowcode.core.framework.config.aspect.enhance.model.*;
 import com.jeelowcode.core.framework.config.aspect.enhance.plugin.*;
 import com.jeelowcode.core.framework.config.listener.JeeLowCodeListener;
 import com.jeelowcode.core.framework.entity.EnhanceJavaEntity;
-import com.jeelowcode.core.framework.params.SaveImportDataParam;
 import com.jeelowcode.core.framework.utils.Func;
 import com.jeelowcode.framework.exception.JeeLowCodeException;
 import com.jeelowcode.framework.utils.model.ExecuteEnhanceModel;
@@ -40,7 +27,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static com.jeelowcode.framework.utils.constant.EnhanceConstant.*;
+import static com.jeelowcode.framework.utils.constant.EnhanceConstant.ENHANCE_EXPORT;
+import static com.jeelowcode.framework.utils.constant.EnhanceConstant.ENHANCE_LIST;
 
 /**
  * @author JX
@@ -138,9 +126,10 @@ public class JeeLowCodeAnnotationAspectjJAVA {
             }
 
         }
-
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Class<?> returnType = signature.getMethod().getReturnType();
         //返回结果
-        Object result = getResult(context);
+        Object result = getResult(returnType,context);
         if (resultFlag) {
             ResultDataModel returnValData = (ResultDataModel) returnVal;
             ResultDataModel resultDataModel = (ResultDataModel) result;
@@ -178,8 +167,11 @@ public class JeeLowCodeAnnotationAspectjJAVA {
                 break;
             }
         }
+        // 获取目标方法返回类型
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Class<?> returnType = signature.getMethod().getReturnType();
 
-        return getResult(context);
+        return getResult(returnType,context);
     }
 
     @AfterThrowing(value = EXPRESSION, throwing = "ex")
@@ -301,7 +293,6 @@ public class JeeLowCodeAnnotationAspectjJAVA {
         param.setDataId((Long)paramMap.getOrDefault("id", null));
         param.setList((ArrayList) paramMap.getOrDefault("dataList", null));
         param.setParams((Map<String, Object>) paramMap.getOrDefault("params", null));
-
 
         //把参数放入到上下文
         EnhanceContext context = new EnhanceContext();
@@ -616,24 +607,34 @@ public class JeeLowCodeAnnotationAspectjJAVA {
 
 
 
-    public Object getResult(EnhanceContext context) {
-        if (Func.isEmpty(context.getResult().getRecords()) && FuncBase.isEmpty(context.getResult().getId())) {
-            return ResultDataModel.fomat(0L, new ArrayList<>());
-        }
-        if (FuncBase.isEmpty(context.getResult().getRecords())) {
-            ExecuteEnhanceModel enhanceModel = new ExecuteEnhanceModel();
-            enhanceModel.setId(context.getResult().getId());
-            enhanceModel.setExitFlag(context.getResult().isExitFlag());
-
-            return enhanceModel;
-        } else {
-
+    public Object getResult(Class<?> returnType,EnhanceContext context) {
+        if (returnType.equals(ResultDataModel.class)) {//查询相关
+            EnhanceResult result = context.getResult();
+            if(Func.isEmpty(result.getRecords())){
+                return ResultDataModel.fomat(0L, new ArrayList<>());
+            }
+            List<Map<String, Object>> records = result.getRecords();
+            String id = result.getId();
+            if(FuncBase.isEmpty(id) && Func.isEmpty(records)){
+                return ResultDataModel.fomat(0L, new ArrayList<>());
+            }
             ResultDataModel resultDataModel = new ResultDataModel();
             resultDataModel.setRecords(context.getResult().getRecords());
             resultDataModel.setTotal(context.getResult().getTotal());
             resultDataModel.setExitFlag(context.getResult().isExitFlag());
             return resultDataModel;
+
         }
+        //不是查询类型
+        if (returnType.equals(ExecuteEnhanceModel.class)) {
+            ExecuteEnhanceModel enhanceModel = new ExecuteEnhanceModel();
+            enhanceModel.setId(context.getResult().getId());
+            enhanceModel.setExitFlag(context.getResult().isExitFlag());
+
+            return enhanceModel;
+        }
+
+        return null;
     }
 
     //判断左边是否为空

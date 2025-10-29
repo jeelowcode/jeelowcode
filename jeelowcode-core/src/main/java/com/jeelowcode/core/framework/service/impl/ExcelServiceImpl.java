@@ -13,31 +13,25 @@ http://www.apache.org/licenses/
 */
 package com.jeelowcode.core.framework.service.impl;
 
-import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.jeelowcode.core.framework.entity.*;
 import com.jeelowcode.core.framework.mapper.JeeLowCodeMapper;
 import com.jeelowcode.core.framework.mapper.ReportFieldMapper;
 import com.jeelowcode.core.framework.params.SaveImportDataParam;
-import com.jeelowcode.core.framework.service.*;
-import com.jeelowcode.core.framework.utils.Func;
-import com.jeelowcode.framework.excel.model.ExcelTitleModel;
-import com.jeelowcode.framework.exception.JeeLowCodeException;
-import com.jeelowcode.framework.utils.component.redis.JeeLowCodeRedisUtils;
-import com.jeelowcode.framework.utils.enums.YNEnum;
-import com.jeelowcode.framework.utils.model.ExecuteEnhanceModel;
-import com.jeelowcode.framework.utils.tool.spring.SpringUtils;
-import com.jeelowcode.framework.utils.utils.FuncBase;
-import com.jeelowcode.framework.utils.utils.JeeLowCodeUtils;
 import com.jeelowcode.core.framework.params.model.ExcelImportDataDictModel;
 import com.jeelowcode.core.framework.params.model.ExcelModel;
 import com.jeelowcode.core.framework.params.model.ExcelTemplateModel;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.jeelowcode.core.framework.service.*;
+import com.jeelowcode.core.framework.utils.Func;
+import com.jeelowcode.framework.excel.model.ExcelTitleModel;
+import com.jeelowcode.framework.utils.enums.YNEnum;
+import com.jeelowcode.framework.utils.utils.FuncBase;
+import com.jeelowcode.framework.utils.utils.JeeLowCodeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -45,8 +39,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -67,12 +59,6 @@ public class ExcelServiceImpl implements IExcelService {
 
     @Autowired
     private IExcelFileDataService excelDataService;
-
-    @Autowired
-    private JeeLowCodeRedisUtils jeeLowCodeRedisUtils;
-
-    @Autowired
-    private IExcelFileService excelFileService;
 
     @Autowired
     private IReportService reportService;
@@ -169,7 +155,6 @@ public class ExcelServiceImpl implements IExcelService {
 
     /**
      * 获取导出基本信息
-     *
      */
     @Override
     public ExcelModel getExcelReportModel(String reportCode) {
@@ -177,8 +162,8 @@ public class ExcelServiceImpl implements IExcelService {
 
         String sheetName = reportEntity.getReportName();//表描述
 
-        LambdaQueryWrapper<ReportFieldEntity> wrapper=new LambdaQueryWrapper<>();
-        wrapper.eq(ReportFieldEntity::getReportId,reportEntity.getId());
+        LambdaQueryWrapper<ReportFieldEntity> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(ReportFieldEntity::getReportId, reportEntity.getId());
         wrapper.eq(ReportFieldEntity::getIsExport, YNEnum.Y.getCode());
         List<ReportFieldEntity> fieldEntityList = reportFieldMapper.selectList(wrapper);
 
@@ -222,11 +207,11 @@ public class ExcelServiceImpl implements IExcelService {
         //获取字典
         ExcelImportDataDictModel dictModel = this.formatExcelImportDataList(dbFormId);
         //处理导入
-        SaveImportDataParam param=new SaveImportDataParam();
+        SaveImportDataParam param = new SaveImportDataParam();
         param.setFieldId(fieldId);
         param.setEntityList(entityList);
         param.setDictModel(dictModel);
-        frameService.handleImportData(dbFormId,param);
+        frameService.handleImportData(dbFormId, param);
     }
 
 

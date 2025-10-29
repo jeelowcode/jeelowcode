@@ -98,9 +98,6 @@ public class FrameServiceImpl implements IFrameService {
     @Autowired
     private IDbFormRoleService dbFormRoleService;
 
-    @Autowired
-    private FormRoleDataRuleMapper roleDataRuleMapper;
-
 
     @Autowired
     private JeeLowCodeRedisUtils jeeLowCodeRedisUtils;

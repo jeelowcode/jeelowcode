@@ -184,7 +184,7 @@ public class JeeLowCodeAnnoaionAspectjSQL {
         }
         EnhanceContext context = new EnhanceContext();
         Map<String, Object> params = JeeLowCodeUtils.getMap2Map(paramMap, "params");
-        context.setParam(dbFormId, params, dataList, dataId, page);
+        context.setParamMore(dbFormId, params, dataList, dataId, page);
         context.setResult(new EnhanceResult());
         return new BuildSqlEnhanceContext(context, allPlugins, setOperation);
     }
@@ -294,7 +294,7 @@ public class JeeLowCodeAnnoaionAspectjSQL {
 
         String executeSql = sqlEntity.getExecuteSql();
         List<Map<String, Object>> dataMapList = this.executeSelectListSql(executeSql, params, autoWhereSql);
-        context.setResult(ResultDataModel.fomatList(dataMapList));
+        context.setResultModel(ResultDataModel.fomatList(dataMapList));
 
     }
 

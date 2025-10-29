@@ -76,38 +76,6 @@ import java.util.stream.Collectors;
  */
 public class Func extends FuncBase {
 
-
-    //校验数据类型
-    public static Object fomatDbValue(String fieldType, Object value) {
-        if (FuncBase.isEmpty(value)) {
-            return null;
-        }
-        if (FuncBase.equals(fieldType, JeeLowCodeFieldTypeEnum.STRING.getFieldType())
-                || FuncBase.equals(fieldType, JeeLowCodeFieldTypeEnum.TEXT.getFieldType())
-                || FuncBase.equals(fieldType, JeeLowCodeFieldTypeEnum.LONGTEXT.getFieldType())) {//字符串
-            return FuncBase.toStr(value);
-        } else if (FuncBase.equals(fieldType, JeeLowCodeFieldTypeEnum.INTEGER.getFieldType())) {
-            return FuncBase.toInt(value);
-        } else if (FuncBase.equals(fieldType, JeeLowCodeFieldTypeEnum.BIGINT.getFieldType())) {
-            return FuncBase.toLong(value);
-        } else if (FuncBase.equals(fieldType, JeeLowCodeFieldTypeEnum.BIGDECIMAL.getFieldType())) {
-            return new BigDecimal(FuncBase.toStr(value));
-        } else if (FuncBase.equals(fieldType, JeeLowCodeFieldTypeEnum.DATE.getFieldType())) {
-            //yyyy-MM-dd
-            String str = FuncBase.toStr(value);
-            return DateUtil.parseDate(str.substring(0, 10));
-        } else if (FuncBase.equals(fieldType, JeeLowCodeFieldTypeEnum.DATETIME.getFieldType())) {
-            //yyyy-MM-dd HH:mm:ss
-            String str = FuncBase.toStr(value);
-            return DateUtil.parseDateTime(str.substring(0, 19));
-        } else if (FuncBase.equals(fieldType, JeeLowCodeFieldTypeEnum.TIME.getFieldType())) {
-            //HH:mm:ss
-            String str = FuncBase.toStr(value);
-            return DateUtil.parseTime(str.substring(0, 8));
-        }
-        return FuncBase.toStr(value);
-    }
-
     /**
      * 校验表名称是否可用
      *
@@ -257,33 +225,7 @@ public class Func extends FuncBase {
         return sql;
     }
 
-    /**
-     * 执行某一个类下的方法，
-     *
-     * @param classPath  类路径
-     * @param methodName 方法名称
-     * @param dataMap    参数
-     * @return
-     */
-    public static Object runByClass(String classPath, String methodName, Map<String, Object> dataMap) {
-        try {
-            // 1. 获取Class对象
-            Class<?> clazz = Class.forName(classPath);
 
-            // 2. 创建DemoClass的一个实例
-            Object demoClassInstance = clazz.getDeclaredConstructor().newInstance();
-
-            // 3. 获取getBjName方法的对象
-            Method method = clazz.getMethod(methodName, Map.class);
-
-            // 4. 调用getBjName方法
-            return method.invoke(demoClassInstance, dataMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new JeeLowCodeException(e.getMessage());
-        }
-
-    }
 
     //计算
     public static String executeJavaExpress(String express, Map<String, Object> dataMap) {
