@@ -1,175 +1,133 @@
 
-/*
-Apache License
-Version 2.0, January 2004
-http://www.apache.org/licenses/
-本软件受适用的国家软件著作权法（包括国际条约）和开源协议 双重保护许可。
-
-开源协议中文释意如下：
-1.JeeLowCode开源版本无任何限制，在遵循本开源协议（Apache2.0）条款下，允许商用使用，不会造成侵权行为。
-2.允许基于本平台软件开展业务系统开发。
-3.在任何情况下，您不得使用本软件开发可能被认为与本软件竞争的软件。
-
-最终解释权归：http://www.jeelowcode.com
-*/
 package com.jeelowcode.framework.plus.component;
 
 
-
-import com.jeelowcode.framework.global.JeeLowCodeBaseConstant;
 import com.jeelowcode.framework.plus.SqlHelper;
 import com.jeelowcode.framework.utils.utils.FuncBase;
-import org.apache.ibatis.builder.StaticSqlSource;
-import org.apache.ibatis.cache.CacheKey;
-import org.apache.ibatis.executor.Executor;
-import org.apache.ibatis.mapping.*;
-import org.apache.ibatis.plugin.Interceptor;
-import org.apache.ibatis.plugin.Intercepts;
-import org.apache.ibatis.plugin.Invocation;
-import org.apache.ibatis.plugin.Signature;
-import org.apache.ibatis.session.ResultHandler;
-import org.apache.ibatis.session.RowBounds;
+import org.apache.ibatis.executor.statement.RoutingStatementHandler;
+import org.apache.ibatis.executor.statement.StatementHandler;
+import org.apache.ibatis.mapping.BoundSql;
+import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.plugin.*;
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.SystemMetaObject;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 
 import static com.jeelowcode.framework.global.JeeLowCodeBaseConstant.BASE_PACKAGES_CODE;
 
 
 @Component
-@Intercepts({@Signature(
-        type = Executor.class,
-        method = "update",
-        args = {MappedStatement.class, Object.class}
-), @Signature(
-        type = Executor.class,
-        method = "query",
-        args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}
-), @Signature(
-        type = Executor.class,
-        method = "query",
-        args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class}
-)})
+@Intercepts({
+        @Signature(type = StatementHandler.class,
+                method = "prepare",
+                args = {Connection.class, Integer.class})
+})
 public class JeelowCodePlusInterceptor implements Interceptor {
 
-    private List<String> getSkipMapperList(){//todo  后面需要优化
-        String SKIP_MAPPER_CODE = BASE_PACKAGES_CODE+".framework.mapper";//不做租户拦截的mapper
-
-
-        List<String> skipMapperList=new ArrayList<>();
-        skipMapperList.add(SKIP_MAPPER_CODE);
+    private List<String> getSkipMapperList() {
+        List<String> skipMapperList = new ArrayList<>();
+        // 不做租户拦截的mapper包路径
+        skipMapperList.add(BASE_PACKAGES_CODE + ".framework.mapper");
+        // 可以添加更多需要跳过的mapper路径
         return skipMapperList;
     }
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-        Object target = invocation.getTarget();
-        Object[] args = invocation.getArgs();
-        if (!(target instanceof Executor)) {
-            return invocation.proceed();
-        }
+        try {
+            StatementHandler statementHandler = (StatementHandler) invocation.getTarget();
 
-
-        Executor executor = (Executor) target;
-        Object parameter = args[1];
-        boolean isUpdate = args.length == 2;
-        MappedStatement ms = (MappedStatement) args[0];
-        String id = ms.getId();
-        List<String> skipMapperList = getSkipMapperList();
-        for(String skipMapper:skipMapperList){
-            if(id.startsWith(skipMapper)){
+            // 获取MappedStatement
+            MappedStatement ms = getMappedStatement(statementHandler);
+            if(FuncBase.isEmpty(ms)){
                 return invocation.proceed();
             }
-        }
-
-        if (!id.startsWith(BASE_PACKAGES_CODE)) {//直接跳过,如果不是低代码平台，则直接跳过
-            return invocation.proceed();
-        }
-
-        if (!isUpdate && ms.getSqlCommandType() == SqlCommandType.SELECT) {//查询相关
-            RowBounds rowBounds = (RowBounds) args[2];
-            ResultHandler resultHandler = (ResultHandler) args[3];
-            BoundSql boundSql;
-            if (args.length == 4) {
-                boundSql = ms.getBoundSql(parameter);
-            } else {
-                boundSql = (BoundSql) args[5];
-            }
-
-            String publicSql = SqlHelper.getPublicSql(boundSql.getSql());
-            Object additionalParametersObj = boundSql.getAdditionalParameters();
-            boundSql = new BoundSql(ms.getConfiguration(), publicSql, boundSql.getParameterMappings(), boundSql.getParameterObject());
-            if (FuncBase.isNotEmpty(additionalParametersObj)) {
-                Map<String,Object> additionalParameters = (Map<String,Object>) additionalParametersObj;
-
-                Iterator<Map.Entry<String, Object>> iterator = additionalParameters.entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<String, Object> next = iterator.next();
-                    String key = next.getKey();
-                    Object value = next.getValue();
-                    boundSql.setAdditionalParameter(key, value);
+            String id = ms.getId();
+            List<String> skipMapperList = getSkipMapperList();
+            for(String skipMapper:skipMapperList){
+                if(id.startsWith(skipMapper)){
+                    return invocation.proceed();
                 }
             }
 
-            CacheKey cacheKey = executor.createCacheKey(ms, parameter, rowBounds, boundSql);
-            List<Object> query = null;
-            try {
-                query = executor.query(ms, parameter, rowBounds, resultHandler, cacheKey, boundSql);
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (!id.startsWith(BASE_PACKAGES_CODE)) {//直接跳过,如果不是低代码平台，则直接跳过
+                return invocation.proceed();
             }
-            return query;
+            // 获取SQL并处理
+            BoundSql boundSql = statementHandler.getBoundSql();
+            String originalSql = boundSql.getSql();
 
-        }
-        if (isUpdate) {
-            SqlSource sqlSource = ms.getSqlSource();
-            try {
-                BoundSql boundSql = sqlSource.getBoundSql(parameter);
-                String publicSql = SqlHelper.getPublicSql(boundSql.getSql());
-                List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
-                SqlSource newSqlSource = new StaticSqlSource(ms.getConfiguration(), publicSql, parameterMappings);
-                MappedStatement.Builder builder = new MappedStatement.Builder(ms.getConfiguration(), ms.getId(), newSqlSource, ms.getSqlCommandType());
-                this.copyBuilder(builder, ms);
-                MappedStatement build = builder.build();
+            // 进行SQL替换处理
+            String publicSql = SqlHelper.getPublicSql(originalSql);
 
-                return executor.update(build, parameter);
-            } catch (Exception e) {
-                //e.printStackTrace();
-            }
+            // 使用反射修改SQL
+            Field sqlField = BoundSql.class.getDeclaredField("sql");
+            sqlField.setAccessible(true);
+            sqlField.set(boundSql, publicSql);
+        } catch (Exception e) {
+            // 记录错误但不中断流程
+            System.err.println("拦截器处理异常: " + e.getMessage());
+            e.printStackTrace();
         }
+
         return invocation.proceed();
-
     }
 
-    //复制属性
-    private void copyBuilder(MappedStatement.Builder builder, MappedStatement ms) {
-        builder.resource(ms.getResource());
-        builder.fetchSize(ms.getFetchSize());
-        builder.timeout(ms.getTimeout());
-        builder.statementType(ms.getStatementType());
-        builder.resultSetType(ms.getResultSetType());
-        builder.cache(ms.getCache());
-        builder.parameterMap(ms.getParameterMap());
-        builder.resultMaps(ms.getResultMaps());
-        builder.flushCacheRequired(ms.isFlushCacheRequired());
-        builder.useCache(ms.isUseCache());
-        builder.resultOrdered(ms.isResultOrdered());
-        builder.keyGenerator(ms.getKeyGenerator());
-        if (FuncBase.isNotEmpty(ms.getKeyProperties())) {
-            builder.keyProperty(ms.getKeyProperties()[0]);
-        }
-        if (FuncBase.isNotEmpty(ms.getKeyColumns())) {
-            builder.keyColumn(ms.getKeyColumns()[0]);
-        }
-        builder.databaseId(ms.getDatabaseId());
-        builder.lang(ms.getLang());
-        if (FuncBase.isNotEmpty(ms.getResultSets())) {
-            builder.resultSets(ms.getResultSets()[0]);
-        }
 
-        builder.dirtySelect(ms.isDirtySelect());
+    /**
+     * 通过反射获取MappedStatement
+     */
+    /**
+     * 通过 MetaObject 获取 MappedStatement
+     */
+    private MappedStatement getMappedStatement(StatementHandler handler) {
+        try {
+            // 处理代理对象
+            if (Proxy.isProxyClass(handler.getClass())) {
+                InvocationHandler invocationHandler = Proxy.getInvocationHandler(handler);
+                if (invocationHandler instanceof Plugin) {
+                    Field targetField = invocationHandler.getClass().getDeclaredField("target");
+                    targetField.setAccessible(true);
+                    handler = (StatementHandler) targetField.get(invocationHandler);
+                }
+            }
+
+            // 如果是 RoutingStatementHandler，获取其 delegate
+            if (handler instanceof RoutingStatementHandler) {
+                Field delegateField = RoutingStatementHandler.class.getDeclaredField("delegate");
+                delegateField.setAccessible(true);
+                Object delegate = delegateField.get(handler);
+
+                // 从 delegate 中获取 mappedStatement
+                MetaObject delegateMeta = SystemMetaObject.forObject(delegate);
+                if (delegateMeta.hasGetter("mappedStatement")) {
+                    return (MappedStatement) delegateMeta.getValue("mappedStatement");
+                }
+            }
+
+            return null;
+        } catch (Exception e) {
+            System.err.println("获取 MappedStatement 失败: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public Object plugin(Object target) {
+        return Interceptor.super.plugin(target);
+    }
+
+    @Override
+    public void setProperties(Properties properties) {
+        Interceptor.super.setProperties(properties);
     }
 }
