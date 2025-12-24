@@ -27,13 +27,24 @@
 <br><br>
 <img src="https://img.shields.io/badge/注意:-JeeLowCode 可以用于个人或公司的项目，不允许任何形式的二次开源并且禁止售卖源代码-red.svg" alt="Downloads">
 
-| 分支           | 简介                         |
-|--------------|----------------------------|
-| master       | 使用jdk8  + SpringBoot2.7.18 |
-| master_jdk17 | 使用jdk17 + SpringBoot3.3.1  |
+## 🎥 视频教程
+点击查看视频
+<table>
+    <tr>
+        <td ><a href="https://www.bilibili.com/video/BV1CgmtBKExE" target="_blank"><img src="https://oss.mj.ink/chatgpt/jeelowcode/gitee/startup_bdkf.png"/></a></td>
+        <td ><a href="https://www.bilibili.com/video/BV1F8msBdEo7" target="_blank"><img src="https://oss.mj.ink/chatgpt/jeelowcode/gitee/startup_java.png"/></a></td>
+        <td ><a href="https://www.bilibili.com/video/BV1zYmsB9EW7" target="_blank"><img src="https://oss.mj.ink/chatgpt/jeelowcode/gitee/start_vue.png"/></a></td>
+    </tr>
+</table>
 
 
 ## 💻 代码架构
+
+| 分支           | 简介                         | | 分支           | 简介                         |
+|--------------|----------------------------|-|--------------|----------------------------|
+| master       | 使用jdk8  + SpringBoot2.7.18 | | master_jdk17 | 使用jdk17 + SpringBoot3.3.1  |
+
+
 ``` 
 com.jeelowcode  
     ├── jeelowcode-admin                     // 启动模块
@@ -61,6 +72,8 @@ com.jeelowcode
 ## 🖼️ 系统架构图
 
 <img src="https://oss.mj.ink/chatgpt/jeelowcode/gitee/jsjg2.png"/>
+
+
 
 
 ## 🐛 Hello World入门
@@ -111,7 +124,12 @@ com.jeelowcode
     </tr>
 </table>
 
-
+### 3. 动态效果图：
+<table>
+    <tr>
+        <td ><img src="https://oss.mj.ink/chatgpt/jeelowcode/gitee/gif5.gif?v=20251209"/></td>
+    </tr>
+</table>
 
 ## 🌟 框架核心亮点
 

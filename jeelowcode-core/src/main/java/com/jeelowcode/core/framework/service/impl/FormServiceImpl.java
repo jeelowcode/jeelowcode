@@ -1474,12 +1474,15 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
         }
         String tableName = dbFormVo.getTableName();
 
+        List<String> mainTableNameList=new ArrayList<>();//我的主表列表
+
         //绑定到附表
         foreignkeyList.stream().forEach(vo -> {
             String mainTable = vo.getMainTable();//主表
             if (FuncBase.isEmpty(mainTable)) {
                 return;
             }
+            mainTableNameList.add(mainTable);//添加主表
             //绑定到主表
             LambdaQueryWrapper<FormEntity> wrapper = new LambdaQueryWrapper<>();
             wrapper.eq(FormEntity::getTableName, mainTable);
@@ -1502,6 +1505,27 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
             baseMapper.updateById(updatMainEntity);
         });
 
+        //获取我的所有主表
+        LambdaQueryWrapper<FormEntity> wrapper = new LambdaQueryWrapper<>();
+        wrapper.like(FormEntity::getSubTableListStr, tableName);
+        List<FormEntity> mainFormEntityList = baseMapper.selectList(wrapper);//主表
+        for(FormEntity mainFormEntity:mainFormEntityList){
+            String mainTableName = mainFormEntity.getTableName();
+            String subTableListStr = mainFormEntity.getSubTableListStr();
+            if(Func.isEmpty(subTableListStr)){
+                continue;
+            }
+            List<String> subTableList = FuncBase.toStrList(subTableListStr);
+            if(!subTableList.contains(tableName)){//主表的附表列表中没有的话，则不处理
+                continue;
+            }
+            //判断当前主表是否是我的主表
+            if(mainTableNameList.contains(mainTableName)){
+                continue;
+            }
+            //进行解绑
+            unBindMainTable(mainFormEntity,tableName);
+        }
 
     }
 
