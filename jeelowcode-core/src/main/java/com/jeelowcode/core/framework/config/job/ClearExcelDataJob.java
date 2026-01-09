@@ -14,7 +14,7 @@ http://www.apache.org/licenses/
 package com.jeelowcode.core.framework.config.job;
 
 import cn.hutool.core.date.DateUtil;
-import cn.iocoder.yudao.framework.quartz.core.handler.JobHandler;
+import com.jeelowcode.tool.framework.quartz.core.handler.JobHandler;
 import com.jeelowcode.core.framework.service.IJeeLowCodeConfigService;
 import com.jeelowcode.core.framework.service.IJeeLowCodeService;
 import com.jeelowcode.framework.tenant.annotation.JeeLowCodeTenantIgnore;

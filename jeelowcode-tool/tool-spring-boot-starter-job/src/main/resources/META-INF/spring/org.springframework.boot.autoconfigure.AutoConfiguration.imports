@@ -1,0 +1,2 @@
+com.jeelowcode.tool.framework.quartz.config.QuartzAutoConfiguration
+com.jeelowcode.tool.framework.quartz.config.AsyncAutoConfiguration

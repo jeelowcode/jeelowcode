@@ -18,9 +18,9 @@
         <module>jeelowcode-core</module>
         <module>jeelowcode-module</module>
 
-        <!-- 芋道模块 -->
-        <module>yudao-framework</module>
-        <module>yudao-module</module>
+        <module>jeelowcode-tool</module>
+        <module>jeelowcode-service</module>
+
 
     </modules>
 

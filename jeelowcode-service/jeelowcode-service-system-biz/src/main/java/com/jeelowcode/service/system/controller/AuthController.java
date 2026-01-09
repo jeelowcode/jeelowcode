@@ -1,0 +1,185 @@
+package com.jeelowcode.service.system.controller;
+
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
+import com.jeelowcode.service.system.controller.vo.auth.*;
+import com.jeelowcode.tool.framework.common.enums.CommonStatusEnum;
+import com.jeelowcode.tool.framework.common.enums.UserTypeEnum;
+import com.jeelowcode.tool.framework.common.pojo.CommonResult;
+import com.jeelowcode.tool.framework.operatelog.core.annotations.OperateLog;
+import com.jeelowcode.tool.framework.security.config.SecurityProperties;
+import com.jeelowcode.tool.framework.security.core.util.SecurityFrameworkUtils;
+import com.jeelowcode.service.system.config.convert.auth.AuthConvert;
+import com.jeelowcode.service.system.entity.MenuDO;
+import com.jeelowcode.service.system.entity.RoleDO;
+import com.jeelowcode.service.system.entity.AdminUserDO;
+import com.jeelowcode.service.system.enums.LoginLogTypeEnum;
+import com.jeelowcode.service.system.service.IAdminAuthService;
+import com.jeelowcode.service.system.service.IMenuService;
+import com.jeelowcode.service.system.service.IPermissionService;
+import com.jeelowcode.service.system.service.IRoleService;
+import com.jeelowcode.service.system.service.IAdminUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import static com.jeelowcode.tool.framework.common.pojo.CommonResult.success;
+import static com.jeelowcode.tool.framework.common.util.collection.CollectionUtils.convertSet;
+import static com.jeelowcode.tool.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
+
+@Tag(name = "管理后台 - 认证")
+@RestController
+@RequestMapping("/system/auth")
+@Validated
+@Slf4j
+public class AuthController {
+
+    @Resource
+    private IAdminAuthService authService;
+    @Resource
+    private IAdminUserService userService;
+    @Resource
+    private IRoleService roleService;
+    @Resource
+    private IMenuService menuService;
+    @Resource
+    private IPermissionService permissionService;
+    @Resource
+    private com.jeelowcode.service.system.service.ISocialClientService ISocialClientService;
+
+    @Resource
+    private SecurityProperties securityProperties;
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
+    @PostMapping("/login")
+    @PermitAll
+    @Operation(tags = "授权管理",summary = "使用账号密码登录")
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public CommonResult<AuthLoginRespVO> login(@RequestBody @Valid AuthLoginReqVO reqVO) {
+        return success(authService.login(reqVO));
+    }
+
+    @PostMapping("/logout")
+    @PermitAll
+    @Operation(tags = "授权管理",summary = "登出系统")
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public CommonResult<Boolean> logout(HttpServletRequest request) {
+        Long loginUserId = getLoginUserId();
+
+        String token = SecurityFrameworkUtils.obtainAuthorization(request,
+                securityProperties.getTokenHeader(), securityProperties.getTokenParameter());
+        if (StrUtil.isNotBlank(token)) {
+            authService.logout(token, LoginLogTypeEnum.LOGOUT_SELF.getType());
+        }
+        //清空个人信息
+        String userRedisKey="JEE_LOW_CODE:USER:"+loginUserId+":*";
+        Set<String> keys = stringRedisTemplate.keys(userRedisKey);
+        if(keys!=null && keys.size()>0){
+            keys.forEach(key->{
+                stringRedisTemplate.delete(key);
+            });
+        }
+
+        return success(true);
+    }
+
+    @PostMapping("/refresh-token")
+    @PermitAll
+    @Operation(tags = "授权管理",summary = "刷新令牌")
+    @Parameter(name = "refreshToken", description = "刷新令牌", required = true)
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public CommonResult<AuthLoginRespVO> refreshToken(@RequestParam("refreshToken") String refreshToken) {
+        return success(authService.refreshToken(refreshToken));
+    }
+
+    @GetMapping("/get-permission-info")
+    @Operation(tags = "授权管理",summary = "获取登录用户的权限信息")
+    public CommonResult<AuthPermissionInfoRespVO> getPermissionInfo() {
+        // 1.1 获得用户信息
+        AdminUserDO user = userService.getUser(getLoginUserId());
+        if (user == null) {
+            return null;
+        }
+        //获取所有按钮权限
+        Set<String> allButtonPermissionSets = menuService.getAllButtonPermissionSets();
+
+        // 1.2 获得角色列表
+        Set<Long> roleIds = permissionService.getUserRoleIdListByUserId(getLoginUserId());
+        if (CollUtil.isEmpty(roleIds)) {
+            return success(AuthConvert.INSTANCE.convert(user, Collections.emptyList(), Collections.emptyList(),allButtonPermissionSets));
+        }
+        List<RoleDO> roles = roleService.getRoleList(roleIds);
+        roles.removeIf(role -> !CommonStatusEnum.ENABLE.getStatus().equals(role.getStatus())); // 移除禁用的角色
+
+        // 1.3 获得菜单列表
+        Set<Long> menuIds = permissionService.getRoleMenuListByRoleId(convertSet(roles, RoleDO::getId));
+        List<MenuDO> menuList = new ArrayList<>();
+        if (!CollUtil.isEmpty(menuIds)) {
+            menuList = menuService.getMenuList(menuIds);
+            menuList.removeIf(menu -> !CommonStatusEnum.ENABLE.getStatus().equals(menu.getStatus())); // 移除禁用的菜单
+        }
+
+        // 2. 拼接结果返回
+        return success(AuthConvert.INSTANCE.convert(user, roles, menuList,allButtonPermissionSets));
+    }
+
+    // ========== 短信登录相关 ==========
+
+    @PostMapping("/sms-login")
+    @PermitAll
+    @Operation(tags = "授权管理",summary = "使用短信验证码登录")
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public CommonResult<AuthLoginRespVO> smsLogin(@RequestBody @Valid AuthSmsLoginReqVO reqVO) {
+        return success(authService.smsLogin(reqVO));
+    }
+
+    @PostMapping("/send-sms-code")
+    @PermitAll
+    @Operation(tags = "授权管理",summary = "发送手机验证码")
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public CommonResult<Boolean> sendLoginSmsCode(@RequestBody @Valid AuthSmsSendReqVO reqVO) {
+
+        authService.sendSmsCode(reqVO);
+        return success(true);
+    }
+
+    // ========== 社交登录相关 ==========
+
+    @GetMapping("/social-auth-redirect")
+    @PermitAll
+    @Operation(tags = "授权管理",summary = "社交授权的跳转")
+    @Parameters({
+            @Parameter(name = "type", description = "社交类型", required = true),
+            @Parameter(name = "redirectUri", description = "回调路径")
+    })
+    public CommonResult<String> socialLogin(@RequestParam("type") Integer type,
+                                            @RequestParam("redirectUri") String redirectUri) {
+        return success(ISocialClientService.getAuthorizeUrl(
+                type, UserTypeEnum.ADMIN.getValue(), redirectUri));
+    }
+
+    @PostMapping("/social-login")
+    @PermitAll
+    @Operation(tags = "授权管理",summary = "社交快捷登录，使用 code 授权码", description = "适合未登录的用户，但是社交账号已绑定用户")
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public CommonResult<AuthLoginRespVO> socialQuickLogin(@RequestBody @Valid AuthSocialLoginReqVO reqVO) {
+        return success(authService.socialLogin(reqVO));
+    }
+
+}

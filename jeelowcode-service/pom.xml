@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.jeelowcode</groupId>
+        <artifactId>jeelowcode</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <groupId>com.jeelowcode</groupId>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>jeelowcode-service</artifactId>
+    <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
+    <description> 框架基础服务模块(流程，系统，基础)</description>
+
+    <modules>
+<!--
+        <module>jeelowcode-service-bpm-api</module>
+        <module>jeelowcode-service-bpm-biz</module>
+-->
+
+        <!-- 基础模块 -->
+        <module>jeelowcode-service-infra-api</module>
+        <module>jeelowcode-service-infra-biz</module>
+
+        <!-- 系统模块 -->
+        <module>jeelowcode-service-system-api</module>
+        <module>jeelowcode-service-system-biz</module>
+
+    </modules>
+
+
+</project>

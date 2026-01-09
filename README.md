@@ -47,19 +47,27 @@
 
 ``` 
 com.jeelowcode  
-    ├── jeelowcode-admin                     // 启动模块
-    ├── jeelowcode-code                      // JeelowCode核心模块
-    ├── jeelowcode-dependencies              // 项目版本依赖模块
-    ├── jeelowcode-framework                 // 功能模块
-    │       └── jeelowcode-excel             // Excel导入导出模块
-    │       └── jeelowcode-exception         // 自定义异常模块
-    │       └── jeelowcode-global            // 全局配置模块
-    │       └── jeelowcode-plus              // SQL/DDL 语构建模块
-    │       └── jeelowcode-tenant            // 租户模块
-    │       └── jeelowcode-utils             // 工具类模块
-    ├── jeelowcode-module                    // 个人业务相关（写在这个模块）
-    │       └── jeelowcode-module-api        // 个人业务模块API
-    │       └── jeelowcode-module-biz        // 个人业务业务
+    ├── jeelowcode-admin                      // 启动模块
+    ├── jeelowcode-code                       // JeelowCode核心模块
+    ├── jeelowcode-dependencies               // 项目版本依赖模块
+    ├── jeelowcode-framework                  // 功能模块
+    │       └── jeelowcode-excel              // Excel导入导出模块
+    │       └── jeelowcode-exception          // 自定义异常模块
+    │       └── jeelowcode-global             // 全局配置模块
+    │       └── jeelowcode-plus               // SQL/DDL 语构建模块
+    │       └── jeelowcode-tenant             // 租户模块
+    │       └── jeelowcode-utils              // 工具类模块
+    ├── jeelowcode-module                     // 个人业务相关（写在这个模块）
+    │       └── jeelowcode-module-api         // 个人业务模块API
+    │       └── jeelowcode-module-biz         // 个人业务模块
+    ├── jeelowcode-service                    // 业务模块
+    │       └── jeelowcode-service-bpm-api    // 流程业务模块API
+    │       └── jeelowcode-service-bpm-biz    // 流程业务模块
+    │       └── jeelowcode-service-infra-api  // 基础业务模块API
+    │       └── jeelowcode-service-infra-biz  // 基础业务模块
+    │       └── jeelowcode-service-system-api // 系统业务模块API
+    │       └── jeelowcode-service-system-biz // 系统业务模块
+    ├── jeelowcode-tool                       // 工具模块
 ```
 
 ## 👥 项目关系

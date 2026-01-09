@@ -1,0 +1,7 @@
+com.jeelowcode.tool.framework.apilog.config.ApiLogAutoConfiguration
+com.jeelowcode.tool.framework.jackson.config.JacksonAutoConfiguration
+com.jeelowcode.tool.framework.swagger.config.SwaggerAutoConfiguration
+com.jeelowcode.tool.framework.web.config.WebAutoConfiguration
+com.jeelowcode.tool.framework.xss.config.XssAutoConfiguration
+com.jeelowcode.tool.framework.banner.config.BannerAutoConfiguration
+com.jeelowcode.tool.framework.errorcode.config.ErrorCodeAutoConfiguration

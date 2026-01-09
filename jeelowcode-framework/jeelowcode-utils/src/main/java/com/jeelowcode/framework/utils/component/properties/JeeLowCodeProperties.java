@@ -35,7 +35,7 @@ public class JeeLowCodeProperties {
     private static String aesKey;
 
     //JAVA增强生成文件地址
-    private static String enhancePath;
+    private static String enhancePath="jeelowcode-module\\jeelowcode-module-biz\\src\\main\\java\\com\\jeelowcode\\module\\biz\\enhance";
 
     //---------------------------------------------------------------------------
 

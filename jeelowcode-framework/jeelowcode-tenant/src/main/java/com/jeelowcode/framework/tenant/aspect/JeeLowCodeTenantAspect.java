@@ -23,9 +23,7 @@ http://www.apache.org/licenses/
 最终解释权归：http://www.jeelowcode.com
 */
 package com.jeelowcode.framework.tenant.aspect;
-
-
-import cn.iocoder.yudao.framework.tenant.core.context.TenantContextHolder;
+import com.jeelowcode.tool.framework.tenant.core.context.TenantContextHolder;
 import com.jeelowcode.framework.tenant.utils.JeeLowCodeTenantUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

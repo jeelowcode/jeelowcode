@@ -19,22 +19,22 @@
 
         <!-- 系统模块 -->
         <dependency>
-            <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-module-system-biz</artifactId>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>jeelowcode-service-system-biz</artifactId>
             <version>${revision}</version>
         </dependency>
 
         <!-- 代码生成器、接口文档 -->
         <dependency>
-            <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-module-infra-biz</artifactId>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>jeelowcode-service-infra-biz</artifactId>
             <version>${revision}</version>
         </dependency>
 
-        <!-- 工作流服务 暂时关闭 后面用到再打开 -->
+<!--         工作流服务 暂时关闭 后面用到再打开-->
 <!--        <dependency>
-            <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-module-bpm-biz</artifactId>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>jeelowcode-service-bpm-biz</artifactId>
             <version>${revision}</version>
         </dependency>-->
 
@@ -46,10 +46,10 @@
 
         <!-- 服务保障相关 -->
         <dependency>
-            <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-spring-boot-starter-protection</artifactId>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>tool-spring-boot-starter-protection</artifactId>
         </dependency>
-        
+
         <!-- 低代码服务 -->
         <dependency>
             <groupId>com.jeelowcode</groupId>

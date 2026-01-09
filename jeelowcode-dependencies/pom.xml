@@ -102,8 +102,8 @@
 
             <!-- 业务组件 -->
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-biz-operatelog</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-operatelog</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
@@ -118,29 +118,33 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-biz-dict</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-dict</artifactId>
                 <version>${revision}</version>
             </dependency>
 
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-biz-tenant</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-tenant</artifactId>
                 <version>${revision}</version>
             </dependency>
+
+
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-biz-data-permission</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-permission</artifactId>
                 <version>${revision}</version>
             </dependency>
+
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-biz-ip</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-ip</artifactId>
                 <version>${revision}</version>
             </dependency>
+
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-captcha</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-captcha</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -155,20 +159,20 @@
 
             <!-- Web 相关 -->
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-web</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-web</artifactId>
                 <version>${revision}</version>
             </dependency>
 
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-security</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-security</artifactId>
                 <version>${revision}</version>
             </dependency>
 
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-websocket</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-websocket</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -185,8 +189,8 @@
 
             <!-- DB 相关 -->
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-mybatis</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-mybatis</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -222,8 +226,8 @@
             </dependency>
 
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-redis</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-redis</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -247,28 +251,15 @@
 
             <!-- Job 定时任务相关 -->
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-job</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-job</artifactId>
                 <version>${revision}</version>
-            </dependency>
-
-            <!-- 消息队列相关 -->
-            <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-mq</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.rocketmq</groupId>
-                <artifactId>rocketmq-spring-boot-starter</artifactId>
-                <version>${rocketmq-spring.version}</version>
             </dependency>
 
             <!-- 服务保障相关 -->
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-protection</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-protection</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -297,8 +288,8 @@
 
             <!-- 监控相关 -->
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-monitor</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-monitor</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -362,8 +353,8 @@
 
             <!-- Test 测试相关 -->
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-test</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-test</artifactId>
                 <version>${revision}</version>
                 <scope>test</scope>
             </dependency>
@@ -404,8 +395,8 @@
 
             <!-- 工作流相关 -->
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-flowable</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-flowable</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
@@ -422,14 +413,14 @@
 
             <!-- 工具类相关 -->
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-common</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-common</artifactId>
                 <version>${revision}</version>
             </dependency>
 
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-excel</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-excel</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -571,8 +562,8 @@
                 <version>${okhttp3.version}</version>
             </dependency>
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-file</artifactId>
+                <groupId>com.jeelowcode</groupId>
+                <artifactId>tool-spring-boot-starter-file</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>

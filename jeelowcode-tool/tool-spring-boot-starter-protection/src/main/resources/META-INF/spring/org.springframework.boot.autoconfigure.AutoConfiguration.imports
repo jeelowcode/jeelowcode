@@ -1,0 +1,2 @@
+com.jeelowcode.tool.framework.idempotent.config.IdempotentConfiguration
+com.jeelowcode.tool.framework.lock4j.config.Lock4jConfiguration

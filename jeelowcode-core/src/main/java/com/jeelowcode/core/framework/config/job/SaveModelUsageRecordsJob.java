@@ -13,7 +13,7 @@ http://www.apache.org/licenses/
 */
 package com.jeelowcode.core.framework.config.job;
 
-import cn.iocoder.yudao.framework.quartz.core.handler.JobHandler;
+import com.jeelowcode.tool.framework.quartz.core.handler.JobHandler;
 import com.jeelowcode.core.framework.service.IJeeLowCodeService;
 import com.jeelowcode.framework.tenant.annotation.JeeLowCodeTenantIgnore;
 import lombok.extern.slf4j.Slf4j;

@@ -25,11 +25,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @MapperScan("${jeelowcode.info.base-package}.**.mapper.**") //低代码平台
 @SuppressWarnings("SpringComponentScan")
 @SpringBootApplication(scanBasePackages = {
-        "${yudao.info.base-package}.server",
-        "${yudao.info.base-package}.module",
+        "${jeelowcode.info.base-package}.server",
+        "${jeelowcode.info.base-package}.service",
         "${jeelowcode.info.base-package}.module",
         "${jeelowcode.info.base-package}.core",//核心模块
         "${jeelowcode.info.base-package}.**.spring"
+
 })
 public class JeeLowCodeApplication {
 

@@ -15,8 +15,9 @@ package com.jeelowcode.core.framework.config.log;
 
 
 
-import cn.iocoder.yudao.framework.common.util.servlet.ServletUtils;
-import com.jeelowcode.core.framework.adapter.YudaoAdapter;
+import com.jeelowcode.core.framework.adapter.FrameWorkAdapter;
+import com.jeelowcode.tool.framework.common.util.servlet.ServletUtils;
+
 import com.jeelowcode.core.framework.utils.Func;
 import com.jeelowcode.core.framework.utils.FuncWeb;
 import com.jeelowcode.framework.exception.JeeLowCodeException;
@@ -57,7 +58,7 @@ public class ApiLogAspect {
 
 	// 芋道
 	@Pointcut("@annotation(io.swagger.v3.oas.annotations.Operation)")
-	private void pointcutYudao() {}
+	private void pointcutFrameWork() {}
 
 
 	/**
@@ -66,7 +67,7 @@ public class ApiLogAspect {
 	 * @return
 	 * @throws Throwable
 	 */
-	@Around("pointcutJeeLowCode()||pointcutYudao()")
+	@Around("pointcutJeeLowCode()||pointcutFrameWork()")
 	public Object around(ProceedingJoinPoint point) throws Throwable {
 		//获取类名
 		String className = point.getTarget().getClass().getName();
@@ -135,7 +136,7 @@ public class ApiLogAspect {
 			HttpServletRequest request = FuncWeb.getRequest();
 			ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
 
-			YudaoAdapter jeeLowCodeAdapter = SpringUtils.getBean(YudaoAdapter.class);
+			FrameWorkAdapter jeeLowCodeAdapter = SpringUtils.getBean(FrameWorkAdapter.class);
 
 			LogRequestApiModel logApiModel=new LogRequestApiModel();
 			logApiModel.setId(IdWorker.getId());

@@ -1,0 +1,3 @@
+com.jeelowcode.tool.framework.security.config.SecurityAutoConfiguration
+com.jeelowcode.tool.framework.security.config.WebSecurityConfigurerAdapter
+com.jeelowcode.tool.framework.operatelog.config.OperateLogV2Configuration

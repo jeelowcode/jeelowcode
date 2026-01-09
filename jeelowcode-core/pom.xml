@@ -17,32 +17,32 @@
     <dependencies>
         <!-- Web 相关 -->
         <dependency>
-            <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-spring-boot-starter-web</artifactId>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>tool-spring-boot-starter-web</artifactId>
         </dependency>
 
         <!-- 鉴权 相关 -->
         <dependency>
-            <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-spring-boot-starter-security</artifactId>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>tool-spring-boot-starter-security</artifactId>
         </dependency>
 
         <!-- DB 相关 -->
         <dependency>
-            <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-spring-boot-starter-mybatis</artifactId>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>tool-spring-boot-starter-mybatis</artifactId>
         </dependency>
 
         <!-- redis 相关 -->
         <dependency>
-            <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-spring-boot-starter-redis</artifactId>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>tool-spring-boot-starter-redis</artifactId>
         </dependency>
 
         <!-- 租户 相关 -->
         <dependency>
-            <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-spring-boot-starter-biz-tenant</artifactId>
+            <groupId>com.jeelowcode</groupId>
+            <artifactId>tool-spring-boot-starter-tenant</artifactId>
         </dependency>
 
         <!-- **************** jeelowcode低代码框架  **************** -->

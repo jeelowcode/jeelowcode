@@ -1,0 +1,2 @@
+com.jeelowcode.tool.framework.datasource.config.DataSourceAutoConfiguration
+com.jeelowcode.tool.framework.mybatis.config.MybatisAutoConfiguration

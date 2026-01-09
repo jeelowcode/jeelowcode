@@ -14,7 +14,7 @@ http://www.apache.org/licenses/
 */
 package com.jeelowcode.core.framework.enhance.example.report.xtsy;
 
-import cn.iocoder.yudao.framework.common.util.json.JsonUtils;
+import com.jeelowcode.tool.framework.common.util.json.JsonUtils;
 import com.jeelowcode.core.framework.config.aspect.enhancereport.model.EnhanceReportContext;
 import com.jeelowcode.core.framework.config.aspect.enhancereport.plugin.ReportAfterAdvicePlugin;
 import com.jeelowcode.core.framework.utils.Func;

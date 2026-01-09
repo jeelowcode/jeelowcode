@@ -75,7 +75,7 @@ mybatis-plus:
       logic-delete-value: 1 # 逻辑已删除值(默认为 1)
       logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
     banner: false # 关闭控制台的 Banner 打印
-  type-aliases-package: ${yudao.info.base-package}.module.*.dal.dataobject,${yudao.info.base-package}.module.**.mapper.*Mapper
+  type-aliases-package: ${jeelowcode.info.base-package}.module.*.dal.dataobject,${jeelowcode.info.base-package}.module.**.mapper.*Mapper
   encryptor:
     password: XDV71a+xqStEA3WH # 加解密的秘钥，可使用 https://www.imaegoo.com/2020/aes-key-generator/ 网站生成
 
@@ -210,36 +210,7 @@ spring:
       # Spring Boot Admin Server 服务端的相关配置
       context-path: /admin # 配置 Spring
 
-# 日志文件配置
-logging:
-  file:
-    name: ./logs/${spring.application.name}.log # 日志文件名，全路径
-  level:
-    # 配置自己写的 MyBatis Mapper 打印日志
-    cn.iocoder.yudao.module.bpm.dal.mysql: debug
-    cn.iocoder.yudao.module.infra.dal.mysql: debug
-    cn.iocoder.yudao.module.infra.dal.mysql.job.JobLogMapper: INFO # 配置 JobLogMapper 的日志级别为 info
-    cn.iocoder.yudao.module.infra.dal.mysql.file.FileConfigMapper: INFO # 配置 FileConfigMapper 的日志级别为 info
-    cn.iocoder.yudao.module.system.dal.mysql: debug
-    cn.iocoder.yudao.module.system.dal.mysql.sensitiveword.SensitiveWordMapper: INFO # 配置 SensitiveWordMapper 的日志级别为 info
-    cn.iocoder.yudao.module.system.dal.mysql.sms.SmsChannelMapper: INFO # 配置 SmsChannelMapper 的日志级别为 info
-    cn.iocoder.yudao.module.tool.dal.mysql: debug
-    cn.iocoder.yudao.module.member.dal.mysql: debug
-    cn.iocoder.yudao.module.trade.dal.mysql: debug
-    cn.iocoder.yudao.module.promotion.dal.mysql: debug
-    cn.iocoder.yudao.module.statistics.dal.mysql: debug
-    cn.iocoder.yudao.module.crm.dal.mysql: debug
-    cn.iocoder.yudao.module.erp.dal.mysql: debug
-    cn.iocoder.yudao.module.jeelowcode.mapper: debug #低代码平台
-    org.springframework.context.support.PostProcessorRegistrationDelegate: ERROR # TODO 芋艿：先禁用，Spring Boot 3.X 存在部分错误的 WARN 提示
-    com.jeelowcode.core: debug
-    com.jeelowcode.module: debug
-    com.jeelowcode.core.framework.mapper.LogApiMapper: ERROR #日志入库不需要打印
-    com.jeelowcode.core.framework.mapper.LogApiErrorMapper: ERROR #日志入库不需要打印
-    cn.iocoder.yudao.module.system.dal.mysql.logger.OperateLogMapper: ERROR #日志入库不需要打印
-
-debug: false
---- #################### 验证码相关配置 ####################
+#--- #################### 验证码相关配置 ####################
 
 aj:
   captcha:
@@ -258,38 +229,6 @@ aj:
     req-check-minute-limit: 60 # check 接口一分钟内请求数限制
     req-verify-minute-limit: 60 # verify 接口一分钟内请求数限制
 
---- #################### 消息队列相关 ####################
-
-# rocketmq 配置项，对应 RocketMQProperties 配置类
-rocketmq:
-  name-server: 127.0.0.1:9876 # RocketMQ Namesrv
-  # Producer 配置项
-  producer:
-    group: ${spring.application.name}_PRODUCER # 生产者分组
-
-spring:
-  rabbitmq:
-    host: 127.0.0.1 # RabbitMQ 服务的地址
-    port: 5672 # RabbitMQ 服务的端口
-    username: rabbit # RabbitMQ 服务的账号
-    password: rabbit # RabbitMQ 服务的密码
-  # Kafka 配置项，对应 KafkaProperties 配置类
-  kafka:
-    bootstrap-servers: 127.0.0.1:9092 # 指定 Kafka Broker 地址，可以设置多个，以逗号分隔
-    # Kafka Producer 配置项
-    producer:
-      acks: 1 # 0-不应答。1-leader 应答。all-所有 leader 和 follower 应答。
-      retries: 3 # 发送失败时，重试发送的次数
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer # 消息的 value 的序列化
-    # Kafka Consumer 配置项
-    consumer:
-      auto-offset-reset: earliest # 设置消费者分组最初的消费进度为 earliest 。可参考博客 https://blog.csdn.net/lishuangzhe7047/article/details/74530417 理解
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: '*'
-    # Kafka Consumer Listener 监听器配置
-    listener:
-      missing-topics-fatal: false # 消费监听接口监听的主题不存在时，默认会报错。所以通过设置为 false ，解决报错
 
 --- #################### 第三方授权登录 ####################
 justauth:
@@ -334,15 +273,17 @@ wx:
       type: RedisTemplate # 采用 RedisTemplate 操作 Redis，会自动从 Spring 中获取
       key-prefix: wa # Redis Key 的前缀
       http-client-type: HttpClient # 采用 HttpClient 请求微信公众号平台
---- #################### 芋道相关配置 ####################
 
-yudao:
+
+# -------------------jeeLowCode 低代码平台--------------------------
+
+jeelowcode:
   info:
     version: 1.0.0
-    base-package: cn.iocoder.yudao
+    base-package: com.jeelowcode
   web:
     admin-ui:
-      url: http://dashboard.yudao.iocoder.cn # Admin 管理后台 UI 的地址
+      url: http://www.jeelowcode.com # Admin 管理后台 UI 的地址
   security:
     permit-all_urls:
       - /admin-api/mp/open/** # 微信公众号开放平台，微信回调接口，不需要登录
@@ -362,22 +303,22 @@ yudao:
   swagger:
     title: JeeLowCode低代码开发平台
     description: 提供管理后台、用户 App 的所有功能
-    version: ${yudao.info.version}
-    url: ${yudao.web.admin-ui.url}
+    version: ${jeelowcode.info.version}
+    url: ${jeelowcode.web.admin-ui.url}
   captcha:
     enable: true # 验证码的开关，默认为 true
   codegen:
-    base-package: ${yudao.info.base-package}
+    base-package: ${jeelowcode.info.base-package}
     db-schemas: ${spring.datasource.dynamic.datasource.master.name}
     front-type: 10 # 前端模版的类型，参见 CodegenFrontTypeEnum 枚举类
   error-code: # 错误码相关配置项
     constants-class-list:
-      - cn.iocoder.yudao.module.bpm.enums.ErrorCodeConstants
-      - cn.iocoder.yudao.module.infra.enums.ErrorCodeConstants
-      - cn.iocoder.yudao.module.member.enums.ErrorCodeConstants
-      - cn.iocoder.yudao.module.pay.enums.ErrorCodeConstants
-      - cn.iocoder.yudao.module.system.enums.ErrorCodeConstants
-      - cn.iocoder.yudao.module.mp.enums.ErrorCodeConstants
+      - com.jeelowcode.service.bpm.enums.ErrorCodeConstants
+      - com.jeelowcode.service.infra.enums.ErrorCodeConstants
+      - com.jeelowcode.service.member.enums.ErrorCodeConstants
+      - com.jeelowcode.service.pay.enums.ErrorCodeConstants
+      - com.jeelowcode.service.system.constant.ErrorCodeConstants
+      - com.jeelowcode.service.mp.enums.ErrorCodeConstants
   tenant: # 多租户相关配置项
     enable: true
     ignore-urls:
@@ -444,10 +385,3 @@ yudao:
     end-code: 9999 # 这里配置 9999 的原因是，测试方便。
 
 debug: false
-
-
-# -------------------jeeLowCode 低代码平台--------------------------
-jeelowcode:
-  info:
-    version: 1.0.0
-    base-package: com.jeelowcode
