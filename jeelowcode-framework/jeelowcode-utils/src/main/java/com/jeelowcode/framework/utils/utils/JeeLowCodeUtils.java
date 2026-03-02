@@ -113,33 +113,64 @@ public class JeeLowCodeUtils {
         return FuncBase.toLong(str);
     }
 
-    /**
-     * 获取map值
-     * (map的value是单个的数据时使用)
-     *
-     * @param map 查询封装的一条数据
-     * @param key 高查条件的key
-     * @return
-     */
-    public static Date getMap2DateTime(Map<String, Object> map, String key) {
-        // 参数校验:
-        if (FuncBase.isEmpty(key) || FuncBase.isEmpty(map)) {
-            return null;
-        }
-        // 根据高查条件的key获取value
-        Object o = map.get(key);
-        if (FuncBase.isEmpty(o)) {
-            return null;
-        }
-        if (o instanceof Date) {
-            if (o instanceof java.sql.Date || o instanceof Time) {
-                return new Date(((Date) o).getTime());
+    public static Date getMap2Date(Map<String, Object> map, String key) {
+        try{
+            // 参数校验:
+            if (FuncBase.isEmpty(key) || FuncBase.isEmpty(map)) {
+                return null;
             }
-            return (Date) o;
+            // 根据高查条件的key获取value
+            Object o = map.get(key);
+            if (FuncBase.isEmpty(o)) {
+                return null;
+            }
+            if (o instanceof Date) {
+                if (o instanceof java.sql.Date || o instanceof Time) {
+                    return new Date(((Date) o).getTime());
+                }
+                return (Date) o;
+            }
+            // object -> String
+            String value = FuncBase.toStr(o);
+            // 处理ISO 8601格式 (2025-12-11T17:50:39)
+            if (value.contains("T")) {
+                value = value.replace("T", " ");
+            }
+            return DateUtil.parse(value);
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        // object -> String
-        String value = FuncBase.toStr(o);
-        return DateUtil.parseDateTime(value);
+        return null;
+    }
+
+    public static Date getMap2DateTime(Map<String, Object> map, String key) {
+        try{
+            // 参数校验:
+            if (FuncBase.isEmpty(key) || FuncBase.isEmpty(map)) {
+                return null;
+            }
+            // 根据高查条件的key获取value
+            Object o = map.get(key);
+            if (FuncBase.isEmpty(o)) {
+                return null;
+            }
+            if (o instanceof Date) {
+                if (o instanceof java.sql.Date || o instanceof Time) {
+                    return new Date(((Date) o).getTime());
+                }
+                return (Date) o;
+            }
+            // object -> String
+            String value = FuncBase.toStr(o);
+            // 处理ISO 8601格式 (2025-12-11T17:50:39)
+            if (value.contains("T")) {
+                value = value.replace("T", " ");
+            }
+            return DateUtil.parse(value);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**

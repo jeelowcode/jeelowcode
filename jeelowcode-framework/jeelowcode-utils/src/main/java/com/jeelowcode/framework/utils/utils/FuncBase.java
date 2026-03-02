@@ -15,6 +15,7 @@ package com.jeelowcode.framework.utils.utils;
 
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
@@ -29,6 +30,7 @@ import org.springframework.util.PatternMatchUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ForkJoinPool;
@@ -924,35 +926,65 @@ public class FuncBase {
     }
 
     public static Date getMap2Date(Map<String, Object> map, String key) {
-        try {
-            String valStr = getMap2StrDefault(map, key, null);
-            if (FuncBase.isEmpty(valStr)) {
+        try{
+            // 参数校验:
+            if (FuncBase.isEmpty(key) || FuncBase.isEmpty(map)) {
                 return null;
             }
-            valStr = valStr.substring(0, 10);
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            return sdf.parse(valStr);
-        } catch (Exception e) {
-
+            // 根据高查条件的key获取value
+            Object o = map.get(key);
+            if (FuncBase.isEmpty(o)) {
+                return null;
+            }
+            if (o instanceof Date) {
+                if (o instanceof java.sql.Date || o instanceof Time) {
+                    return new Date(((Date) o).getTime());
+                }
+                return (Date) o;
+            }
+            // object -> String
+            String value = FuncBase.toStr(o);
+            // 处理ISO 8601格式 (2025-12-11T17:50:39)
+            if (value.contains("T")) {
+                value = value.replace("T", " ");
+            }
+            return DateUtil.parse(value);
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return null;
     }
 
     public static Date getMap2DateTime(Map<String, Object> map, String key) {
-        try {
-            String valStr = getMap2StrDefault(map, key, null);
-            if (FuncBase.isEmpty(valStr)) {
+        try{
+            // 参数校验:
+            if (FuncBase.isEmpty(key) || FuncBase.isEmpty(map)) {
                 return null;
             }
-            valStr = valStr.substring(0, 19);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            return sdf.parse(valStr);
-        } catch (Exception e) {
-
+            // 根据高查条件的key获取value
+            Object o = map.get(key);
+            if (FuncBase.isEmpty(o)) {
+                return null;
+            }
+            if (o instanceof Date) {
+                if (o instanceof java.sql.Date || o instanceof Time) {
+                    return new Date(((Date) o).getTime());
+                }
+                return (Date) o;
+            }
+            // object -> String
+            String value = FuncBase.toStr(o);
+            // 处理ISO 8601格式 (2025-12-11T17:50:39)
+            if (value.contains("T")) {
+                value = value.replace("T", " ");
+            }
+            return DateUtil.parse(value);
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return null;
     }
+
 
     public static Long getMap2LongDefault(Map<String, Object> map, String key, Long defaultVal) {
         String valStr = getMap2StrDefault(map, key, null);
