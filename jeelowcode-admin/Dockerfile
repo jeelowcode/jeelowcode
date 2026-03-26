@@ -3,10 +3,10 @@
 FROM eclipse-temurin:8-jre
 
 ## 创建目录，并使用它作为工作目录
-RUN mkdir -p /jeelowcode-server
-WORKDIR /jeelowcode-server
+RUN mkdir -p /jeelowcode-admin
+WORKDIR /jeelowcode-admin
 ## 将后端项目的 Jar 文件，复制到镜像中
-COPY ./target/jeelowcode-server.jar app.jar
+COPY ./target/jeelowcode-admin.jar app.jar
 
 ## 设置 TZ 时区
 ENV TZ=Asia/Shanghai
@@ -14,7 +14,7 @@ ENV TZ=Asia/Shanghai
 ENV JAVA_OPTS="-Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom"
 
 ## 应用参数
-ENV ARGS=""
+ENV ARGS="--spring.profiles.active=local"
 
 ## 暴露后端项目的 48080 端口
 EXPOSE 48080
