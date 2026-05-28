@@ -1,4 +1,4 @@
-/*					
+/*
 Apache License
 Version 2.0, January 2004
 http://www.apache.org/licenses/
@@ -103,19 +103,23 @@ public class EnhanceSqlServiceImpl extends ServiceImpl<EnhanceSqlMapper, Enhance
     //保存历史记录
     private void saveHistoryLog(Long jsId, EnhanceSqlEntity enhanceSqlEntity){
 
-        HistoryDbformEntity entity=new HistoryDbformEntity();
-        entity.setId(IdWorker.getId());
-        entity.setTenantId(jeeLowCodeAdapter.getTenantId());
-        entity.setCreateUser(jeeLowCodeAdapter.getOnlineUserId());
-        entity.setCreateTime(LocalDateTime.now());
-        entity.setCreateUserName(jeeLowCodeAdapter.getOnlineUserName());
+        try{
+            HistoryDbformEntity entity=new HistoryDbformEntity();
+            entity.setId(IdWorker.getId());
+            entity.setTenantId(jeeLowCodeAdapter.getTenantId());
+            entity.setCreateUser(jeeLowCodeAdapter.getOnlineUserId());
+            entity.setCreateTime(LocalDateTime.now());
+            entity.setCreateUserName(jeeLowCodeAdapter.getOnlineUserName());
 
-        entity.setDbformId(enhanceSqlEntity.getDbformId());
-        entity.setServiceType("sql");
-        entity.setServiceId(jsId);
-        entity.setServiceJson(Func.json2Str(enhanceSqlEntity));
+            entity.setDbformId(enhanceSqlEntity.getDbformId());
+            entity.setServiceType("sql");
+            entity.setServiceId(jsId);
+            entity.setServiceJson(Func.json2Str(enhanceSqlEntity));
 
-        historyDbFormMapper.insert(entity);
+            historyDbFormMapper.insert(entity);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

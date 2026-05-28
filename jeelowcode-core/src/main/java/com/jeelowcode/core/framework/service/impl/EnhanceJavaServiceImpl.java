@@ -125,19 +125,23 @@ public class EnhanceJavaServiceImpl extends ServiceImpl<EnhanceJavaMapper, Enhan
     //保存历史记录
     private void saveHistoryLog(Long javaId, EnhanceJavaEntity javaEntity){
 
-        HistoryDbformEntity entity=new HistoryDbformEntity();
-        entity.setId(IdWorker.getId());
-        entity.setTenantId(jeeLowCodeAdapter.getTenantId());
-        entity.setCreateUser(jeeLowCodeAdapter.getOnlineUserId());
-        entity.setCreateTime(LocalDateTime.now());
-        entity.setCreateUserName(jeeLowCodeAdapter.getOnlineUserName());
+       try{
+           HistoryDbformEntity entity=new HistoryDbformEntity();
+           entity.setId(IdWorker.getId());
+           entity.setTenantId(jeeLowCodeAdapter.getTenantId());
+           entity.setCreateUser(jeeLowCodeAdapter.getOnlineUserId());
+           entity.setCreateTime(LocalDateTime.now());
+           entity.setCreateUserName(jeeLowCodeAdapter.getOnlineUserName());
 
-        entity.setDbformId(javaEntity.getDbformId());
-        entity.setServiceType("java");
-        entity.setServiceId(javaId);
-        entity.setServiceJson(Func.json2Str(javaEntity));
+           entity.setDbformId(javaEntity.getDbformId());
+           entity.setServiceType("java");
+           entity.setServiceId(javaId);
+           entity.setServiceJson(Func.json2Str(javaEntity));
 
-        historyDbFormMapper.insert(entity);
+           historyDbFormMapper.insert(entity);
+       }catch (Exception e){
+           e.printStackTrace();
+       }
     }
 
     @Override

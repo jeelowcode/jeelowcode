@@ -1,4 +1,4 @@
-/*					
+/*
 Apache License
 Version 2.0, January 2004
 http://www.apache.org/licenses/
@@ -87,18 +87,22 @@ public class DesFormServiceImpl extends ServiceImpl<DesFormMapper, DesformEntity
 
     //保存历史记录
     private void saveHistoryLog(Long id,DesFormAddOrUpdateParam param){
-        HistoryDesformEntity historyEntity=new HistoryDesformEntity();
-        historyEntity.setId(IdWorker.getId());
-        historyEntity.setTenantId(jeeLowCodeAdapter.getTenantId());
-        historyEntity.setCreateUser(jeeLowCodeAdapter.getOnlineUserId());
-        historyEntity.setCreateTime(LocalDateTime.now());
-        historyEntity.setCreateUserName(jeeLowCodeAdapter.getOnlineUserName());
+        try{
+            HistoryDesformEntity historyEntity=new HistoryDesformEntity();
+            historyEntity.setId(IdWorker.getId());
+            historyEntity.setTenantId(jeeLowCodeAdapter.getTenantId());
+            historyEntity.setCreateUser(jeeLowCodeAdapter.getOnlineUserId());
+            historyEntity.setCreateTime(LocalDateTime.now());
+            historyEntity.setCreateUserName(jeeLowCodeAdapter.getOnlineUserName());
 
-        historyEntity.setDesformId(id);
-        historyEntity.setDesformName(param.getDesformName());
-        historyEntity.setDesformJson(param.getDesformJson());
-        historyEntity.setGroupDesformId(param.getGroupDesformId());
-        historyEntity.setIsOpen(param.getIsOpen());
-        historyDesFormMapper.insert(historyEntity);
+            historyEntity.setDesformId(id);
+            historyEntity.setDesformName(param.getDesformName());
+            historyEntity.setDesformJson(param.getDesformJson());
+            historyEntity.setGroupDesformId(param.getGroupDesformId());
+            historyEntity.setIsOpen(param.getIsOpen());
+            historyDesFormMapper.insert(historyEntity);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

@@ -96,7 +96,7 @@ public class Func extends FuncBase {
 
     public static boolean isJeeLowCodeUrl(HttpServletRequest request) {
         List<String> jeeLowCodeUrlList = new ArrayList<>();
-        jeeLowCodeUrlList.add(JeeLowCodeBaseConstant.REQUEST_URL_START+"/** ");
+        jeeLowCodeUrlList.add(JeeLowCodeBaseConstant.REQUEST_URL_START+"/**");
         if(isEmpty(request)){
             return false;
         }

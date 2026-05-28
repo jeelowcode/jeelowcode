@@ -123,18 +123,22 @@ public class EnhanceJsServiceImpl extends ServiceImpl<EnhanceJsMapper, EnhanceJs
     //保存历史记录
     private void saveHistoryLog(Long jsId, EnhanceJsEntity enhanceJsEntity){
 
-        HistoryDbformEntity entity=new HistoryDbformEntity();
-        entity.setId(IdWorker.getId());
-        entity.setTenantId(jeeLowCodeAdapter.getTenantId());
-        entity.setCreateUser(jeeLowCodeAdapter.getOnlineUserId());
-        entity.setCreateTime(LocalDateTime.now());
-        entity.setCreateUserName(jeeLowCodeAdapter.getOnlineUserName());
+       try{
+           HistoryDbformEntity entity=new HistoryDbformEntity();
+           entity.setId(IdWorker.getId());
+           entity.setTenantId(jeeLowCodeAdapter.getTenantId());
+           entity.setCreateUser(jeeLowCodeAdapter.getOnlineUserId());
+           entity.setCreateTime(LocalDateTime.now());
+           entity.setCreateUserName(jeeLowCodeAdapter.getOnlineUserName());
 
-        entity.setDbformId(enhanceJsEntity.getDbformId());
-        entity.setServiceType("js");
-        entity.setServiceId(jsId);
-        entity.setServiceJson(Func.json2Str(enhanceJsEntity));
+           entity.setDbformId(enhanceJsEntity.getDbformId());
+           entity.setServiceType("js");
+           entity.setServiceId(jsId);
+           entity.setServiceJson(Func.json2Str(enhanceJsEntity));
 
-        historyDbFormMapper.insert(entity);
+           historyDbFormMapper.insert(entity);
+       }catch (Exception e){
+           e.printStackTrace();
+       }
     }
 }

@@ -102,9 +102,6 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
     private FormSummaryMapper summaryMapper;
 
     @Autowired
-    private IFormButtonService formButtonService;
-
-    @Autowired
     private IEnhanceJsService jsService;
 
     @Autowired
@@ -620,7 +617,7 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
         DbFormConfigVo dbFormConfig = this.getDetailDbFormConfig(dbFormId, typeList, selfFieldList);
 
         //获取按钮增强
-        List<FormButtonEntity> buttonList = formButtonService.getButtonList(dbFormId);
+        List<FormButtonEntity> buttonList = buttonService.getButtonList(dbFormId);
 
         //获取Js增强
         List<EnhanceJsEntity> jsList = jsService.getJsList(dbFormId);
