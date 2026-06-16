@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static com.jeelowcode.framework.global.JeeLowCodeBaseConstant.BASE_PACKAGES_CODE;
+import static com.jeelowcode.framework.global.JeeLowCodeBaseConstant.BASE_PACKAGES_MODULE;
 
 
 @Component
@@ -58,7 +59,7 @@ public class JeelowCodePlusInterceptor implements Interceptor {
                 }
             }
 
-            if (!id.startsWith(BASE_PACKAGES_CODE)) {//直接跳过,如果不是低代码平台，则直接跳过
+            if (!id.startsWith(BASE_PACKAGES_CODE) && !id.startsWith(BASE_PACKAGES_MODULE)) {//直接跳过,如果不是低代码平台，则直接跳过
                 return invocation.proceed();
             }
             // 获取SQL并处理

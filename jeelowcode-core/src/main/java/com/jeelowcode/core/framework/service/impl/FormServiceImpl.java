@@ -14,7 +14,7 @@ http://www.apache.org/licenses/
 package com.jeelowcode.core.framework.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.jeelowcode.core.framework.config.aspect.enhance.JeeLowCodeAnnoaionAspectjSQL;
+import com.jeelowcode.core.framework.config.aspect.enhance.JeeLowCodeAnnotationAspectjSQL;
 import com.jeelowcode.core.framework.config.aspect.enhance.JeeLowCodeAnnotationAspectjJAVA;
 import com.jeelowcode.core.framework.config.aspect.enhance.plugin.BaseAdvicePlugin;
 import com.jeelowcode.core.framework.config.aspect.enhance.plugin.PluginManager;
@@ -1731,7 +1731,7 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
 
         //初始化切面增强
         JeeLowCodeAnnotationAspectjJAVA.initPluginNames(pluginJavaMap);
-        JeeLowCodeAnnoaionAspectjSQL.initSqlPlugins(pluginSqlMap);
+        JeeLowCodeAnnotationAspectjSQL.initSqlPlugins(pluginSqlMap);
 
         Map<String, String> enhanceCodeConfig = jeeLowCodeConfigService.getEnhanceCodeConfig();
         JeeLowCodeAnnotationAspectjJAVA.initAspectMethodNameMap(enhanceCodeConfig);

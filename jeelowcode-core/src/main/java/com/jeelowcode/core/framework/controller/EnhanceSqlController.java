@@ -14,7 +14,7 @@ http://www.apache.org/licenses/
 package com.jeelowcode.core.framework.controller;
 
 import com.jeelowcode.framework.global.JeeLowCodeBaseConstant;
-import com.jeelowcode.core.framework.config.aspect.enhance.JeeLowCodeAnnoaionAspectjSQL;
+import com.jeelowcode.core.framework.config.aspect.enhance.JeeLowCodeAnnotationAspectjSQL;
 import com.jeelowcode.core.framework.entity.EnhanceSqlEntity;
 import com.jeelowcode.core.framework.service.IEnhanceSqlService;
 import com.jeelowcode.core.framework.utils.Func;
@@ -76,7 +76,7 @@ public class EnhanceSqlController extends BaseController {
         List<EnhanceSqlEntity> enhanceSqlEntities = sqlService.listByIds(ids);
         enhanceSqlEntities.stream().forEach(
                 e ->{
-                    JeeLowCodeAnnoaionAspectjSQL.removePlugin(e);
+                    JeeLowCodeAnnotationAspectjSQL.removePlugin(e);
                 }
         );
         sqlService.removeBatchByIds(ids);

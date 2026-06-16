@@ -20,7 +20,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jeelowcode.core.framework.config.aspect.enhance.JeeLowCodeAnnoaionAspectjSQL;
+import com.jeelowcode.core.framework.config.aspect.enhance.JeeLowCodeAnnotationAspectjSQL;
 import com.jeelowcode.core.framework.config.aspect.enhance.JeeLowCodeAnnotationAspectjJAVA;
 import com.jeelowcode.core.framework.config.aspect.enhance.plugin.BaseAdvicePlugin;
 import com.jeelowcode.core.framework.config.aspect.enhance.plugin.PluginManager;

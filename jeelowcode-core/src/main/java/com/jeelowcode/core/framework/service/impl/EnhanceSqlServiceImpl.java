@@ -13,7 +13,7 @@ http://www.apache.org/licenses/
 */
 package com.jeelowcode.core.framework.service.impl;
 
-import com.jeelowcode.core.framework.config.aspect.enhance.JeeLowCodeAnnoaionAspectjSQL;
+import com.jeelowcode.core.framework.config.aspect.enhance.JeeLowCodeAnnotationAspectjSQL;
 import com.jeelowcode.core.framework.entity.EnhanceSqlEntity;
 import com.jeelowcode.core.framework.entity.HistoryDbformEntity;
 import com.jeelowcode.core.framework.mapper.EnhanceSqlMapper;
@@ -59,7 +59,7 @@ public class EnhanceSqlServiceImpl extends ServiceImpl<EnhanceSqlMapper, Enhance
         enhanceSqlEntity.setId(id);
         this.save(enhanceSqlEntity);
         //加入插件管理
-        JeeLowCodeAnnoaionAspectjSQL.addPlugin(enhanceSqlEntity);
+        JeeLowCodeAnnotationAspectjSQL.addPlugin(enhanceSqlEntity);
         //加历史记录
         this.saveHistoryLog(id,enhanceSqlEntity);
     }
@@ -70,9 +70,9 @@ public class EnhanceSqlServiceImpl extends ServiceImpl<EnhanceSqlMapper, Enhance
     public void updateEnhanceSql(EnhanceSqlEntity enhanceSqlEntity){
         this.updateById(enhanceSqlEntity);
         if (Func.equals(enhanceSqlEntity.getActiveStatus(), YNEnum.Y.getCode())){
-            JeeLowCodeAnnoaionAspectjSQL.updatePlugin(enhanceSqlEntity);
+            JeeLowCodeAnnotationAspectjSQL.updatePlugin(enhanceSqlEntity);
         } else {
-            JeeLowCodeAnnoaionAspectjSQL.removePlugin(enhanceSqlEntity);
+            JeeLowCodeAnnotationAspectjSQL.removePlugin(enhanceSqlEntity);
         }
         //加历史记录
         this.saveHistoryLog(enhanceSqlEntity.getId(),enhanceSqlEntity);
