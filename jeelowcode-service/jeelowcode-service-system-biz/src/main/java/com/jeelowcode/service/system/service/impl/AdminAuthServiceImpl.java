@@ -181,13 +181,6 @@ public class AdminAuthServiceImpl implements IAdminAuthService {
 
     @VisibleForTesting
     void validateCaptcha(AuthLoginReqVO reqVO) {
-        if(true){
-            return;
-        }
-        // 如果验证码关闭，则不进行校验
-        if (true) {//临时关闭
-            return;
-        }
         if (!captchaEnable) {
             return;
         }

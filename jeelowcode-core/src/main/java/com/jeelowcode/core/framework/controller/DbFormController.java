@@ -65,8 +65,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 @Tag(name = "低代码框架-框架接口")
@@ -233,60 +231,50 @@ public class DbFormController extends BaseController {
         }
         Map<String, List<Map<String, Object>>> resultMap = new ConcurrentHashMap<>();
 
-        ForkJoinPool pool = null;
-        try {
-            pool = FuncBase.jeelowcodeForkJoinPool();
-            pool.submit(() -> labelParamList.parallelStream().forEach(labelParam ->{
-                Long dbformId = labelParam.getDbformId();
-                List<String> fieldList = labelParam.getFieldList();
-                String code = labelParam.getCode();
-                String label = labelParam.getLabel();
-                List<String> dataList = labelParam.getDataList();
-                List<Long> userIdList = labelParam.getUserIdList();//用户id
-                List<Long> deptIdList = labelParam.getDeptIdList();//部门id
+        FuncBase.parallelExecute(() -> labelParamList.parallelStream().forEach(labelParam ->{
+            Long dbformId = labelParam.getDbformId();
+            List<String> fieldList = labelParam.getFieldList();
+            String code = labelParam.getCode();
+            String label = labelParam.getLabel();
+            List<String> dataList = labelParam.getDataList();
+            List<Long> userIdList = labelParam.getUserIdList();//用户id
+            List<Long> deptIdList = labelParam.getDeptIdList();//部门id
 
-                if (Func.isNotEmpty(dbformId)) { //自定义表
-                    String mapKey = dbformId + "&" + label;
-                    if (FuncBase.isEmpty(dataList)) {
-                        List<Map<String, Object>> resultList = new ArrayList<>();
-                        resultMap.put(FuncBase.toStr(dbformId), resultList);
-                        return;
+            if (Func.isNotEmpty(dbformId)) { //自定义表
+                String mapKey = dbformId + "&" + label;
+                if (FuncBase.isEmpty(dataList)) {
+                    List<Map<String, Object>> resultList = new ArrayList<>();
+                    resultMap.put(FuncBase.toStr(dbformId), resultList);
+                    return;
+                }
+
+                List<Map<String, Object>> resultList =new ArrayList<>();
+                for(String dataId:dataList){
+                    Map<String, Object> params =new HashMap<>();
+                    params.put(ParamEnum.DICT_TABLE_FIELD.getCode(),fieldList);
+                    params.put(code,dataId);//id=1
+                    params.put(ParamEnum.PAGE_NO.getCode(),1);
+                    params.put(ParamEnum.PAGE_SIZE.getCode(),1000);
+                    params.put(ParamEnum.ALL_QUERY_FIELD.getCode(),"Y");
+                    ResultDataModel model = frameService.getDataList(dbformId, params);
+                    List<Map<String, Object>> tmpList = model.getRecords();
+                    if(Func.isEmpty(tmpList)){
+                        continue;
                     }
+                    resultList.addAll(tmpList);
+                }
 
-                    List<Map<String, Object>> resultList =new ArrayList<>();
-                    for(String dataId:dataList){
-                        Map<String, Object> params =new HashMap<>();
-                        params.put(ParamEnum.DICT_TABLE_FIELD.getCode(),fieldList);
-                        params.put(code,dataId);//id=1
-                        params.put(ParamEnum.PAGE_NO.getCode(),1);
-                        params.put(ParamEnum.PAGE_SIZE.getCode(),1000);
-                        params.put(ParamEnum.ALL_QUERY_FIELD.getCode(),"Y");
-                        ResultDataModel model = frameService.getDataList(dbformId, params);
-                        List<Map<String, Object>> tmpList = model.getRecords();
-                        if(Func.isEmpty(tmpList)){
-                            continue;
-                        }
-                        resultList.addAll(tmpList);
-                    }
-
-                    resultMap.put(mapKey, resultList);
-                }
-                if (Func.isNotEmpty(userIdList)) {//用户表回显
-                    List<Map<String, Object>> userViewList = jeeLowCodeAdapter.getUserViewList(userIdList);
-                    resultMap.put("userList", userViewList);
-                }
-                if (Func.isNotEmpty(deptIdList)) {//部门表回显
-                    List<Map<String, Object>> deptViewList = jeeLowCodeAdapter.getDeptViewList(deptIdList);
-                    resultMap.put("deptList", deptViewList);
-                }
-            })).get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e.getMessage());
-        } finally {
-            if (pool != null) {
-                pool.shutdown();
+                resultMap.put(mapKey, resultList);
             }
-        }
+            if (Func.isNotEmpty(userIdList)) {//用户表回显
+                List<Map<String, Object>> userViewList = jeeLowCodeAdapter.getUserViewList(userIdList);
+                resultMap.put("userList", userViewList);
+            }
+            if (Func.isNotEmpty(deptIdList)) {//部门表回显
+                List<Map<String, Object>> deptViewList = jeeLowCodeAdapter.getDeptViewList(deptIdList);
+                resultMap.put("deptList", deptViewList);
+            }
+        }));
 
         return BaseWebResult.success(resultMap);
     }

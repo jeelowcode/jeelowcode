@@ -306,7 +306,7 @@ jeelowcode:
     version: ${jeelowcode.info.version}
     url: ${jeelowcode.web.admin-ui.url}
   captcha:
-    enable: true # 验证码的开关，默认为 true
+    enable: false # 验证码的开关，默认为 true
   codegen:
     base-package: ${jeelowcode.info.base-package}
     db-schemas: ${spring.datasource.dynamic.datasource.master.name}

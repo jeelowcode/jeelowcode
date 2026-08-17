@@ -64,9 +64,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -402,19 +399,9 @@ public class Func extends FuncBase {
 
 
     public static void handlePlusDataList(List<Map<String, Object>> records, Map<String, JeeLowCodeFieldTypeEnum> fieldTypeEnumMap) {
-        ForkJoinPool pool = null;
-        try {
-            pool = FuncBase.jeelowcodeForkJoinPool();
-            pool.submit(() -> records.parallelStream().forEach(recordMap -> {
-                handlePlusDataMap(recordMap, fieldTypeEnumMap);
-            })).get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e.getMessage());
-        } finally {
-            if (pool != null) {
-                pool.shutdown();
-            }
-        }
+        FuncBase.parallelExecute(() -> records.parallelStream().forEach(recordMap -> {
+            handlePlusDataMap(recordMap, fieldTypeEnumMap);
+        }));
     }
 
 

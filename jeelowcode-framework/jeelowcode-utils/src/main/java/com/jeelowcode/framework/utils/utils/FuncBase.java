@@ -33,6 +33,7 @@ import java.math.BigDecimal;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.stream.Collectors;
@@ -1070,6 +1071,27 @@ public class FuncBase {
             return thread;
         };
         return new ForkJoinPool(poolSize, factory, null, false);
+    }
+
+    /**
+     * 并行执行任务（使用自定义ForkJoinPool）
+     * 封装了ForkJoinPool的创建、提交、等待和关闭生命周期，
+     * 统一管理线程池，避免重复的 try-catch-finally 模板代码
+     *
+     * @param task 要并行执行的任务
+     */
+    public static void parallelExecute(Runnable task) {
+        ForkJoinPool pool = null;
+        try {
+            pool = jeelowcodeForkJoinPool();
+            pool.submit(task).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e.getMessage());
+        } finally {
+            if (pool != null) {
+                pool.shutdown();
+            }
+        }
     }
 
 }

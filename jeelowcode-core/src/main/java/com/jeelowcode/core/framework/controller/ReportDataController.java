@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Tag(name = "低代码框架-报表接口")
@@ -60,25 +60,15 @@ public class ReportDataController extends BaseController {
         Map<String, Object> params = FuncWeb.getParameterBodyMap(req);
         List<String> reportCodeList = Func.toStrList(reportCodeListStr);
         Map<String, ResultDataModel> resultMap = new ConcurrentHashMap<>();
-        ForkJoinPool pool = null;
-        try {
-            pool = FuncBase.jeelowcodeForkJoinPool();
-            pool.submit(() -> reportCodeList.parallelStream().forEach(reportCode -> {
-                // 处理代码
-                Map<String, Object> subParam = (Map) params.get(reportCode);
-                if (Func.isEmpty(subParam)) {
-                    subParam = new HashMap<>();
-                }
-                ResultDataModel pages = getReportDataList(reportCode, subParam);
-                resultMap.put(reportCode, pages);
-            })).get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e.getMessage());
-        } finally {
-            if (pool != null) {
-                pool.shutdown();
+        FuncBase.parallelExecute(() -> reportCodeList.parallelStream().forEach(reportCode -> {
+            // 处理代码
+            Map<String, Object> subParam = (Map) params.get(reportCode);
+            if (Func.isEmpty(subParam)) {
+                subParam = new HashMap<>();
             }
-        }
+            ResultDataModel pages = getReportDataList(reportCode, subParam);
+            resultMap.put(reportCode, pages);
+        }));
         return BaseWebResult.success(resultMap);
     }
 

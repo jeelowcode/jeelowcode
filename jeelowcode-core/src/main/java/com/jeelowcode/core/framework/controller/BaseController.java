@@ -37,8 +37,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
 
 @Tag(name = "低代码框架-公共框架接口")
 public class BaseController {
@@ -328,32 +326,22 @@ public class BaseController {
 
 
     protected void formatFormEntityPageVo(List<FormEntityPageVo> records, IFormService dbFormService){
-        ForkJoinPool pool = null;
-        try {
-            pool = FuncBase.jeelowcodeForkJoinPool();
-            pool.submit(() -> records.parallelStream().forEach(vo ->{
-                Map<String, Object> couMap = dbFormService.getFormCou(vo.getId());
-                Integer js_cou = Func.getMap2IntDefault(couMap, "js_cou",0);
-                Integer scss_cou = Func.getMap2IntDefault(couMap, "scss_cou",0);
-                Integer button_cou = Func.getMap2IntDefault(couMap, "button_cou",0);
-                Integer java_cou = Func.getMap2IntDefault(couMap, "java_cou",0);
-                Integer sql_cou = Func.getMap2IntDefault(couMap, "sql_cou",0);
-                Integer field_cou = Func.getMap2IntDefault(couMap, "field_cou",0);
+        FuncBase.parallelExecute(() -> records.parallelStream().forEach(vo ->{
+            Map<String, Object> couMap = dbFormService.getFormCou(vo.getId());
+            Integer js_cou = Func.getMap2IntDefault(couMap, "js_cou",0);
+            Integer scss_cou = Func.getMap2IntDefault(couMap, "scss_cou",0);
+            Integer button_cou = Func.getMap2IntDefault(couMap, "button_cou",0);
+            Integer java_cou = Func.getMap2IntDefault(couMap, "java_cou",0);
+            Integer sql_cou = Func.getMap2IntDefault(couMap, "sql_cou",0);
+            Integer field_cou = Func.getMap2IntDefault(couMap, "field_cou",0);
 
-                vo.setJsCou(js_cou);
-                vo.setScssCou(scss_cou);
-                vo.setButtonCou(button_cou);
-                vo.setJavaCou(java_cou);
-                vo.setSqlCou(sql_cou);
-                vo.setFieldCou(field_cou);
-            })).get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e.getMessage());
-        } finally {
-            if (pool != null) {
-                pool.shutdown();
-            }
-        }
+            vo.setJsCou(js_cou);
+            vo.setScssCou(scss_cou);
+            vo.setButtonCou(button_cou);
+            vo.setJavaCou(java_cou);
+            vo.setSqlCou(sql_cou);
+            vo.setFieldCou(field_cou);
+        }));
     }
 
     //导出Excel数据

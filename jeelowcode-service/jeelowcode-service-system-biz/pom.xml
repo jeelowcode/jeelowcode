@@ -109,6 +109,10 @@
             <groupId>com.xingyuv</groupId>
             <artifactId>spring-boot-starter-justauth</artifactId> <!-- 社交登陆（例如说，个人微信、企业微信等等） -->
         </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId> <!-- 实为 fastjson2 的 1.x API 兼容包，供 justauth 等三方库运行时使用 -->
+        </dependency>
 
         <dependency>
             <groupId>com.github.binarywang</groupId>

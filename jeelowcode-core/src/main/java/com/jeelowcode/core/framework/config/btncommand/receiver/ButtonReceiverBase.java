@@ -32,8 +32,6 @@ import com.jeelowcode.framework.utils.utils.FuncBase;
 import org.apache.commons.collections4.map.LinkedMap;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 /**
@@ -83,30 +81,20 @@ public class ButtonReceiverBase {
         Set<String> webViewFieldSet = new HashSet<>(formService.getWebViewFieldList(dbFormId));
 
         Map<String, DbFormRoleFieldVo> finalRoleDisableMap = roleDisableMap;
-        ForkJoinPool pool = null;
-        try {
-            pool = FuncBase.jeelowcodeForkJoinPool();
-            pool.submit(() -> records.parallelStream().forEach(recordMap -> recordMap.keySet().removeIf(key -> {
-                if(Func.equals(key,"jeelowcode_subtable_data") || Func.equals(key,"hasChildren") || Func.equals(key,"leaf")){
-                    return false;
-                }
-                boolean noRoleFlag=false;
-                if(Func.isNotEmpty(finalRoleDisableMap) && finalRoleDisableMap.containsKey(key)){
-                    DbFormRoleFieldVo roleVo = finalRoleDisableMap.get(key);
-                    //如果全部为空话，看最大的那个,最大的那个为N说明是没有权限，需要剔除
-                    if(Func.isEmpty(roleVo.getFormIsEdit()) && Func.isEmpty(roleVo.getFormIsView()) && Func.isEmpty(roleVo.getListIsView())&&Func.equals(roleVo.getEnableState(),YNEnum.N.getCode())){
-                        noRoleFlag=true;
-                    }
-                }
-                return !webViewFieldSet.contains(key) || noRoleFlag;
-            }))).get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e.getMessage());
-        } finally {
-            if (pool != null) {
-                pool.shutdown();
+        FuncBase.parallelExecute(() -> records.parallelStream().forEach(recordMap -> recordMap.keySet().removeIf(key -> {
+            if(Func.equals(key,"jeelowcode_subtable_data") || Func.equals(key,"hasChildren") || Func.equals(key,"leaf")){
+                return false;
             }
-        }
+            boolean noRoleFlag=false;
+            if(Func.isNotEmpty(finalRoleDisableMap) && finalRoleDisableMap.containsKey(key)){
+                DbFormRoleFieldVo roleVo = finalRoleDisableMap.get(key);
+                //如果全部为空话，看最大的那个,最大的那个为N说明是没有权限，需要剔除
+                if(Func.isEmpty(roleVo.getFormIsEdit()) && Func.isEmpty(roleVo.getFormIsView()) && Func.isEmpty(roleVo.getListIsView())&&Func.equals(roleVo.getEnableState(),YNEnum.N.getCode())){
+                    noRoleFlag=true;
+                }
+            }
+            return !webViewFieldSet.contains(key) || noRoleFlag;
+        })));
     }
 
     /**

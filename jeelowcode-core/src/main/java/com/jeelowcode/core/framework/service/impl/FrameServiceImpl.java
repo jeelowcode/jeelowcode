@@ -62,8 +62,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -362,46 +360,36 @@ public class FrameServiceImpl implements IFrameService {
         if (Func.isNotEmpty(summaryTopList)) {
             Map<Long, SummaryTopModel> topMap = new ConcurrentHashMap();
             //并行流处理
-            ForkJoinPool pool = null;
-            try {
-                pool = FuncBase.jeelowcodeForkJoinPool();
-                pool.submit(() -> summaryTopList.parallelStream().forEach(summaryEntity -> {
-                    Long id = summaryEntity.getId();
-                    String summarySql = summaryEntity.getSummarySql();
-                    String summaryLabel = summaryEntity.getSummaryLabel();
-                    String summaryJson = summaryEntity.getSummaryJson();
-                    if (Func.isEmpty(summarySql)) {
-                        return;
-                    }
-
-                    SqlInfoQueryWrapper.Wrapper wrapper = getDataQueryWrapper(formEntity, params, false);
-                    //拿到原sql,也就是数据源
-                    SqlFormatModel sqlFormatModel = wrapper.buildSql();
-                    String sql = sqlFormatModel.getSql();
-                    Map<String, Object> sqlParams = sqlFormatModel.getDataMap();
-
-                    String newSql = "";
-                    if (summarySql.contains(JeeLowCodeConstant.JEELOWCODE_SUMMARY_TABLE)) {//需要替换数据源
-                        newSql = summarySql.replace(JeeLowCodeConstant.JEELOWCODE_SUMMARY_TABLE, sql);
-                    } else {//直接运行自定义sql
-                        newSql = SqlHelper.getPublicSql(summarySql);
-                    }
-
-                    List<Map<String, Object>> dataMapList = sqlService.getDataListByPlus(newSql, sqlParams);
-
-                    SummaryTopModel topModel = new SummaryTopModel();
-                    topModel.setSummaryLabel(summaryLabel);
-                    topModel.setSummaryJson(summaryJson);
-                    topModel.setDataMapList(dataMapList);
-                    topMap.put(id, topModel);
-                })).get();
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e.getMessage());
-            } finally {
-                if (pool != null) {
-                    pool.shutdown();
+            FuncBase.parallelExecute(() -> summaryTopList.parallelStream().forEach(summaryEntity -> {
+                Long id = summaryEntity.getId();
+                String summarySql = summaryEntity.getSummarySql();
+                String summaryLabel = summaryEntity.getSummaryLabel();
+                String summaryJson = summaryEntity.getSummaryJson();
+                if (Func.isEmpty(summarySql)) {
+                    return;
                 }
-            }
+
+                SqlInfoQueryWrapper.Wrapper wrapper = getDataQueryWrapper(formEntity, params, false);
+                //拿到原sql,也就是数据源
+                SqlFormatModel sqlFormatModel = wrapper.buildSql();
+                String sql = sqlFormatModel.getSql();
+                Map<String, Object> sqlParams = sqlFormatModel.getDataMap();
+
+                String newSql = "";
+                if (summarySql.contains(JeeLowCodeConstant.JEELOWCODE_SUMMARY_TABLE)) {//需要替换数据源
+                    newSql = summarySql.replace(JeeLowCodeConstant.JEELOWCODE_SUMMARY_TABLE, sql);
+                } else {//直接运行自定义sql
+                    newSql = SqlHelper.getPublicSql(summarySql);
+                }
+
+                List<Map<String, Object>> dataMapList = sqlService.getDataListByPlus(newSql, sqlParams);
+
+                SummaryTopModel topModel = new SummaryTopModel();
+                topModel.setSummaryLabel(summaryLabel);
+                topModel.setSummaryJson(summaryJson);
+                topModel.setDataMapList(dataMapList);
+                topMap.put(id, topModel);
+            }));
             //按顺序取出来
             summaryTopList.stream().forEach(summaryEntity -> {
                 Long id = summaryEntity.getId();
@@ -572,68 +560,58 @@ public class FrameServiceImpl implements IFrameService {
         AtomicReference<Integer> importState = new AtomicReference<>(1);//成功
         String redisKey = "excel:import:task_" + fieldId;//判断是否
         AtomicReference<Boolean> breakFlag = new AtomicReference<>(false);
-        ForkJoinPool pool = null;
-        try {
-            pool = FuncBase.jeelowcodeForkJoinPool();
-            pool.submit(() -> entityList.parallelStream().forEach(entity -> {
-                if (breakFlag.get()) {//说明退出
-                    return;
-                }
-
-                String errorReason = "";
-                String handleResult = "";
-                try {
-                    //单条入库
-                    Map<String, Object> dataMap = Func.json2Bean(entity.getDataJson(), Map.class);
-                    Map<String, Object> saveDataMap = dataMap.entrySet().stream().filter(item -> fieldCodeSet.contains(item.getKey()))
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));//移除不属于数据库的列
-                    this.handleDict(dictModel, saveDataMap);//处理字典，字典值回显
-                    //新增入库
-                    proxyFrameService.saveImportData(dbFormId,saveDataMap);
-
-                    handleResult = "SUCCESS";
-                } catch (JeeLowCodeException e) {
-                    errorReason = e.getMessage();
-                    handleResult = "FAIL";
-                } catch (Exception e) {
-                    errorReason = "数据格式有误";
-                    handleResult = "FAIL";
-                }
-                String redisKeyData = "excel:import_data:task_" + fieldId + ":" + handleResult + ":" + entity.getId();
-                jeeLowCodeRedisUtils.set(redisKeyData, handleResult, 2, TimeUnit.DAYS);//存2天
-
-                //更新表
-                ExcelFileDataEntity updateEntity = new ExcelFileDataEntity();
-                updateEntity.setId(entity.getId());
-                updateEntity.setHandleState(YNEnum.Y.getCode());//已处理
-                updateEntity.setHandleResult(handleResult);
-                updateEntity.setHandleTime(DateUtil.date());
-                updateEntity.setErrorReason(errorReason);
-                excelDataService.updateById(updateEntity);
-
-
-                //判断是否存在暂停，取消
-                if (!jeeLowCodeRedisUtils.hasKey(redisKey)) {
-                    return;
-                }
-                String redisVal = (String) jeeLowCodeRedisUtils.get(redisKey);
-                if (Func.equals(redisVal, "STOP_TASK")) {//暂停
-                    jeeLowCodeRedisUtils.del(redisKey);
-                    breakFlag.set(true);
-                } else if (Func.equals(redisVal, "CANCLE_TASK")) {//取消
-                    jeeLowCodeRedisUtils.del(redisKey);
-                    log.error("手动取消导入任务：" + fieldId);
-                    breakFlag.set(true);
-                    importState.set(-2);
-                }
-            })).get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e.getMessage());
-        } finally {
-            if (pool != null) {
-                pool.shutdown();
+        FuncBase.parallelExecute(() -> entityList.parallelStream().forEach(entity -> {
+            if (breakFlag.get()) {//说明退出
+                return;
             }
-        }
+
+            String errorReason = "";
+            String handleResult = "";
+            try {
+                //单条入库
+                Map<String, Object> dataMap = Func.json2Bean(entity.getDataJson(), Map.class);
+                Map<String, Object> saveDataMap = dataMap.entrySet().stream().filter(item -> fieldCodeSet.contains(item.getKey()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));//移除不属于数据库的列
+                this.handleDict(dictModel, saveDataMap);//处理字典，字典值回显
+                //新增入库
+                proxyFrameService.saveImportData(dbFormId,saveDataMap);
+
+                handleResult = "SUCCESS";
+            } catch (JeeLowCodeException e) {
+                errorReason = e.getMessage();
+                handleResult = "FAIL";
+            } catch (Exception e) {
+                errorReason = "数据格式有误";
+                handleResult = "FAIL";
+            }
+            String redisKeyData = "excel:import_data:task_" + fieldId + ":" + handleResult + ":" + entity.getId();
+            jeeLowCodeRedisUtils.set(redisKeyData, handleResult, 2, TimeUnit.DAYS);//存2天
+
+            //更新表
+            ExcelFileDataEntity updateEntity = new ExcelFileDataEntity();
+            updateEntity.setId(entity.getId());
+            updateEntity.setHandleState(YNEnum.Y.getCode());//已处理
+            updateEntity.setHandleResult(handleResult);
+            updateEntity.setHandleTime(DateUtil.date());
+            updateEntity.setErrorReason(errorReason);
+            excelDataService.updateById(updateEntity);
+
+
+            //判断是否存在暂停，取消
+            if (!jeeLowCodeRedisUtils.hasKey(redisKey)) {
+                return;
+            }
+            String redisVal = (String) jeeLowCodeRedisUtils.get(redisKey);
+            if (Func.equals(redisVal, "STOP_TASK")) {//暂停
+                jeeLowCodeRedisUtils.del(redisKey);
+                breakFlag.set(true);
+            } else if (Func.equals(redisVal, "CANCLE_TASK")) {//取消
+                jeeLowCodeRedisUtils.del(redisKey);
+                log.error("手动取消导入任务：" + fieldId);
+                breakFlag.set(true);
+                importState.set(-2);
+            }
+        }));
 
         //如果是取消的话，需要回滚事务
         Integer importStateInt = importState.get();
@@ -1396,31 +1374,21 @@ public class FrameServiceImpl implements IFrameService {
         if (Func.isEmpty(treeDataList)) {
             return;
         }
-        ForkJoinPool pool = null;
-        try {
-            pool = FuncBase.jeelowcodeForkJoinPool();
-            pool.submit(() -> treeDataList.parallelStream().forEach(dataMap -> {
-                Long id = Func.getMap2Long(dataMap, "id");
+        FuncBase.parallelExecute(() -> treeDataList.parallelStream().forEach(dataMap -> {
+            Long id = Func.getMap2Long(dataMap, "id");
 
-                SqlInfoQueryWrapper.Wrapper wrapper = SqlHelper.getQueryWrapper()
-                        .setTableName(tableName)
-                        .select("id")
-                        .setWhere(where -> {
-                            where.eq("is_deleted", 0);
-                            where.eq("pid", id);
-                        }).build();
-                Map<String, Object> subMap = sqlService.getDataOneByPlus(wrapper);
-                boolean hasChildren = Func.isNotEmpty(subMap);
-                dataMap.put("hasChildren", hasChildren);
-                dataMap.put("leaf", !hasChildren);
-            })).get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e.getMessage());
-        } finally {
-            if (pool != null) {
-                pool.shutdown();
-            }
-        }
+            SqlInfoQueryWrapper.Wrapper wrapper = SqlHelper.getQueryWrapper()
+                    .setTableName(tableName)
+                    .select("id")
+                    .setWhere(where -> {
+                        where.eq("is_deleted", 0);
+                        where.eq("pid", id);
+                    }).build();
+            Map<String, Object> subMap = sqlService.getDataOneByPlus(wrapper);
+            boolean hasChildren = Func.isNotEmpty(subMap);
+            dataMap.put("hasChildren", hasChildren);
+            dataMap.put("leaf", !hasChildren);
+        }));
     }
 
     //处理字典
