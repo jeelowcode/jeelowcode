@@ -19,6 +19,7 @@ import com.jeelowcode.framework.utils.component.cache.JeelowCodeCacheAspect;
 import com.jeelowcode.framework.utils.component.crypto.ApiDecryptRequestBodyAdvice;
 import com.jeelowcode.framework.utils.component.crypto.ApiDecryptResponseBodyAdvice;
 import com.jeelowcode.framework.utils.component.defaultval.DefaultValAspect;
+import com.jeelowcode.framework.utils.component.devonly.JeeLowCodeDevOnlyAspect;
 import com.jeelowcode.framework.utils.component.mybatis.MapWrapperFactory;
 import com.jeelowcode.framework.utils.component.properties.JeeLowCodeProperties;
 import com.jeelowcode.framework.utils.component.redis.JeeLowCodeRedisUtils;
@@ -46,6 +47,12 @@ public class JeeLowCodeAutoConfiguration {
     @Bean
     public JeelowCodeValidateAspect jeelowCodeValidateAspect() {
         return new JeelowCodeValidateAspect();
+    }
+
+    //仅 local/dev 允许编写 SQL/在线脚本
+    @Bean
+    public JeeLowCodeDevOnlyAspect jeeLowCodeDevOnlyAspect() {
+        return new JeeLowCodeDevOnlyAspect();
     }
 
     //缓存相关

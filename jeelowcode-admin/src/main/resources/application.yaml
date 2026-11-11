@@ -278,6 +278,10 @@ wx:
 # -------------------jeeLowCode 低代码平台--------------------------
 
 jeelowcode:
+  # SQL 编写环境隔离校验开关，默认 true
+  #   true  : 所有环境都做校验，local/dev 默认也不允许修改 SQL/在线脚本
+  #   false : 关闭后仅 local/dev 允许修改；prod 等正式环境仍做校验，不受本开关影响
+  sql-write-check-enabled: true
   info:
     version: 1.0.0
     base-package: com.jeelowcode

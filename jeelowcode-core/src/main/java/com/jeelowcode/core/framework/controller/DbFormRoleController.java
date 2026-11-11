@@ -14,6 +14,8 @@ http://www.apache.org/licenses/
 package com.jeelowcode.core.framework.controller;
 
 import com.jeelowcode.framework.global.JeeLowCodeBaseConstant;
+import com.jeelowcode.core.framework.config.aspect.devonly.provider.RuleSqlOldValueProvider;
+import com.jeelowcode.framework.utils.annotation.JeeLowCodeDevOnly;
 import com.jeelowcode.core.framework.params.vo.role.DbFormRoleButtonVo;
 import com.jeelowcode.core.framework.params.vo.role.DbFormRoleDataRuleVo;
 import com.jeelowcode.core.framework.params.vo.role.DbFormRoleDataTenantVo;
@@ -81,6 +83,7 @@ public class DbFormRoleController extends BaseController {
     @PostMapping("/save-data-rule")
     @ApiOperationSupport(order = 3)
     @Operation(tags = "表单开发",summary = "新增/修改 数据权限-规则")
+    @JeeLowCodeDevOnly(fields = {"ruleSql"}, oldValue = RuleSqlOldValueProvider.class)
     public BaseWebResult saveRoleDataRule(@RequestBody DbFormRoleDataRuleVo vo) {
         dbFormRoleService.saveOrUpdateRoleDataRule(vo);
         return BaseWebResult.success("成功");

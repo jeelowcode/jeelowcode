@@ -14,7 +14,12 @@ http://www.apache.org/licenses/
 package com.jeelowcode.core.framework.controller;
 
 import com.jeelowcode.framework.global.JeeLowCodeBaseConstant;
+import com.jeelowcode.core.framework.config.aspect.devonly.checker.EnhanceJavaCreateChecker;
+import com.jeelowcode.core.framework.config.aspect.devonly.checker.EnhanceJavaUpdateChecker;
+import com.jeelowcode.core.framework.config.aspect.devonly.provider.EnhanceJavaOldValueProvider;
 import com.jeelowcode.core.framework.config.aspect.enhance.JeeLowCodeAnnotationAspectjJAVA;
+import com.jeelowcode.framework.utils.annotation.JeeLowCodeDevOnly;
+import com.jeelowcode.framework.utils.enums.WriteMode;
 import com.jeelowcode.core.framework.entity.EnhanceJavaEntity;
 import com.jeelowcode.core.framework.service.IEnhanceJavaService;
 import com.jeelowcode.core.framework.utils.Func;
@@ -54,6 +59,7 @@ public class EnhanceJavaController extends BaseController {
     @PostMapping("/save")
     @ApiOperationSupport(order = 2)
     @Operation(tags = "JAVA增强",summary = "新增")
+    @JeeLowCodeDevOnly(fields = {"onlineScript"}, oldValue = EnhanceJavaOldValueProvider.class, checker = EnhanceJavaCreateChecker.class, mode = WriteMode.CREATE)
     public BaseWebResult save(@RequestBody EnhanceJavaEntity model) {
         javaService.saveEnhanceJava(model);
         return BaseWebResult.success("成功");
@@ -63,6 +69,7 @@ public class EnhanceJavaController extends BaseController {
     @PutMapping("/update")
     @ApiOperationSupport(order = 3)
     @Operation(tags = "JAVA增强",summary = "修改")
+    @JeeLowCodeDevOnly(fields = {"onlineScript"}, oldValue = EnhanceJavaOldValueProvider.class, checker = EnhanceJavaUpdateChecker.class, mode = WriteMode.UPDATE)
     public BaseWebResult update(@RequestBody EnhanceJavaEntity model) {
         javaService.updateEnhanceJava(model);
         return BaseWebResult.success("成功");

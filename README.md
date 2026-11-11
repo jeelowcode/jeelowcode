@@ -26,7 +26,9 @@
 **JeeLowCode** 是一款基于SpringBoot专为企业打造的低代码开发框架，以低代码为核心，实现快速开发。提供可视化界面，拖拽组件即可搭建应用，无需复杂代码编写，极大提升开发效率。企业可免费使用，灵活适配业务需求，助力高效数字化转型，是企业降本增效的利器。
 <br><br>
 <img src="https://img.shields.io/badge/注意:-JeeLowCode 可以用于个人或公司的项目，不允许任何形式的二次开源并且禁止售卖源代码-red.svg" alt="Downloads">
-
+<br>
+<img src="https://oss.mj.ink/jeelowcode/icon/jeelowcode_cloud.jpg">
+<br>
 ## 🎥 视频教程
 点击查看视频
 <table>

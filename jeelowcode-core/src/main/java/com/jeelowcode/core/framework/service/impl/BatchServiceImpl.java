@@ -97,7 +97,9 @@ public class BatchServiceImpl implements IBatchService {
     }
 
     protected <E> boolean executeBatch(Collection list, int batchSize,BaseMapper baseMapper,Class clazz, BiConsumer<SqlSession, E> consumer) {
-        return SqlHelper.executeBatch(this.getSqlSessionFactory(baseMapper,clazz), this.log, list, batchSize, consumer);
+        SqlSessionFactory factory = this.getSqlSessionFactory(baseMapper,clazz);
+        boolean result = SqlHelper.executeBatch(factory, this.log, list, batchSize, consumer);
+        return result;
     }
     protected SqlSessionFactory getSqlSessionFactory(BaseMapper baseMapper,Class clazz) {
         if (this.sqlSessionFactory == null) {

@@ -63,4 +63,7 @@ public interface JeeLowCodeConstant {
 
     // 本地开发环境
     String APPLICATION_LOCAL = "local";
+
+    // 开发环境
+    String APPLICATION_DEV = "dev";
 }

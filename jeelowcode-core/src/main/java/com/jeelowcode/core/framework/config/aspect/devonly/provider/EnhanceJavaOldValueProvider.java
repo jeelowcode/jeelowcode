@@ -1,0 +1,54 @@
+/*
+Apache License
+Version 2.0, January 2004
+http://www.apache.org/licenses/LICENSE-2.0
+本软件受适用的国家软件著作权法（包括国际条约）和开源协议 双重保护许可。
+
+开源协议中文释意如下：
+1.JeeLowCode开源版本无任何限制，在遵循本开源协议（Apache2.0）条款下，【允许商用】使用，不会造成侵权行为。
+2.允许基于本平台软件开展业务系统开发。
+3.在任何情况下，您不得使用本软件开发可能被认为与【本软件竞争】的软件。
+
+最终解释权归：http://www.jeelowcode.com
+*/
+package com.jeelowcode.core.framework.config.aspect.devonly.provider;
+
+import com.jeelowcode.core.framework.config.aspect.devonly.support.DevOnlyArgUtils;
+import com.jeelowcode.core.framework.config.aspect.devonly.support.SqlFieldNames;
+
+import com.jeelowcode.core.framework.entity.EnhanceJavaEntity;
+import com.jeelowcode.core.framework.service.IEnhanceJavaService;
+import com.jeelowcode.framework.utils.component.devonly.OldSqlValueProvider;
+import com.jeelowcode.framework.utils.component.devonly.SqlFieldSnapshot;
+import com.jeelowcode.framework.utils.utils.SqlFieldDetector;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/**
+ * 在线 Java 增强旧值：onlineScript。
+ * javaType / activeStatus 的条件判断由 EnhanceJavaCreateChecker / EnhanceJavaUpdateChecker 负责。
+ */
+@Component
+@RequiredArgsConstructor
+public class EnhanceJavaOldValueProvider implements OldSqlValueProvider {
+
+    private final IEnhanceJavaService javaService;
+
+    @Override
+    public SqlFieldSnapshot load(Object[] args) {
+        EnhanceJavaEntity request = DevOnlyArgUtils.find(args, EnhanceJavaEntity.class);
+        if (request == null || request.getId() == null) {
+            return SqlFieldSnapshot.empty();
+        }
+        EnhanceJavaEntity old = javaService.getById(request.getId());
+        if (old == null) {
+            return SqlFieldSnapshot.empty();
+        }
+        Map<String, Object> snapshot = new LinkedHashMap<>();
+        snapshot.put("onlineScript", old.getOnlineScript());
+        return SqlFieldDetector.snapshot(new Object[]{snapshot}, SqlFieldNames.ALL);
+    }
+}

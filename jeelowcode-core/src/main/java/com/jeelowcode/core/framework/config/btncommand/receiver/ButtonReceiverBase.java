@@ -29,6 +29,7 @@ import com.jeelowcode.core.framework.params.model.WebFormatConfigModel;
 import com.jeelowcode.core.framework.service.IFormService;
 import com.jeelowcode.core.framework.utils.Func;
 import com.jeelowcode.framework.utils.utils.FuncBase;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.LinkedMap;
 
 import java.util.*;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 /**
  * 公共
  */
+@Slf4j
 public class ButtonReceiverBase {
 
     //移除不是导入项目
@@ -140,21 +142,42 @@ public class ButtonReceiverBase {
                 return;
             }
             WebFormatConfigModel.Json  formatJson= webFormatConfigModel.getFormatJson();
+            if(Func.isEmpty(formatJson)){
+                return;
+            }
             WebFormatConfigModel.JavaModel javaModel = formatJson.getJava();
+            if(Func.isEmpty(javaModel)){
+                return;
+            }
             String valueType = javaModel.getValueType();
             List<WebFormatConfigModel.JavaGroup> groupList = javaModel.getGroup();
             WebFormatConfigModel.JavaCustom custom = javaModel.getCustom();
             switch (valueType){
                 case "group"://表达式
-                    records.stream().forEach(record -> {
-                        record.put(fieldCode, this.getGroupVal(fieldDictMap, groupList, new HashMap<>(record)));
+                    records.forEach(record -> {
+                        try {
+                            record.put(fieldCode, this.getGroupVal(fieldDictMap, groupList, new HashMap<>(record)));
+                        } catch (Exception e) {
+                            log.warn("虚拟化字段表达式执行失败。dbFormId={}, fieldCode={}", dbFormId, fieldCode, e);
+                            throw new JeeLowCodeException("虚拟字段[" + fieldCode
+                                    + "]表达式计算失败，请检查表达式配置及字段数据，详细原因请查看服务端日志");
+                        }
                     });
                     break;
                 case "custom":
-                    records.stream().forEach(record -> {
-                        //运行插件
-                        String result = VirtualizationFieldPluginManager.executePlugin(custom.getJavaPath(), new HashMap<>(record));
-                        record.put(fieldCode, result);
+                    if(Func.isEmpty(custom) || Func.isEmpty(custom.getJavaPath())){
+                        return;
+                    }
+                    records.forEach(record -> {
+                        try {
+                            //运行插件
+                            String result = VirtualizationFieldPluginManager.executePlugin(custom.getJavaPath(), new HashMap<>(record));
+                            record.put(fieldCode, result);
+                        } catch (Exception e) {
+                            log.warn("虚拟化字段插件执行失败。dbFormId={}, fieldCode={}, javaPath={}", dbFormId, fieldCode, custom.getJavaPath(), e);
+                            throw new JeeLowCodeException("虚拟字段[" + fieldCode
+                                    + "]插件执行失败，请检查插件配置及字段数据，详细原因请查看服务端日志");
+                        }
                     });
                     break;
             }

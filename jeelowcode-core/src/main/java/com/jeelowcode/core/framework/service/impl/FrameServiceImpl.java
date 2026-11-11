@@ -1003,6 +1003,8 @@ public class FrameServiceImpl implements IFrameService {
         SqlInfoQueryWrapper.Wrapper queryWrapper = SqlHelper.getQueryWrapper();
         //表视图
         Integer tableClassify = formEntity.getTableClassify();
+        //排序字段白名单，用于防止 ORDER BY SQL 注入
+        List<String> allowOrderColumns = this.getAllowOrderColumns(formEntity);
         if (Func.equals(tableClassify, TableClassifyEnum.SERVICE.getType())) {//业务表
             String tableName = formEntity.getTableName();
             queryWrapper.setTableName(tableName);
@@ -1028,7 +1030,7 @@ public class FrameServiceImpl implements IFrameService {
         }
 
         //处理排序排序================
-        this.handleOrderBy(queryWrapper, params, formEntity.getOrderbyConfig());
+        this.handleOrderBy(queryWrapper, params, formEntity.getOrderbyConfig(), allowOrderColumns);
 
         //处理默认条件============
         this.handleDefaultWhere(queryWrapper, formEntity.getWhereConfig());
@@ -1067,7 +1069,7 @@ public class FrameServiceImpl implements IFrameService {
         Func.replaceParam(dataSourceConfigModel.getExecuteSql(), params, null, jeeLowCodeAdapter);
 
         //处理排序排序================
-        this.handleOrderBy(queryWrapper, params, null);
+        this.handleOrderBy(queryWrapper, params, null, null);
 
         //处理搜索where=================
         List<Map<String, String>> whereFieldMapList = jeeLowCodeMapper.getReportWhereFieldList(reportEntity.getId());
@@ -1076,15 +1078,39 @@ public class FrameServiceImpl implements IFrameService {
         return queryWrapper;
     }
 
+    /**
+     * 获取允许排序的字段白名单，用于防止 ORDER BY SQL 注入
+     * 业务表取表单配置的全部字段（含 is_db='N' 的虚拟/展示字段，它们在 SQL 中以子查询别名存在，可合法排序）；
+     * 视图/自定义SQL场景无法穷举字段，返回 null 由下游降级为格式校验
+     * 注意：须与前端列表列的 prop 同源（均为 FormFieldMapper.getByDbFormId），否则会导致可排序列被误拦
+     *
+     * @param formEntity 表单实体
+     * @return 允许排序的字段名集合，null 表示不启用白名单
+     */
+    private List<String> getAllowOrderColumns(FormEntity formEntity) {
+        Integer tableClassify = formEntity.getTableClassify();
+        if (!Func.equals(tableClassify, TableClassifyEnum.SERVICE.getType())) {
+            return null;//视图-自定义SQL，字段不可枚举，走格式校验
+        }
+        List<FormFieldEntity> fieldList = dbFormService.getFieldList(formEntity.getId());
+        if (FuncBase.isEmpty(fieldList)) {
+            return null;
+        }
+        return fieldList.stream()
+                .map(FormFieldEntity::getFieldCode)
+                .filter(FuncBase::isNotEmpty)
+                .collect(Collectors.toList());
+    }
+
 
     //处理排序
-    private void handleOrderBy(SqlInfoQueryWrapper.Wrapper wrapper, Map<String, Object> params, String orderbyConfigStr) {
+    private void handleOrderBy(SqlInfoQueryWrapper.Wrapper wrapper, Map<String, Object> params, String orderbyConfigStr, Collection<String> allowColumns) {
         Map<String, Object> seleOrderByMap = (Map<String, Object>) params.get(ParamEnum.REQUEST_PARAM_BODY.getCode());
         if (Func.isNotEmpty(seleOrderByMap)) {
-            String column = JeeLowCodeUtils.getMap2Str(seleOrderByMap, ParamEnum.COLUMN.getCode());
-            String order = JeeLowCodeUtils.getMap2Str(seleOrderByMap, ParamEnum.ORDER.getCode());
-            if (FuncBase.isNotEmpty(column) && FuncBase.isNotEmpty(order) && (FuncBase.equals(order, "desc") || FuncBase.equals(order, "asc"))) {
-                if (FuncBase.equals(order, "desc")) {
+            Boolean desc = Func.parseOrderDesc(JeeLowCodeUtils.getMap2Str(seleOrderByMap, ParamEnum.ORDER.getCode()));
+            String column = Func.checkOrderByColumn(JeeLowCodeUtils.getMap2Str(seleOrderByMap, ParamEnum.COLUMN.getCode()), allowColumns);
+            if (FuncBase.isNotEmpty(column) && desc != null) {
+                if (desc) {
                     wrapper.orderByDesc(column);
                 } else {
                     wrapper.orderByAsc(column);
@@ -1094,10 +1120,10 @@ public class FrameServiceImpl implements IFrameService {
         }
 
 
-        String column = JeeLowCodeUtils.getMap2Str(params, ParamEnum.COLUMN.getCode());
-        String order = JeeLowCodeUtils.getMap2Str(params, ParamEnum.ORDER.getCode());
-        if (FuncBase.isNotEmpty(column) && FuncBase.isNotEmpty(order) && (FuncBase.equals(order, "desc") || FuncBase.equals(order, "asc"))) {
-            if (FuncBase.equals(order, "desc")) {
+        Boolean desc = Func.parseOrderDesc(JeeLowCodeUtils.getMap2Str(params, ParamEnum.ORDER.getCode()));
+        String column = Func.checkOrderByColumn(JeeLowCodeUtils.getMap2Str(params, ParamEnum.COLUMN.getCode()), allowColumns);
+        if (FuncBase.isNotEmpty(column) && desc != null) {
+            if (desc) {
                 wrapper.orderByDesc(column);
             } else {
                 wrapper.orderByAsc(column);
@@ -1114,7 +1140,10 @@ public class FrameServiceImpl implements IFrameService {
         //遍历
         orderByList.forEach(model -> {
             String orderBy = model.getOrder();
-            String orderByColumn = model.getColumn();
+            String orderByColumn = Func.checkOrderByColumn(model.getColumn(), allowColumns);
+            if (FuncBase.isEmpty(orderByColumn)) {
+                return;
+            }
             switch (orderBy) {
                 case "asc":
                     wrapper.orderByAsc(orderByColumn);

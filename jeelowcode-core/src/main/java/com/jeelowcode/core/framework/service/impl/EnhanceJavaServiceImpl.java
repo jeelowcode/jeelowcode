@@ -13,6 +13,7 @@ http://www.apache.org/licenses/
 */
 package com.jeelowcode.core.framework.service.impl;
 
+import com.jeelowcode.core.framework.config.aspect.enhance.EnhanceScriptEnvGuard;
 import com.jeelowcode.core.framework.config.aspect.enhance.JeeLowCodeAnnotationAspectjJAVA;
 import com.jeelowcode.core.framework.entity.EnhanceJavaEntity;
 import com.jeelowcode.core.framework.entity.HistoryDbformEntity;
@@ -20,7 +21,9 @@ import com.jeelowcode.core.framework.mapper.EnhanceJavaMapper;
 import com.jeelowcode.core.framework.mapper.HistoryDbFormMapper;
 import com.jeelowcode.core.framework.service.IEnhanceJavaService;
 import com.jeelowcode.core.framework.utils.Func;
+import com.jeelowcode.framework.exception.JeeLowCodeException;
 import com.jeelowcode.framework.utils.adapter.IJeeLowCodeAdapter;
+import com.jeelowcode.framework.utils.utils.DevProfileUtils;
 import com.jeelowcode.framework.utils.constant.EnhanceConstant;
 import com.jeelowcode.framework.utils.enums.TableType2Enum;
 import com.jeelowcode.framework.utils.enums.YNEnum;
@@ -58,12 +61,17 @@ public class EnhanceJavaServiceImpl extends ServiceImpl<EnhanceJavaMapper, Enhan
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveEnhanceJava(EnhanceJavaEntity enhanceJavaEntity){
+        EnhanceScriptEnvGuard.checkCreate(enhanceJavaEntity);
+
         long id = IdWorker.getId();
         enhanceJavaEntity.setId(id);
         this.save(enhanceJavaEntity);
 
-        //加入到pluginmanager中
-        JeeLowCodeAnnotationAspectjJAVA.addPlugin(enhanceJavaEntity);
+        //停用的在线增强不注册，避免在开发环境创建 N 状态脚本时仍执行。
+        if (!EnhanceScriptEnvGuard.isOnline(enhanceJavaEntity)
+                || YNEnum.Y.getCode().equals(enhanceJavaEntity.getActiveStatus())) {
+            JeeLowCodeAnnotationAspectjJAVA.addPlugin(enhanceJavaEntity);
+        }
         //加历史记录
         this.saveHistoryLog(id,enhanceJavaEntity);
     }
@@ -72,16 +80,22 @@ public class EnhanceJavaServiceImpl extends ServiceImpl<EnhanceJavaMapper, Enhan
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateEnhanceJava(EnhanceJavaEntity enhanceJavaEntity){
-        this.updateById(enhanceJavaEntity);
-        //加历史记录
-
-        if (Func.equals(enhanceJavaEntity.getActiveStatus(), YNEnum.Y.getCode())){
-            JeeLowCodeAnnotationAspectjJAVA.updatePlugins(enhanceJavaEntity);
-        }else{
-            JeeLowCodeAnnotationAspectjJAVA.deletePlugins(enhanceJavaEntity);
+        if (enhanceJavaEntity == null || enhanceJavaEntity.getId() == null) {
+            throw new JeeLowCodeException("增强ID不能为空");
+        }
+        EnhanceJavaEntity oldEntity = this.getById(enhanceJavaEntity.getId());
+        EnhanceJavaEntity merged = EnhanceScriptEnvGuard.prepareUpdate(oldEntity, enhanceJavaEntity);
+        if (!this.updateById(merged)) {
+            throw new JeeLowCodeException("增强更新失败");
         }
 
-        this.saveHistoryLog(enhanceJavaEntity.getId(),enhanceJavaEntity);
+        //按旧绑定移除，再用已校验的完整配置注册，兼容稀疏更新及开发环境修改绑定。
+        JeeLowCodeAnnotationAspectjJAVA.deletePlugins(oldEntity);
+        if (YNEnum.Y.getCode().equals(merged.getActiveStatus())) {
+            JeeLowCodeAnnotationAspectjJAVA.updatePlugins(merged);
+        }
+
+        this.saveHistoryLog(merged.getId(), merged);
     }
 
 
@@ -115,12 +129,16 @@ public class EnhanceJavaServiceImpl extends ServiceImpl<EnhanceJavaMapper, Enhan
                     return false;
                 }
                 javaEntity.setJavaClassUrl(newEnhanceName);
+            } else if (FuncBase.equals(javaEntity.getJavaType(), EnhanceConstant.ENHANCE_TYPE_ONLINE_EDIT)) {// 在线编辑方式
+                //安全策略：非 local/dev 环境，复制过来的在线脚本默认不生效，避免脚本被复制到生产环境
+                if (!DevProfileUtils.isDevOrLocal()) {
+                    javaEntity.setActiveStatus(YNEnum.N.getCode());
+                }
             }
             return true;
         }).collect(Collectors.toList());
         this.saveBatch(javaEntityList);
     }
-
 
     //保存历史记录
     private void saveHistoryLog(Long javaId, EnhanceJavaEntity javaEntity){

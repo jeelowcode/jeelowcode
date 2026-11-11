@@ -33,14 +33,14 @@ import com.jeelowcode.framework.utils.params.JeeLowCodeDeptParam;
 import com.jeelowcode.framework.utils.tool.spring.SpringUtils;
 import com.jeelowcode.framework.utils.utils.FuncBase;
 import com.jeelowcode.framework.utils.utils.JeeLowCodeUtils;
+import com.jeelowcode.framework.utils.utils.DevProfileUtils;
 import com.jeelowcode.framework.utils.component.properties.JeeLowCodeProperties;
 import com.jeelowcode.core.framework.entity.FormFieldEntity;
 import com.jeelowcode.core.framework.entity.FormFieldWebEntity;
 import com.jeelowcode.core.framework.params.model.WebFormatConfigModel;
 import com.jeelowcode.core.framework.params.vo.DbFormFieldIdVo;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
-import com.ql.util.express.DefaultContext;
-import com.ql.util.express.ExpressRunner;
+import com.jeelowcode.core.framework.config.express.ExpressSafeRunner;
 import oracle.sql.TIMESTAMP;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -224,22 +224,72 @@ public class Func extends FuncBase {
 
 
 
-    //计算
+    //计算（走沙箱执行器，表达式为不可信输入，禁止直接调用 Java 类/方法）
     public static String executeJavaExpress(String express, Map<String, Object> dataMap) {
-        try {
-            String expressTmp = express.replaceAll("\\#\\{([^}]+)\\}", "$1");
-            ExpressRunner runner = new ExpressRunner();
-            DefaultContext<String, Object> context = new DefaultContext<String, Object>();
-            dataMap.forEach((key, val) -> {
-                // 处理键值对
-                context.put(key, val);
-            });
-            Object result = runner.execute(expressTmp, context, null, true, false);
-            return Func.toStr(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new JeeLowCodeException(e.getMessage());
+        return ExpressSafeRunner.execute(express, dataMap);
+    }
+
+    /**
+     * 排序字段格式白名单：仅允许「字段」或「别名.字段」两段，每段字母/数字/下划线、
+     * 不以数字开头、最长 64 位。与 BuildOrderBy.SAFE_ORDER_BY_COLUMN_PATTERN 结构一致。
+     */
+    private static final Pattern SAFE_ORDER_BY_COLUMN_PATTERN = Pattern.compile(
+            "^[A-Za-z_][A-Za-z0-9_]{0,63}(\\.[A-Za-z_][A-Za-z0-9_]{0,63})?$");
+
+    /**
+     * 校验排序字段，防止 ORDER BY SQL 注入
+     * 1) 先对整串做格式校验（含别名前缀），杜绝表达式、子查询、注释、多段前缀
+     * 2) 传入了字段白名单，则必须命中白名单才放行（忽略大小写，适配 Oracle/达梦等大写字段库）
+     * 3) 没有白名单（如报表场景），降级为严格格式校验
+     * 4) 都不通过返回 null，调用方应忽略本次排序
+     *
+     * @param column       待校验的排序字段，支持 "别名.字段" 形式
+     * @param allowColumns 允许排序的字段白名单，为空则降级为格式校验
+     * @return 合法的排序字段，非法返回 null
+     */
+    public static String checkOrderByColumn(String column, Collection<String> allowColumns) {
+        if (FuncBase.isEmpty(column)) {
+            return null;
         }
+        column = column.trim();
+        //整串格式校验：仅允许「字段」或「别名.字段」
+        if (!SAFE_ORDER_BY_COLUMN_PATTERN.matcher(column).matches()) {
+            return null;
+        }
+        //白名单取最后一段作为真实字段名（兼容 别名.字段）
+        int dotIndex = column.lastIndexOf('.');
+        String realColumn = dotIndex < 0 ? column : column.substring(dotIndex + 1);
+        if (FuncBase.isNotEmpty(allowColumns)) {
+            //忽略大小写比对：数据库列名本身大小写不敏感，白名单也应如此
+            String lowerColumn = realColumn.toLowerCase(Locale.ROOT);
+            for (String allow : allowColumns) {
+                if (allow != null && allow.toLowerCase(Locale.ROOT).equals(lowerColumn)) {
+                    return column;
+                }
+            }
+            return null;
+        }
+        return column;
+    }
+
+    /**
+     * 解析排序方向，忽略大小写
+     *
+     * @param order asc/desc，允许大小写
+     * @return true=降序 false=升序；非 asc/desc 返回 null
+     */
+    public static Boolean parseOrderDesc(String order) {
+        if (FuncBase.isEmpty(order)) {
+            return null;
+        }
+        String orderKey = order.trim().toLowerCase(Locale.ROOT);
+        if ("desc".equals(orderKey)) {
+            return Boolean.TRUE;
+        }
+        if ("asc".equals(orderKey)) {
+            return Boolean.FALSE;
+        }
+        return null;
     }
 
     public static Object getfieldValObj(JeeLowCodeFieldTypeEnum fieldTypeEnum, Object fieldVal) {
@@ -599,9 +649,8 @@ public class Func extends FuncBase {
      * @param newTableName 新表名
      */
     public static String copySpringEnhance(String type, String oldEnhanceName, String newTableName){
-        // 获取当前环境配置，只在本地开发环境进行复制
-        String activeProfile = SpringUtils.getActiveProfile();
-        if (Func.isNotEmpty(activeProfile) && !Func.equals(activeProfile, JeeLowCodeConstant.APPLICATION_LOCAL)) {
+        // 仅 local/dev 允许复制；判定统一为 DevProfileUtils（DENY 优先、空 profile 默认拒绝）
+        if (!DevProfileUtils.isDevOrLocal()) {
             return null;
         }
         // 获取原增强
@@ -633,9 +682,8 @@ public class Func extends FuncBase {
      * 复制class类型增强
      */
     public static String copyClassEnhance(String type, String oldClazzName, String newTableName) {
-        // 获取当前环境配置，只在本地开发环境进行复制
-        String activeProfile = SpringUtils.getActiveProfile();
-        if (Func.isNotEmpty(activeProfile) && !Func.equals(activeProfile, JeeLowCodeConstant.APPLICATION_LOCAL)) {
+        // 仅 local/dev 允许复制；判定统一为 DevProfileUtils（DENY 优先、空 profile 默认拒绝）
+        if (!DevProfileUtils.isDevOrLocal()) {
             return null;
         }
         Class<?> aClass = null;

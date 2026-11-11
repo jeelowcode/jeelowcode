@@ -37,6 +37,9 @@ public class JeeLowCodeProperties {
     //JAVA增强生成文件地址
     private static String enhancePath="jeelowcode-module\\jeelowcode-module-biz\\src\\main\\java\\com\\jeelowcode\\module\\biz\\enhance";
 
+    //SQL 编写环境隔离校验开关，默认开启：开启时所有环境（含 local/dev）都做校验
+    private static boolean sqlWriteCheckEnabled = true;
+
     //---------------------------------------------------------------------------
 
 
@@ -71,5 +74,13 @@ public class JeeLowCodeProperties {
 
     public void setEnhancePath(String enhancePath) {
         JeeLowCodeProperties.enhancePath = enhancePath;
+    }
+
+    public static boolean getSqlWriteCheckEnabled() {
+        return sqlWriteCheckEnabled;
+    }
+
+    public void setSqlWriteCheckEnabled(boolean sqlWriteCheckEnabled) {
+        JeeLowCodeProperties.sqlWriteCheckEnabled = sqlWriteCheckEnabled;
     }
 }

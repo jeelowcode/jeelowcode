@@ -54,6 +54,7 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import groovy.lang.GroovyClassLoader;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,6 +70,7 @@ import java.util.stream.Collectors;
  * 该接口下所有业务不用租户过滤
  */
 @Service
+@Slf4j
 public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> implements IFormService {
 
     @Autowired
@@ -490,7 +492,6 @@ public class FormServiceImpl extends ServiceImpl<FormMapper, FormEntity> impleme
         buttonService.copy(dbformId, newDbformId);
 
     }
-
 
     //所有模块
     @Override

@@ -14,6 +14,9 @@ http://www.apache.org/licenses/
 package com.jeelowcode.core.framework.controller;
 
 import com.jeelowcode.framework.global.JeeLowCodeBaseConstant;
+import com.jeelowcode.core.framework.config.aspect.devonly.provider.ReportOldSqlValueProvider;
+import com.jeelowcode.framework.utils.annotation.JeeLowCodeDevOnly;
+import com.jeelowcode.framework.utils.enums.WriteMode;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -54,6 +57,7 @@ public class ReportController extends BaseController {
     @PostMapping("/save")
     @ApiOperationSupport(order = 1)
     @Operation(tags = "报表统计",summary = "数据报表 - 保存")
+    @JeeLowCodeDevOnly(fields = {"executeSql"}, oldValue = ReportOldSqlValueProvider.class, mode = WriteMode.CREATE)
     public BaseWebResult saveDbFormConfig(@RequestBody ReportAddOrUpdateParam param, HttpServletRequest req) {
         reportService.saveReportConfig(param);
 
@@ -67,6 +71,7 @@ public class ReportController extends BaseController {
     @PutMapping("/update")
     @ApiOperationSupport(order = 2)
     @Operation(tags = "报表统计",summary = "数据报表 - 修改")
+    @JeeLowCodeDevOnly(fields = {"executeSql"}, oldValue = ReportOldSqlValueProvider.class, mode = WriteMode.UPDATE)
     public BaseWebResult updateDbFormConfig(@RequestBody ReportAddOrUpdateParam param) {
         Long reportId = param.getReport().getId();
         ReportEntity oldEntity = reportService.getReportEntityById(reportId);

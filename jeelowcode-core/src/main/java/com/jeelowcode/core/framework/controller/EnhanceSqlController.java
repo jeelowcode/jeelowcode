@@ -14,7 +14,11 @@ http://www.apache.org/licenses/
 package com.jeelowcode.core.framework.controller;
 
 import com.jeelowcode.framework.global.JeeLowCodeBaseConstant;
+import com.jeelowcode.core.framework.config.aspect.devonly.checker.EnhanceSqlUpdateChecker;
+import com.jeelowcode.core.framework.config.aspect.devonly.provider.EnhanceSqlOldValueProvider;
 import com.jeelowcode.core.framework.config.aspect.enhance.JeeLowCodeAnnotationAspectjSQL;
+import com.jeelowcode.framework.utils.annotation.JeeLowCodeDevOnly;
+import com.jeelowcode.framework.utils.enums.WriteMode;
 import com.jeelowcode.core.framework.entity.EnhanceSqlEntity;
 import com.jeelowcode.core.framework.service.IEnhanceSqlService;
 import com.jeelowcode.core.framework.utils.Func;
@@ -54,6 +58,7 @@ public class EnhanceSqlController extends BaseController {
     @PostMapping("/save")
     @ApiOperationSupport(order = 2)
     @Operation(tags = "Sql增强",summary = "新增")
+    @JeeLowCodeDevOnly(fields = {"executeSql"}, oldValue = EnhanceSqlOldValueProvider.class, mode = WriteMode.CREATE)
     public BaseWebResult save(@RequestBody EnhanceSqlEntity model) {
         sqlService.saveEnhanceSql(model);
         return BaseWebResult.success("成功");
@@ -63,6 +68,7 @@ public class EnhanceSqlController extends BaseController {
     @PutMapping("/update")
     @ApiOperationSupport(order = 3)
     @Operation(tags = "Sql增强",summary = "修改")
+    @JeeLowCodeDevOnly(fields = {"executeSql"}, oldValue = EnhanceSqlOldValueProvider.class, checker = EnhanceSqlUpdateChecker.class, mode = WriteMode.UPDATE)
     public BaseWebResult update(@RequestBody EnhanceSqlEntity model) {
         sqlService.updateEnhanceSql(model);
         return BaseWebResult.success("成功");

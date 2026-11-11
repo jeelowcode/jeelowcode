@@ -15,6 +15,9 @@ package com.jeelowcode.core.framework.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.jeelowcode.framework.global.JeeLowCodeBaseConstant;
+import com.jeelowcode.core.framework.config.aspect.devonly.provider.DbFormOldSqlValueProvider;
+import com.jeelowcode.framework.utils.annotation.JeeLowCodeDevOnly;
+import com.jeelowcode.framework.utils.enums.WriteMode;
 import com.jeelowcode.framework.utils.model.global.BaseWebResult;
 import com.jeelowcode.core.framework.config.validate.DbFormCopyValidate;
 import com.jeelowcode.core.framework.config.validate.TableNameValidate;
@@ -45,6 +48,7 @@ import com.jeelowcode.framework.plus.build.buildmodel.wrapper.SqlInfoQueryWrappe
 import com.jeelowcode.framework.tenant.annotation.JeeLowCodeTenantIgnore;
 import com.jeelowcode.framework.utils.adapter.IJeeLowCodeAdapter;
 import com.jeelowcode.framework.utils.annotation.JeelowCodeValidate;
+import com.jeelowcode.framework.utils.component.properties.JeeLowCodeProperties;
 import com.jeelowcode.framework.utils.enums.DbFormTypeEnum;
 import com.jeelowcode.framework.utils.enums.ParamEnum;
 import com.jeelowcode.framework.utils.model.ResultDataModel;
@@ -64,6 +68,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -88,6 +93,10 @@ public class DbFormController extends BaseController {
     @PostMapping("/save")
     @ApiOperationSupport(order = 1)
     @Operation(tags = "表单开发",summary = "表单开发 - 保存")
+    @JeeLowCodeDevOnly(
+            fields = {"executeSql", "whereConfig", "summarySql", "sql.custom", "sql.group", "fun"},
+            oldValue = DbFormOldSqlValueProvider.class,
+            mode = WriteMode.CREATE)
     public BaseWebResult saveDbFormConfig(@RequestBody DbFormAddOrUpdateParam param, HttpServletRequest req) {
         //基本信息校验完成
         dbFormService.saveDbFormConfig(param);
@@ -98,6 +107,10 @@ public class DbFormController extends BaseController {
     @PutMapping("/update")
     @ApiOperationSupport(order = 2)
     @Operation(tags = "表单开发",summary = "表单开发 - 修改")
+    @JeeLowCodeDevOnly(
+            fields = {"executeSql", "whereConfig", "summarySql", "sql.custom", "sql.group", "fun"},
+            oldValue = DbFormOldSqlValueProvider.class,
+            mode = WriteMode.UPDATE)
     public BaseWebResult updateDbFormConfig(@RequestBody DbFormAddOrUpdateParam param) {
         dbFormService.updateDbFormConfig(param);
         return BaseWebResult.success("成功");
@@ -323,6 +336,7 @@ public class DbFormController extends BaseController {
     @PostMapping("/explain/datasource-sql")
     @ApiOperationSupport(order = 11)
     @Operation(tags = "表单开发",summary = "解释数据源SQL的运行结果")
+    @JeeLowCodeDevOnly
     public BaseWebResult explainDatasourceSql(@RequestBody ExplainDatasourceSqlModel model) {
         Page page = FuncWeb.getPage(1, 10);
         Map<String, Object> params=new HashMap<>();
